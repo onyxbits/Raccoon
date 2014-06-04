@@ -104,6 +104,9 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 	}
 
 	protected void doSearch() {
+		if (query.getText().length()==0) {
+			return;
+		}
 		query.setEnabled(false);
 		page.setEnabled(false);
 		cardLayout.show(main, CARDPROGRESS);
