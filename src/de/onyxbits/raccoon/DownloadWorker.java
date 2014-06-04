@@ -41,12 +41,16 @@ class DownloadWorker extends SwingWorker<Exception, Integer> {
 	@Override
 	protected Exception doInBackground() throws Exception {
 		publish(0); // Just so there is no delay in the UI updating
-		
+
 		String pwd = archive.getPassword();
 		String uid = archive.getUserId();
 		String aid = archive.getAndroidId();
 		GooglePlayAPI service = new GooglePlayAPI(uid, pwd, aid);
-		service.login();
+		service.setToken(archive.getAuthToken());
+		if (service.getToken() == null) {
+			service.login();
+			archive.setAuthToken(service.getToken());
+		}
 		String pn = app.getBackendDocid();
 		int vc = app.getDetails().getAppDetails().getVersionCode();
 		int ot = app.getOffer(0).getOfferType();

@@ -27,9 +27,7 @@ class SearchWorker extends SwingWorker<BulkDetailsResponse, String> {
 	private int offset;
 	private int limit;
 	private String localization;
-	private String androidId;
-	private String userId;
-	private String password;
+	private Archive archive;
 
 	/**
 	 * 
@@ -45,12 +43,8 @@ class SearchWorker extends SwingWorker<BulkDetailsResponse, String> {
 	 * @param callback
 	 *          where to report back when the results are in.
 	 */
-	public SearchWorker(String androidId, String userId, String password, String search,
-			SearchView callback) {
-		this.androidId = androidId;
-		this.userId = userId;
-		this.password = password;
-		this.androidId = androidId;
+	public SearchWorker(Archive archive, String search, SearchView callback) {
+		this.archive = archive;
 		this.search = search;
 		this.searchView = callback;
 		this.limit = 10;
@@ -61,15 +55,6 @@ class SearchWorker extends SwingWorker<BulkDetailsResponse, String> {
 
 		if (search == null || search.length() == 0) {
 			throw new IllegalArgumentException("Bad search query");
-		}
-		if (androidId == null) {
-			throw new IllegalArgumentException("bad credentials");
-		}
-		if (userId == null || userId.length() == 0) {
-			throw new IllegalArgumentException("bad credentials");
-		}
-		if (password == null || password.length() == 0) {
-			throw new IllegalArgumentException("bad credentials");
 		}
 	}
 
@@ -111,9 +96,16 @@ class SearchWorker extends SwingWorker<BulkDetailsResponse, String> {
 
 	@Override
 	protected BulkDetailsResponse doInBackground() throws Exception {
-		GooglePlayAPI service = new GooglePlayAPI(userId, password, androidId);
+		String pwd = archive.getPassword();
+		String uid = archive.getUserId();
+		String aid = archive.getAndroidId();
+		GooglePlayAPI service = new GooglePlayAPI(uid, pwd, aid);
 		service.setLocalization(localization);
-		service.login();
+		service.setToken(archive.getAuthToken());
+		if (service.getToken()==null) {
+			service.login();
+			archive.setAuthToken(service.getToken());
+		}
 		SearchResponse response = service.search(search, offset, limit);
 
 		List<String> apps = new Vector<String>();

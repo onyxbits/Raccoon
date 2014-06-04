@@ -107,12 +107,9 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		query.setEnabled(false);
 		page.setEnabled(false);
 		cardLayout.show(main, CARDPROGRESS);
-		String pwd = archive.getPassword();
-		String uid = archive.getUserId();
-		String aid = archive.getAndroidId();
 		int offset = (Integer) page.getValue();
 		offset = (offset - 1) * 10;
-		new SearchWorker(aid, uid, pwd, query.getText(), this).withOffset(offset)
+		new SearchWorker(archive, query.getText(), this).withOffset(offset)
 				.withLimit(offset + 10).execute();
 	}
 
