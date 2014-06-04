@@ -59,11 +59,16 @@ public class ResultView extends JPanel implements ActionListener {
 				true);
 		String boiler = "<html><h2>" + title + "</h2><code>" + pack + "</code><br>" + author
 				+ "<br> <br>" + size + " &#8213; " + date + " &#8213; " + price + "</html>";
+		
 
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new GridLayout(3, 1, 0, 4));
 		buttons.setOpaque(false);
 		download = new JButton("Download");
+		if (doc.getOffer(0).getCheckoutFlowRequired()) {
+			// Paid apps - no idea how to do a checkout.
+			download.setEnabled(false);
+		}
 		details = new JButton("Google Play");
 		permissions = new JButton("Permissions");
 		buttons.add(download);

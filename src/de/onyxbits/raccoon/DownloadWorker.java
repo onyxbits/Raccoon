@@ -91,14 +91,8 @@ class DownloadWorker extends SwingWorker<Exception, Integer> {
 			progress.setString("Aborted");
 		}
 		catch (ExecutionException e) {
-			if (e.getCause() instanceof IndexOutOfBoundsException) {
-				// At least thats the likely interpretation.
-				progress.setString("Not paid for");
-			}
-			else {
-				progress.setString("Error!");
-				e.printStackTrace();
-			}
+			progress.setString("Error!");
+			e.printStackTrace();
 		}
 		catch (InterruptedException e) {
 			progress.setString("Aborted");
