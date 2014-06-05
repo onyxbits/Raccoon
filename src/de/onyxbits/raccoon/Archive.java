@@ -2,7 +2,6 @@ package de.onyxbits.raccoon;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -45,6 +44,11 @@ public class Archive {
 	public static final String CREDCFG = "credentials.cfg";
 
 	/**
+	 * Name of the file where downloads should be logged.
+	 */
+	private static final String DOWNLOADLOG = "downloadlog.txt";
+
+	/**
 	 * Name of the file containing the network config
 	 */
 	public static final String NETCFG = "network.cfg";
@@ -56,6 +60,7 @@ public class Archive {
 	public static final String PROXYPORT = "proxyport";
 
 	private File root;
+	private DownloadLogger downloadLogger;
 
 	private Properties credentials;
 
@@ -143,6 +148,7 @@ public class Archive {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		downloadLogger = new DownloadLogger(new File(root,DOWNLOADLOG));
 	}
 
 	/**
@@ -230,4 +236,12 @@ public class Archive {
 		return tmp;
 	}
 
+	/**
+	 * Get the download logger.
+	 * 
+	 * @return the downloadlogger.
+	 */
+	public DownloadLogger getDownloadLogger() {
+		return downloadLogger;
+	}
 }

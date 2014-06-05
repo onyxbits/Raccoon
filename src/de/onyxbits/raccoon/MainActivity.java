@@ -93,6 +93,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	 */
 	public void doMount(Archive archive) {
 		archive.getRoot().mkdirs();
+		archive.getDownloadLogger().clear();
 		setTitle("Raccoon - " + archive.getRoot().getAbsolutePath());
 		views.removeAll();
 		if (archive.getAndroidId().length() == 0) {

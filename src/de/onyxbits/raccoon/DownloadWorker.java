@@ -83,6 +83,7 @@ class DownloadWorker extends SwingWorker<Exception, Integer> {
 		}
 		out.close();
 		in.close();
+		archive.getDownloadLogger().addEntry(dest);
 
 		return null;
 	}

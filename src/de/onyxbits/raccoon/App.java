@@ -19,6 +19,7 @@ public class App implements Runnable {
 	public static void main(String[] args) {
 		if (System.getProperty("update") != null) {
 			Archive a = new Archive(new File(System.getProperty("update")));
+			a.getDownloadLogger().clear();
 			new UpdateService(a).run();
 		}
 		else {
@@ -30,6 +31,7 @@ public class App implements Runnable {
 		Preferences prefs = Preferences.userNodeForPackage(MainActivity.class);
 
 		Archive a = new Archive(new File(prefs.get(MainActivity.LASTARCHIVE, "Raccoon")));
+		a.getDownloadLogger().clear();
 		MainActivity ma = MainActivity.create();
 		ma.doMount(a);
 		ma.setVisible(true);

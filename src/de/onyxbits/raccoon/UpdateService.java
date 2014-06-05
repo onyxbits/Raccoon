@@ -44,6 +44,7 @@ public class UpdateService implements Runnable {
 				File res = download(bulkDetailsEntry.getDoc());
 				if (res != null) {
 					received.add(res);
+					archive.getDownloadLogger().addEntry(res);
 				}
 			}
 			catch (Exception e) {
