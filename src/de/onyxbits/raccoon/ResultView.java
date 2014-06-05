@@ -3,6 +3,9 @@ package de.onyxbits.raccoon;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -128,8 +131,10 @@ public class ResultView extends JPanel implements ActionListener {
 
 	private void doShowPermissions() {
 		List<String> perms = doc.getDetails().getAppDetails().getPermissionList();
+		ArrayList<String> sortMe = new ArrayList<String>(perms); 
+		Collections.sort(sortMe);
 		StringBuilder sb = new StringBuilder();
-		for (String perm : perms) {
+		for (String perm : sortMe) {
 			sb.append(perm);
 			sb.append("\n");
 		}
