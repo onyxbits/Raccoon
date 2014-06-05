@@ -8,6 +8,8 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import org.apache.http.client.HttpClient;
+
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsEntry;
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsResponse;
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
@@ -101,6 +103,10 @@ class SearchWorker extends SwingWorker<BulkDetailsResponse, String> {
 		String uid = archive.getUserId();
 		String aid = archive.getAndroidId();
 		GooglePlayAPI service = new GooglePlayAPI(uid, pwd, aid);
+		HttpClient proxy = archive.getProxyClient();
+		if (proxy!=null) {
+			service.setClient(proxy);
+		}
 		service.setLocalization(localization);
 		service.setToken(archive.getAuthToken());
 		if (service.getToken()==null) {
@@ -143,6 +149,7 @@ class SearchWorker extends SwingWorker<BulkDetailsResponse, String> {
 			Throwable wrapped = e.getCause();
 			if (wrapped instanceof GooglePlayException) {
 				searchView.doMessage("Authentication error");
+				e.printStackTrace();
 			}
 			else {
 				searchView.doMessage(e.getMessage());

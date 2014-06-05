@@ -6,6 +6,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.http.HttpHost;
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.impl.conn.SchemeRegistryFactory;
+
+import com.akdeniz.googleplaycrawler.Utils;
+
 /**
  * An archive is a container for managing downloaded apk files and credentials.
  * The idea here is that the user should be able to keep around different apk
@@ -27,10 +36,13 @@ public class Archive {
 	public static final String PASSWORD = "password";
 	public static final String USERID = "userid";
 	public static final String ANDROIDID = "androidid";
+	public static final String PROXYHOST = "proxyhost";
+	public static final String PROXYPORT = "proxyport";
 
 	private File root;
 
 	private Properties credentials;
+	private HttpClient proxyClient;
 
 	// TODO: Figure out if this can produce a race condition. It is possible that
 	// two workers run at the same time, find this to be null and go through a
@@ -114,7 +126,17 @@ public class Archive {
 			credentials.load(new FileInputStream(new File(root, CREDS)));
 		}
 		catch (Exception e) {
-			// e.printStackTrace();
+			e.printStackTrace();
+		}
+		String ph = credentials.getProperty(PROXYHOST, null);
+		String pp = credentials.getProperty(PROXYPORT, null);
+		if (ph != null && pp != null) {
+			try {
+				proxyClient = createProxiedHttpClient(ph, Integer.parseInt(pp));
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -164,6 +186,28 @@ public class Archive {
 	public File fileMeta(String packName, int vc) {
 		File appRoot = new File(root, packName.replace('.', '_'));
 		return new File(appRoot, packName + "-" + vc + ".txt");
+	}
+
+	/**
+	 * Gets the proxy to use if one is configured.
+	 * 
+	 * @return either a proxy or null.
+	 */
+	public HttpClient getProxyClient() {
+		return proxyClient;
+	}
+
+	private static HttpClient createProxiedHttpClient(String host, Integer port) throws Exception {
+		PoolingClientConnectionManager connManager = new PoolingClientConnectionManager(
+				SchemeRegistryFactory.createDefault());
+		connManager.setMaxTotal(100);
+		connManager.setDefaultMaxPerRoute(30);
+
+		HttpClient client = new DefaultHttpClient(connManager);
+		client.getConnectionManager().getSchemeRegistry().register(Utils.getMockedScheme());
+		HttpHost proxy = new HttpHost(host, port);
+		client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+		return client;
 	}
 
 }

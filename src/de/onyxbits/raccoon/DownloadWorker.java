@@ -11,6 +11,8 @@ import javax.swing.JButton;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
+import org.apache.http.client.HttpClient;
+
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 
@@ -46,6 +48,10 @@ class DownloadWorker extends SwingWorker<Exception, Integer> {
 		String uid = archive.getUserId();
 		String aid = archive.getAndroidId();
 		GooglePlayAPI service = new GooglePlayAPI(uid, pwd, aid);
+		HttpClient proxy = archive.getProxyClient();
+		if (proxy!=null) {
+			service.setClient(proxy);
+		}
 		service.setToken(archive.getAuthToken());
 		if (service.getToken() == null) {
 			service.login();
