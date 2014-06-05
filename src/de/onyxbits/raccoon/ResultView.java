@@ -1,5 +1,6 @@
 package de.onyxbits.raccoon;
 
+import java.awt.Event;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,6 +41,8 @@ public class ResultView extends JPanel implements ActionListener {
 
 	private SearchView searchView;
 
+	private JEditorPane entry;
+
 	/**
 	 * Construct a new app listing
 	 * 
@@ -64,15 +67,15 @@ public class ResultView extends JPanel implements ActionListener {
 		String author = doc.getCreator();
 		String price = doc.getOffer(0).getFormattedAmount();
 		if (hasInAppPurchase(doc)) {
-			price+=" [+IAP]";
+			price += " [+IAP]";
 		}
 		String date = doc.getDetails().getAppDetails().getUploadDate();
 		String size = humanReadableByteCount(doc.getDetails().getAppDetails().getInstallationSize(),
 				true);
 		String summary = "";
-		String boiler = "<html><p><big>"+title+"</big></p><p><strong>" + author + "</strong> (<code>" + pack
-				+ "</code>)</p><p>" + size + " &mdash; " + date + " &mdash; " + price + "</p><p>"
-				+ installs + " / " + rating + "</p><cite>" + summary + "</cite></html>";
+		String boiler = "<html><p><big>" + title + "</big></p><p><strong>" + author
+				+ "</strong> (<code>" + pack + "</code>)</p><p>" + size + " &mdash; " + date + " &mdash; "
+				+ price + "</p><p>" + installs + " / " + rating + "</p><cite>" + summary + "</cite></html>";
 
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new GridLayout(3, 1, 0, 4));
@@ -87,7 +90,7 @@ public class ResultView extends JPanel implements ActionListener {
 		buttons.add(download);
 		buttons.add(details);
 		buttons.add(permissions);
-		JEditorPane entry = new JEditorPane("text/html", boiler);
+		entry = new JEditorPane("text/html", boiler);
 		entry.setEditable(false);
 		entry.setOpaque(false);
 		add(entry);
@@ -113,17 +116,24 @@ public class ResultView extends JPanel implements ActionListener {
 			searchView.doDownload(d);
 		}
 		if (src == details) {
-			BrowseUtil.openUrl(doc.getShareUrl());
-			SwingUtilities.invokeLater(searchView);
+			if ((event.getModifiers() & Event.SHIFT_MASK) == Event.SHIFT_MASK) {
+				// This is indented for debugging!
+				entry.setContentType("text/plain");
+				entry.setText(doc.toString());
+			}
+			else {
+				BrowseUtil.openUrl(doc.getShareUrl());
+				SwingUtilities.invokeLater(searchView);
+			}
 		}
 		if (src == permissions) {
 			doShowPermissions();
 		}
 	}
-	
+
 	private static boolean hasInAppPurchase(DocV2 doc) {
 		List<String> perms = doc.getDetails().getAppDetails().getPermissionList();
-		for(String perm: perms) {
+		for (String perm : perms) {
 			if (perm.equals("com.android.vending.BILLING")) {
 				return true;
 			}
