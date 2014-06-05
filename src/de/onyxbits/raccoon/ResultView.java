@@ -15,6 +15,7 @@ import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 
@@ -124,6 +125,7 @@ public class ResultView extends JPanel implements ActionListener {
 		}
 		if (src == details) {
 			BrowseUtil.openUrl(doc.getShareUrl());
+			SwingUtilities.invokeLater(searchView);
 		}
 		if (src == permissions) {
 			doShowPermissions();
@@ -144,6 +146,7 @@ public class ResultView extends JPanel implements ActionListener {
 		}
 		JOptionPane.showMessageDialog(getRootPane(), sb.toString(), doc.getTitle(),
 				JOptionPane.PLAIN_MESSAGE);
+		SwingUtilities.invokeLater(searchView);
 	}
 
 	public static String humanReadableByteCount(long bytes, boolean si) {
