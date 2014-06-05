@@ -79,18 +79,24 @@ public class UpdateService implements Runnable {
 		File target = archive.fileUnder(pn, vc);
 		if (!target.exists()) {
 			System.err.println("# Downloading: " + target.getAbsolutePath());
-			int ot = doc.getOffer(0).getOfferType();
-			InputStream in = service.download(pn, vc, ot);
+			try {
+				int ot = doc.getOffer(0).getOfferType();
+				InputStream in = service.download(pn, vc, ot);
 
-			target.getParentFile().mkdirs();
-			FileOutputStream out = new FileOutputStream(target);
-			byte[] buffer = new byte[1024 * 16];
-			int length;
-			while ((length = in.read(buffer)) > 0) {
-				out.write(buffer, 0, length);
+				target.getParentFile().mkdirs();
+				FileOutputStream out = new FileOutputStream(target);
+				byte[] buffer = new byte[1024 * 16];
+				int length;
+				while ((length = in.read(buffer)) > 0) {
+					out.write(buffer, 0, length);
+				}
+				out.close();
+				in.close();
 			}
-			out.close();
-			in.close();
+			catch (Exception e) {
+				target.delete();
+				throw e;
+			}
 			return target;
 		}
 		return null;
