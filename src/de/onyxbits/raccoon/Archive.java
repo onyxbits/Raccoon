@@ -2,8 +2,11 @@ package de.onyxbits.raccoon;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
@@ -39,7 +42,12 @@ public class Archive {
 	/**
 	 * Name of the file containing the credentials for connecting to GPlay.
 	 */
-	public static final String CREDS = "credentials.cfg";
+	public static final String CREDCFG = "credentials.cfg";
+
+	/**
+	 * Name of the file containing the network config
+	 */
+	public static final String NETCFG = "network.cfg";
 
 	public static final String PASSWORD = "password";
 	public static final String USERID = "userid";
@@ -50,7 +58,6 @@ public class Archive {
 	private File root;
 
 	private Properties credentials;
-	private HttpClient proxyClient;
 
 	// TODO: Figure out if this can produce a race condition. It is possible that
 	// two workers run at the same time, find this to be null and go through a
@@ -131,21 +138,44 @@ public class Archive {
 		this.root = root;
 		try {
 			credentials = new Properties();
-			credentials.load(new FileInputStream(new File(root, CREDS)));
+			credentials.load(new FileInputStream(new File(root, CREDCFG)));
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		String ph = credentials.getProperty(PROXYHOST, null);
-		String pp = credentials.getProperty(PROXYPORT, null);
-		if (ph != null && pp != null) {
-			try {
-				proxyClient = createProxiedHttpClient(ph, Integer.parseInt(pp));
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+	}
+
+	/**
+	 * Get a proxy client, if it is configured.
+	 * 
+	 * @return either a client or null
+	 * @throws IOException
+	 *           if reading the config file fails
+	 * @throws KeyManagementException
+	 * @throws NumberFormatException
+	 *           if that port could not be parsed.
+	 * @throws NoSuchAlgorithmException
+	 */
+	public HttpClient getProxyClient() throws IOException, KeyManagementException,
+			NoSuchAlgorithmException, NumberFormatException {
+		File cfgfile = new File(root, NETCFG);
+		if (cfgfile.exists()) {
+			Properties cfg = new Properties();
+			cfg.load(new FileInputStream(cfgfile));
+			String ph = cfg.getProperty(PROXYHOST, null);
+			String pp = cfg.getProperty(PROXYPORT, null);
+			PoolingClientConnectionManager connManager = new PoolingClientConnectionManager(
+					SchemeRegistryFactory.createDefault());
+			connManager.setMaxTotal(100);
+			connManager.setDefaultMaxPerRoute(30);
+
+			HttpClient client = new DefaultHttpClient(connManager);
+			client.getConnectionManager().getSchemeRegistry().register(Utils.getMockedScheme());
+			HttpHost proxy = new HttpHost(ph, Integer.parseInt(pp));
+			client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+			return client;
 		}
+		return null;
 	}
 
 	/**
@@ -165,7 +195,7 @@ public class Archive {
 	 */
 	public void saveCredentials() throws IOException {
 		root.mkdirs();
-		credentials.store(new FileOutputStream(new File(root, CREDS)), "");
+		credentials.store(new FileOutputStream(new File(root, CREDCFG)), "");
 	}
 
 	/**
@@ -194,32 +224,10 @@ public class Archive {
 		Vector<String> tmp = new Vector<String>();
 		for (File f : lst) {
 			if (f.isDirectory()) {
-				tmp.add(f.getName().replace('-','.'));
+				tmp.add(f.getName().replace('-', '.'));
 			}
 		}
 		return tmp;
-	}
-
-	/**
-	 * Gets the proxy to use if one is configured.
-	 * 
-	 * @return either a proxy or null.
-	 */
-	public HttpClient getProxyClient() {
-		return proxyClient;
-	}
-
-	private static HttpClient createProxiedHttpClient(String host, Integer port) throws Exception {
-		PoolingClientConnectionManager connManager = new PoolingClientConnectionManager(
-				SchemeRegistryFactory.createDefault());
-		connManager.setMaxTotal(100);
-		connManager.setDefaultMaxPerRoute(30);
-
-		HttpClient client = new DefaultHttpClient(connManager);
-		client.getConnectionManager().getSchemeRegistry().register(Utils.getMockedScheme());
-		HttpHost proxy = new HttpHost(host, port);
-		client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
-		return client;
 	}
 
 }
