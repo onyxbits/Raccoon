@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
 
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
@@ -27,6 +29,12 @@ import com.akdeniz.googleplaycrawler.Utils;
  * 
  */
 public class Archive {
+
+	/**
+	 * Relative path to where we keep APK files. This directory contains one
+	 * subdirectory per app, which in turn holds the apks.
+	 */
+	public static final String APKSTORAGE = "apk_storage";
 
 	/**
 	 * Name of the file containing the credentials for connecting to GPlay.
@@ -170,22 +178,26 @@ public class Archive {
 	 * @return the file where to save this app.
 	 */
 	public File fileUnder(String packName, int vc) {
-		File appRoot = new File(root, packName.replace('.', '_'));
+		File appRoot = new File(new File(root, APKSTORAGE), packName.replace('.', '-'));
 		return new File(appRoot, packName.replace('.', '_') + "-" + vc + ".apk");
 	}
 
 	/**
-	 * Figure out where to save meta information for an app
+	 * List all apps in the archive
 	 * 
-	 * @param packName
-	 *          packagename of the app
-	 * @param vc
-	 *          versioncode
-	 * @return the properties file for saving meta information
+	 * @return a list of packagenames.
 	 */
-	public File fileMeta(String packName, int vc) {
-		File appRoot = new File(root, packName.replace('.', '_'));
-		return new File(appRoot, packName + "-" + vc + ".txt");
+	public List<String> list() {
+		File storage = new File(root, APKSTORAGE);
+		storage.mkdirs();
+		File[] lst = storage.listFiles();
+		Vector<String> tmp = new Vector<String>();
+		for (File f : lst) {
+			if (f.isDirectory()) {
+				tmp.add(f.getName().replace('-','.'));
+			}
+		}
+		return tmp;
 	}
 
 	/**
