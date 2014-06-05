@@ -71,19 +71,9 @@ public class ResultView extends JPanel implements ActionListener {
 		String size = humanReadableByteCount(doc.getDetails().getAppDetails().getInstallationSize(),
 				true);
 		String summary = "";
-		String boiler = "<html><h2>" + title + "</h2><code>" + pack + "</code><br>" + author
-				+ "<br> <br>" + size + " &#8213; " + date + " &#8213; " + price + "</html>";
-		boiler = "<html><p><big>=TITLE</big></p><p><strong>=AUTHOR</strong> (<code>=APPID</code>)</p><p>=SIZE &mdash; =DATE &mdash; =PRICE</p><p>=INSTALLS / =RATING</p><cite>=SUMMARY</cite></html>";
-		boiler = boiler.replaceFirst("=TITLE", title);
-		boiler = boiler.replaceFirst("=AUTHOR", author);
-		boiler = boiler.replaceFirst("=APPID", pack);
-		boiler = boiler.replaceFirst("=SIZE", size);
-		boiler = boiler.replaceFirst("=DATE", date);
-		boiler = boiler.replaceFirst("=PRICE", price);
-		boiler = boiler.replaceFirst("=INSTALLS", installs);
-		boiler = boiler.replaceFirst("=RATING", rating);
-		boiler = boiler.replaceFirst("=REVIEWS", reviews);
-		boiler = boiler.replaceFirst("=SUMMARY", summary);
+		String boiler = "<html><p><big>"+title+"</big></p><p><strong>" + author + "</strong> (<code>" + pack
+				+ "</code>)</p><p>" + size + " &mdash; " + date + " &mdash; " + price + "</p><p>"
+				+ installs + " / " + rating + "</p><cite>" + summary + "</cite></html>";
 
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new GridLayout(3, 1, 0, 4));
@@ -134,7 +124,7 @@ public class ResultView extends JPanel implements ActionListener {
 
 	private void doShowPermissions() {
 		List<String> perms = doc.getDetails().getAppDetails().getPermissionList();
-		ArrayList<String> sortMe = new ArrayList<String>(perms); 
+		ArrayList<String> sortMe = new ArrayList<String>(perms);
 		Collections.sort(sortMe);
 		StringBuilder sb = new StringBuilder();
 		for (String perm : sortMe) {
