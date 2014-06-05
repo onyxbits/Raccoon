@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsEntry;
@@ -147,5 +148,6 @@ class SearchWorker extends SwingWorker<BulkDetailsResponse, String> {
 				searchView.doMessage(e.getMessage());
 			}
 		}
+		SwingUtilities.invokeLater(searchView);
 	}
 }

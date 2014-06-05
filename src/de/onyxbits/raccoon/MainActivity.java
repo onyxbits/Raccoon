@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 public class MainActivity extends JFrame implements ActionListener, WindowListener {
 
@@ -98,12 +99,15 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 			views.addTab("Init", InitView.create(this, archive));
 		}
 		else {
-			views.addTab("Search", SearchView.create(this, archive));
+			SearchView sv = SearchView.create(this, archive);
+			views.addTab("Search", sv);
+			views.addChangeListener(sv);
 			downloadListScroll = new JScrollPane();
 			downloadListScroll.setViewportView(downloadList);
 			views.addTab("Downloads", downloadListScroll);
 			Preferences prefs = Preferences.userNodeForPackage(getClass());
 			prefs.put(LASTARCHIVE, archive.getRoot().getAbsolutePath());
+			SwingUtilities.invokeLater(sv);
 		}
 	}
 

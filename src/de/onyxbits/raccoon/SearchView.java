@@ -13,11 +13,11 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
 
 /**
  * A container for putting search results in.
@@ -25,7 +25,7 @@ import javax.swing.event.ChangeListener;
  * @author patrick
  * 
  */
-public class SearchView extends JPanel implements ActionListener, ChangeListener {
+public class SearchView extends JPanel implements ActionListener, ChangeListener, Runnable {
 
 	/**
 	 * 
@@ -73,7 +73,7 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		container = new JPanel();
 		container.add(progress);
 		main.add(container, CARDPROGRESS);
-		
+
 		container = new JPanel();
 		container.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		container.setLayout(new BoxLayout(container, BoxLayout.X_AXIS));
@@ -82,9 +82,9 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		add(container, BorderLayout.NORTH);
 		add(main, BorderLayout.CENTER);
 	}
-	
+
 	public static SearchView create(MainActivity mainActivity, Archive archive) {
-		SearchView ret = new SearchView(mainActivity,archive);
+		SearchView ret = new SearchView(mainActivity, archive);
 		ret.query.addActionListener(ret);
 		ret.page.addChangeListener(ret);
 		return ret;
@@ -101,10 +101,23 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		if (event.getSource() == page) {
 			doSearch();
 		}
+		// Slightly ugly: a searchview is meant to sit in a JTabbedPane and
+		// registered as it's ChangeListener, so the query can get focus whenever
+		// the user switches to this view. In fact, we consider the query field to
+		// be so important that we always focus it, no matter what.
+		query.requestFocusInWindow();
+	}
+
+	/**
+	 * After adding this view to a JTabbedPane, post it to the EDT via
+	 * SwingUtils.invokeLater() to ensure the query gets the inputfocus.
+	 */
+	public void run() {
+		query.requestFocusInWindow();
 	}
 
 	protected void doSearch() {
-		if (query.getText().length()==0) {
+		if (query.getText().length() == 0) {
 			return;
 		}
 		query.setEnabled(false);
@@ -112,8 +125,8 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		cardLayout.show(main, CARDPROGRESS);
 		int offset = (Integer) page.getValue();
 		offset = (offset - 1) * 10;
-		new SearchWorker(archive, query.getText(), this).withOffset(offset)
-				.withLimit(offset + 10).execute();
+		new SearchWorker(archive, query.getText(), this).withOffset(offset).withLimit(offset + 10)
+				.execute();
 	}
 
 	protected void doMessage(String status) {
@@ -134,7 +147,7 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		if (d.isDownloaded()) {
 			int result = JOptionPane.showConfirmDialog(getRootPane(), "Overwrite file?", "File exists",
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if (result==JOptionPane.YES_OPTION) {
+			if (result == JOptionPane.YES_OPTION) {
 				mainActivity.doDownload(d);
 			}
 		}
