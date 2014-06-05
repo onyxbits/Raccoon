@@ -98,6 +98,7 @@ public class ResultView extends JPanel implements ActionListener {
 		buttons.add(details);
 		buttons.add(permissions);
 		JEditorPane entry = new JEditorPane("text/html", boiler);
+		entry.setEditable(false);
 		entry.setOpaque(false);
 		add(entry);
 		JPanel container = new JPanel();
