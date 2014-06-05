@@ -4,7 +4,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,7 +11,6 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -62,11 +60,12 @@ public class ResultView extends JPanel implements ActionListener {
 		String title = doc.getTitle();
 		String installs = "Installs: " + doc.getDetails().getAppDetails().getNumDownloads();
 		String rating = "Rated: " + String.format("%.2f", doc.getAggregateRating().getStarRating());
-		String reviews = ""; // doc.getAggregateRating().getCommentCount() +
-													// " Reviews";
 		String pack = doc.getBackendDocid();
 		String author = doc.getCreator();
 		String price = doc.getOffer(0).getFormattedAmount();
+		if (hasInAppPurchase(doc)) {
+			price+=" [+IAP]";
+		}
 		String date = doc.getDetails().getAppDetails().getUploadDate();
 		String size = humanReadableByteCount(doc.getDetails().getAppDetails().getInstallationSize(),
 				true);
@@ -120,6 +119,16 @@ public class ResultView extends JPanel implements ActionListener {
 		if (src == permissions) {
 			doShowPermissions();
 		}
+	}
+	
+	private static boolean hasInAppPurchase(DocV2 doc) {
+		List<String> perms = doc.getDetails().getAppDetails().getPermissionList();
+		for(String perm: perms) {
+			if (perm.equals("com.android.vending.BILLING")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void doShowPermissions() {
