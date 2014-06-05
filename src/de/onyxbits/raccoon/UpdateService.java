@@ -3,7 +3,6 @@ package de.onyxbits.raccoon;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.Vector;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsEntry;
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsResponse;
@@ -38,27 +37,13 @@ public class UpdateService implements Runnable {
 			return;
 		}
 
-		Vector<File> received = new Vector<File>();
 		for (BulkDetailsEntry bulkDetailsEntry : response.getEntryList()) {
 			try {
-				File res = download(bulkDetailsEntry.getDoc());
-				if (res != null) {
-					received.add(res);
-					archive.getDownloadLogger().addEntry(res);
-				}
+				download(bulkDetailsEntry.getDoc());
 			}
 			catch (Exception e) {
 				System.err.println("# Error: " + e.getMessage());
 			}
-		}
-		if (received.size() == 0) {
-			System.err.println("# Nothing to update");
-		}
-		else {
-			System.err.println("# Successfully downloaded: ");
-		}
-		for (File f : received) {
-			System.err.println(f.getAbsolutePath());
 		}
 	}
 
@@ -67,11 +52,10 @@ public class UpdateService implements Runnable {
 	 * 
 	 * @param doc
 	 *          app description
-	 * @return the target file or null if the target already existed.
 	 * @throws Exception
 	 *           if something went wrong.
 	 */
-	private File download(DocV2 doc) throws Exception {
+	private void download(DocV2 doc) throws Exception {
 		String pn = doc.getBackendDocid();
 		if (pn == null || pn.length() == 0) {
 			throw new IllegalAccessException("Package not available");
@@ -93,14 +77,13 @@ public class UpdateService implements Runnable {
 				}
 				out.close();
 				in.close();
+				archive.getDownloadLogger().addEntry(target);
 			}
 			catch (Exception e) {
 				target.delete();
 				throw e;
 			}
-			return target;
 		}
-		return null;
 	}
 
 	/**
