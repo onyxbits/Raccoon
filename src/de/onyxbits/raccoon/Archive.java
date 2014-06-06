@@ -170,6 +170,9 @@ public class Archive {
 			cfg.load(new FileInputStream(cfgfile));
 			String ph = cfg.getProperty(PROXYHOST, null);
 			String pp = cfg.getProperty(PROXYPORT, null);
+			if (ph==null || pp ==null) {
+				return null;
+			}
 			PoolingClientConnectionManager connManager = new PoolingClientConnectionManager(
 					SchemeRegistryFactory.createDefault());
 			connManager.setMaxTotal(100);
