@@ -54,9 +54,9 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		JMenu view = new JMenu("View");
 		view.setMnemonic('v');
 		search = new JMenuItem("Search", 's');
-		search.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK));
+		search.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK));
 		downloads = new JMenuItem("Downloads", 'd');
-		downloads.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, Event.CTRL_MASK));
+		downloads.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, Event.CTRL_MASK));
 		view.add(search);
 		view.add(downloads);
 		search.setEnabled(false);
