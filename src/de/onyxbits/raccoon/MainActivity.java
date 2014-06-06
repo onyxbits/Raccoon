@@ -32,6 +32,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	private JMenuItem open;
 	private JMenuItem search;
 	private JMenuItem downloads;
+	private JMenuItem contents;
 
 	private JTabbedPane views;
 	private ListView downloadList;
@@ -62,6 +63,14 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		search.setEnabled(false);
 		downloads.setEnabled(false);
 		bar.add(view);
+
+		JMenu help = new JMenu("Help");
+		help.setMnemonic('h');
+		contents = new JMenuItem("Contents",'c');
+		contents.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
+		help.add(contents);
+		bar.add(help);
+		
 		setJMenuBar(bar);
 		setSize(800, 600);
 		setContentPane(views);
@@ -72,6 +81,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		ret.open.addActionListener(ret);
 		ret.quit.addActionListener(ret);
 		ret.search.addActionListener(ret);
+		ret.contents.addActionListener(ret);
 		ret.downloads.addActionListener(ret);
 		ret.addWindowListener(ret);
 		ret.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -91,6 +101,9 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		}
 		if (src == search) {
 			views.setSelectedIndex(0);
+		}
+		if (src==contents) {
+			BrowseUtil.openUrl("http://www.onyxbits.de/raccoon/handbook");
 		}
 	}
 
