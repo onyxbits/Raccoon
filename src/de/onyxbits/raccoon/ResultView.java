@@ -56,7 +56,6 @@ public class ResultView extends JPanel implements ActionListener {
 	private ResultView(SearchView searchView, DocV2 doc) {
 		this.doc = doc;
 		this.searchView = searchView;
-		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 		// FIXME: The api returns wrong values for the commentcount, number of
 		// ratings, version and summary.
