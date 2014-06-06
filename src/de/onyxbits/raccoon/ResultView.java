@@ -72,13 +72,7 @@ public class ResultView extends JPanel implements ActionListener {
 		String date = doc.getDetails().getAppDetails().getUploadDate();
 		String size = humanReadableByteCount(doc.getDetails().getAppDetails().getInstallationSize(),
 				true);
-		// String boiler = "<html><p><big>" + title + "</big></p><p><strong>" +
-		// author
-		// + "</strong> (<code>" + pack + "</code>)</p><p>" + size + " &mdash; " +
-		// date + " &mdash; "
-		// + price + "</p><p>" + installs + " / " + rating + "</p><cite>" + summary
-		// + "</cite></html>";
-		String boiler = "<html><style>table {border: 1px solid black;}  th {text-align: left;	background-color: black;color: gray;} td	{padding-right: 15px;} </style><p><big><u>"
+		String boiler = "<html><style>table {border: 1px solid black;}  th {text-align: left;	background-color: #9E9E9E;color: black;} td	{padding-right: 15px;} </style><p><big><u>"
 				+ title
 				+ "</u></big></p><p><strong>"
 				+ author
