@@ -44,9 +44,9 @@ public class DownloadLogger {
 	 *           if writing fails.
 	 */
 	public synchronized void addEntry(File file) throws IOException {
+		logfile.getParentFile().mkdirs();
 		FileWriter fw = new FileWriter(logfile, true);
 		fw.write(file.getAbsolutePath() + "\n");
 		fw.close();
-		
 	}
 }

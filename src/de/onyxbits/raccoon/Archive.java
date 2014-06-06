@@ -36,22 +36,27 @@ public class Archive {
 	 * Relative path to where we keep APK files. This directory contains one
 	 * subdirectory per app, which in turn holds the apks.
 	 */
-	public static final String APKSTORAGE = "apk_storage";
+	private static final String APKDIR = "apk_storage";
+
+	/**
+	 * Name of the logdir
+	 */
+	private static final String LOGDIR = "logs";
 
 	/**
 	 * Name of the file containing the credentials for connecting to GPlay.
 	 */
-	public static final String CREDCFG = "credentials.cfg";
-
-	/**
-	 * Name of the file where downloads should be logged.
-	 */
-	private static final String DOWNLOADLOG = "downloadlog.txt";
+	private static final String CREDCFG = "credentials.cfg";
 
 	/**
 	 * Name of the file containing the network config
 	 */
 	public static final String NETCFG = "network.cfg";
+
+	/**
+	 * Name of the file where downloads should be logged.
+	 */
+	private static final String DOWNLOADCOMPLETELOG = "download-complete.txt";
 
 	public static final String PASSWORD = "password";
 	public static final String USERID = "userid";
@@ -149,7 +154,7 @@ public class Archive {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		downloadLogger = new DownloadLogger(new File(root, DOWNLOADLOG));
+		downloadLogger = new DownloadLogger(new File(new File(root, LOGDIR), DOWNLOADCOMPLETELOG));
 	}
 
 	/**
@@ -218,7 +223,7 @@ public class Archive {
 	 * @return the file where to save this app.
 	 */
 	public File fileUnder(String packName, int vc) {
-		File appRoot = new File(new File(root, APKSTORAGE), packName.replace('.', '-'));
+		File appRoot = new File(new File(root, APKDIR), packName.replace('.', '-'));
 		return new File(appRoot, packName.replace('.', '_') + "-" + vc + ".apk");
 	}
 
@@ -228,7 +233,7 @@ public class Archive {
 	 * @return a list of packagenames.
 	 */
 	public List<String> list() {
-		File storage = new File(root, APKSTORAGE);
+		File storage = new File(root, APKDIR);
 		storage.mkdirs();
 		File[] lst = storage.listFiles();
 		Vector<String> tmp = new Vector<String>();
