@@ -61,21 +61,32 @@ public class ResultView extends JPanel implements ActionListener {
 		// ratings, version and summary.
 
 		String title = doc.getTitle();
-		String installs = "Installs: " + doc.getDetails().getAppDetails().getNumDownloads();
-		String rating = "Rated: " + String.format("%.2f", doc.getAggregateRating().getStarRating());
+		String installs = doc.getDetails().getAppDetails().getNumDownloads();
+		String rating = String.format("%.2f", doc.getAggregateRating().getStarRating());
 		String pack = doc.getBackendDocid();
 		String author = doc.getCreator();
 		String price = doc.getOffer(0).getFormattedAmount();
 		if (hasInAppPurchase(doc)) {
-			price += " [+IAP]";
+			price += " (+IAP)";
 		}
 		String date = doc.getDetails().getAppDetails().getUploadDate();
 		String size = humanReadableByteCount(doc.getDetails().getAppDetails().getInstallationSize(),
 				true);
-		String summary = "";
-		String boiler = "<html><p><big>" + title + "</big></p><p><strong>" + author
-				+ "</strong> (<code>" + pack + "</code>)</p><p>" + size + " &mdash; " + date + " &mdash; "
-				+ price + "</p><p>" + installs + " / " + rating + "</p><cite>" + summary + "</cite></html>";
+		// String boiler = "<html><p><big>" + title + "</big></p><p><strong>" +
+		// author
+		// + "</strong> (<code>" + pack + "</code>)</p><p>" + size + " &mdash; " +
+		// date + " &mdash; "
+		// + price + "</p><p>" + installs + " / " + rating + "</p><cite>" + summary
+		// + "</cite></html>";
+		String boiler = "<html><style>table {border-collapse: collapse;} table, th {border: 1px solid black;}  th {text-align: left;	background-color: black;color: gray;} td	{padding-right: 15px;} </style><p><big>"
+				+ title
+				+ "</big></p><p><strong>"
+				+ author
+				+ "</strong> (<code>"
+				+ pack
+				+ "</code>)</p><p><table><tr><th>Size</th><th>Published</th><th>Price</th><th>Installs</th><th>Rating</th></tr><tr><td>"
+				+ size + "</td><td>" + date + "</td><td>" + price + "</td><td>" + installs + "</td><td>"
+				+ rating + "</td></tr></table>";
 
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new GridLayout(3, 1, 0, 4));
