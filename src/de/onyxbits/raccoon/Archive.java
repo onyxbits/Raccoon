@@ -64,16 +64,14 @@ public class Archive {
 
 	private Properties credentials;
 
-	// TODO: Figure out if this can produce a race condition. It is possible that
-	// two workers run at the same time, find this to be null and go through a
-	// full login. As long as both login attempts produce the same token or both
-	// tokens are valid, there is no problem here.
 	/**
 	 * Cache of the auth token. This is not persisted. This may be null.
 	 */
 	private String authToken;
 
 	/**
+	 * Query the cached auth cookie.
+	 * 
 	 * @return the authToken
 	 */
 	public String getAuthToken() {
@@ -81,6 +79,9 @@ public class Archive {
 	}
 
 	/**
+	 * Cache an auth cookie. WARNING: In a multithread environment, make sure that
+	 * you don't perform logins simultaneously, so you don't race for cookies.
+	 * 
 	 * @param authToken
 	 *          the authToken to set
 	 */
@@ -148,7 +149,7 @@ public class Archive {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		downloadLogger = new DownloadLogger(new File(root,DOWNLOADLOG));
+		downloadLogger = new DownloadLogger(new File(root, DOWNLOADLOG));
 	}
 
 	/**
@@ -170,7 +171,7 @@ public class Archive {
 			cfg.load(new FileInputStream(cfgfile));
 			String ph = cfg.getProperty(PROXYHOST, null);
 			String pp = cfg.getProperty(PROXYPORT, null);
-			if (ph==null || pp ==null) {
+			if (ph == null || pp == null) {
 				return null;
 			}
 			PoolingClientConnectionManager connManager = new PoolingClientConnectionManager(
