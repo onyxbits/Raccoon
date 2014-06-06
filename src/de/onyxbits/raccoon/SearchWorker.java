@@ -8,8 +8,6 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
-import org.apache.http.client.HttpClient;
-
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsEntry;
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsResponse;
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
@@ -99,20 +97,8 @@ class SearchWorker extends SwingWorker<BulkDetailsResponse, String> {
 
 	@Override
 	protected BulkDetailsResponse doInBackground() throws Exception {
-		String pwd = archive.getPassword();
-		String uid = archive.getUserId();
-		String aid = archive.getAndroidId();
-		GooglePlayAPI service = new GooglePlayAPI(uid, pwd, aid);
-		HttpClient proxy = archive.getProxyClient();
-		if (proxy!=null) {
-			service.setClient(proxy);
-		}
+		GooglePlayAPI service = App.createConnection(archive);
 		service.setLocalization(localization);
-		service.setToken(archive.getAuthToken());
-		if (service.getToken()==null) {
-			service.login();
-			archive.setAuthToken(service.getToken());
-		}
 		SearchResponse response = service.search(search, offset, limit);
 
 		List<String> apps = new Vector<String>();

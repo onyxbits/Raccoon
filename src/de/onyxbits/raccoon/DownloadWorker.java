@@ -11,7 +11,6 @@ import javax.swing.JButton;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
-import org.apache.http.client.HttpClient;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
@@ -44,19 +43,7 @@ class DownloadWorker extends SwingWorker<Exception, Integer> {
 	protected Exception doInBackground() throws Exception {
 		publish(0); // Just so there is no delay in the UI updating
 
-		String pwd = archive.getPassword();
-		String uid = archive.getUserId();
-		String aid = archive.getAndroidId();
-		GooglePlayAPI service = new GooglePlayAPI(uid, pwd, aid);
-		HttpClient proxy = archive.getProxyClient();
-		if (proxy!=null) {
-			service.setClient(proxy);
-		}
-		service.setToken(archive.getAuthToken());
-		if (service.getToken() == null) {
-			service.login();
-			archive.setAuthToken(service.getToken());
-		}
+		GooglePlayAPI service = App.createConnection(archive);
 		String pn = app.getBackendDocid();
 		int vc = app.getDetails().getAppDetails().getVersionCode();
 		int ot = app.getOffer(0).getOfferType();

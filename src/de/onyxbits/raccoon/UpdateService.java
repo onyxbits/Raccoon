@@ -28,7 +28,7 @@ public class UpdateService implements Runnable {
 		BulkDetailsResponse response = null;
 		try {
 			System.err.println("# Login...");
-			createService();
+			service=App.createConnection(archive);
 			System.err.println("# Downloading packagelist");
 			response = service.bulkDetails(archive.list());
 		}
@@ -83,28 +83,6 @@ public class UpdateService implements Runnable {
 				target.delete();
 				throw e;
 			}
-		}
-	}
-
-	/**
-	 * Hook up with GPlay
-	 * 
-	 * @throws Exception
-	 *           if something goes wrong.
-	 */
-	private void createService() throws Exception {
-		String pwd = archive.getPassword();
-		String uid = archive.getUserId();
-		String aid = archive.getAndroidId();
-		service = new GooglePlayAPI(uid, pwd, aid);
-
-		if (archive.getProxyClient() != null) {
-			service.setClient(archive.getProxyClient());
-		}
-		service.setToken(archive.getAuthToken());
-		if (service.getToken() == null) {
-			service.login();
-			archive.setAuthToken(service.getToken());
 		}
 	}
 }
