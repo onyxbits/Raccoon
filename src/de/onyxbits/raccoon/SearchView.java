@@ -117,15 +117,17 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 
 	protected void doSearch() {
 		if (query.getText().length() == 0) {
-			return;
+			doMessage("Enter keywords, app name, vendor name, app id or a Google Play url");
 		}
-		query.setEnabled(false);
-		page.setEnabled(false);
-		cardLayout.show(main, CARDPROGRESS);
-		int offset = (Integer) page.getValue();
-		offset = (offset - 1) * 10;
-		new SearchWorker(archive, query.getText(), this).withOffset(offset).withLimit(offset + 10)
-				.execute();
+		else {
+			query.setEnabled(false);
+			page.setEnabled(false);
+			cardLayout.show(main, CARDPROGRESS);
+			int offset = (Integer) page.getValue();
+			offset = (offset - 1) * 10;
+			new SearchWorker(archive, query.getText(), this).withOffset(offset).withLimit(offset + 10)
+					.execute();
+		}
 	}
 
 	protected void doMessage(String status) {
