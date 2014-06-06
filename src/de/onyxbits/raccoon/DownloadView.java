@@ -4,7 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -40,7 +42,11 @@ public class DownloadView extends JPanel implements ActionListener {
 		container.setOpaque(false);
 		container.add(worker.progress);
 		container.add(worker.cancel);
-		add(new JLabel(boiler));
+		JEditorPane info = new JEditorPane("text/html",boiler);
+		info.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+		info.setEditable(false);
+		info.setOpaque(false);
+		add(info);
 		add(container);
 	}
 	
