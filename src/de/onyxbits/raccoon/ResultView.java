@@ -83,9 +83,9 @@ public class ResultView extends JPanel implements ActionListener {
 				+ title
 				+ "</u></big></p><p><strong>"
 				+ author
-				+ "</strong> (<code>"
+				+ "</strong> <strong>&#124;</strong> <code>"
 				+ pack
-				+ "</code>)</p><p><table><tr><th>Size</th><th>Published</th><th>Price</th><th>Installs</th><th>Rating</th></tr><tr><td>"
+				+ "</code></p><p><table><tr><th>Size</th><th>Published</th><th>Price</th><th>Installs</th><th>Rating</th></tr><tr><td>"
 				+ size + "</td><td>" + date + "</td><td>" + price + "</td><td>" + installs + "</td><td>"
 				+ rating + "</td></tr></table>";
 
