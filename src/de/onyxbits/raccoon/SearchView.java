@@ -2,6 +2,8 @@ package de.onyxbits.raccoon;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -63,14 +65,20 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		progress.setString("Searching");
 		progress.setStringPainted(true);
 
-		JPanel container = new JPanel();
+		GridBagConstraints center = new GridBagConstraints();
+		center.anchor = GridBagConstraints.CENTER;
+		center.fill = GridBagConstraints.NONE;
+		
 		main = new JPanel();
 		main.setLayout(cardLayout);
-		container.add(message);
+		JPanel container = new JPanel();
+		container.setLayout(new GridBagLayout());
+		container.add(message,center);
 		main.add(container, CARDMESSAGE);
 		main.add(results, CARDRESULTS);
 		container = new JPanel();
-		container.add(progress);
+		container.setLayout(new GridBagLayout());
+		container.add(progress,center);
 		main.add(container, CARDPROGRESS);
 
 		container = new JPanel();
