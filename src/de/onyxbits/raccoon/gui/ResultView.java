@@ -2,6 +2,7 @@ package de.onyxbits.raccoon.gui;
 
 import java.awt.Event;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -128,6 +129,7 @@ public class ResultView extends JPanel implements ActionListener {
 		entry = new JEditorPane("text/html", appOverview);
 		entry.setEditable(false);
 		entry.setOpaque(false);
+		entry.setMargin(new Insets(10,10,10,10));
 		add(entry);
 		JPanel container = new JPanel();
 		container.setOpaque(false);
