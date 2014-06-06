@@ -28,9 +28,10 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	 */
 	public static final String LASTARCHIVE = "lastarchive";
 
-
 	private JMenuItem quit;
 	private JMenuItem open;
+	private JMenuItem search;
+	private JMenuItem downloads;
 
 	private JTabbedPane views;
 	private ListView downloadList;
@@ -43,36 +44,38 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		JMenuBar bar = new JMenuBar();
 		JMenu file = new JMenu("File");
 		file.setMnemonic('f');
-		quit = new JMenuItem("Exit");
-		quit.setMnemonic('x');
+		quit = new JMenuItem("Exit", 'x');
 		quit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Event.CTRL_MASK));
 		open = new JMenuItem("Switch archive");
 		file.add(open);
 		file.add(quit);
 		bar.add(file);
+
+		JMenu view = new JMenu("View");
+		view.setMnemonic('v');
+		search = new JMenuItem("Search", 's');
+		search.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK));
+		downloads = new JMenuItem("Downloads", 'd');
+		downloads.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, Event.CTRL_MASK));
+		view.add(search);
+		view.add(downloads);
+		search.setEnabled(false);
+		downloads.setEnabled(false);
+		bar.add(view);
 		setJMenuBar(bar);
 		setSize(800, 600);
 		setContentPane(views);
 	}
-	
+
 	public static MainActivity create() {
 		MainActivity ret = new MainActivity();
 		ret.open.addActionListener(ret);
 		ret.quit.addActionListener(ret);
+		ret.search.addActionListener(ret);
+		ret.downloads.addActionListener(ret);
 		ret.addWindowListener(ret);
 		ret.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		return ret;
-	}
-
-	/**
-	 * Connect actionlisteners etc. must be called before making the frame visible
-	 * for the first time.
-	 */
-	public void resolve() {
-		open.addActionListener(this);
-		quit.addActionListener(this);
-		addWindowListener(this);
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 	}
 
 	public void actionPerformed(ActionEvent event) {
@@ -82,6 +85,12 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		}
 		if (src == open) {
 			doOpen();
+		}
+		if (src == downloads) {
+			views.setSelectedIndex(1);
+		}
+		if (src == search) {
+			views.setSelectedIndex(0);
 		}
 	}
 
@@ -103,6 +112,8 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 			SearchView sv = SearchView.create(this, archive);
 			views.addTab("Search", sv);
 			views.addChangeListener(sv);
+			search.setEnabled(true);
+			downloads.setEnabled(true);
 			downloadListScroll = new JScrollPane();
 			downloadListScroll.setViewportView(downloadList);
 			views.addTab("Downloads", downloadListScroll);
@@ -114,9 +125,10 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 
 	private void doOpen() {
 		if (isDownloading()) {
-			int result = JOptionPane.showConfirmDialog(getRootPane(), "This will cancel your current downloads. Really proceed?",
-					"Still Downloading", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if (result==JOptionPane.YES_OPTION) {
+			int result = JOptionPane.showConfirmDialog(getRootPane(),
+					"This will cancel your current downloads. Really proceed?", "Still Downloading",
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if (result == JOptionPane.YES_OPTION) {
 				for (int i = 0; i < downloadList.getComponentCount(); i++) {
 					DownloadView dv = (DownloadView) downloadList.getComponent(i);
 					dv.stopWorker();
@@ -157,7 +169,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		if (isDownloading()) {
 			int result = JOptionPane.showConfirmDialog(getRootPane(), "Really quit?",
 					"Still Downloading", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if (result==JOptionPane.YES_OPTION) {
+			if (result == JOptionPane.YES_OPTION) {
 				for (int i = 0; i < downloadList.getComponentCount(); i++) {
 					DownloadView dv = (DownloadView) downloadList.getComponent(i);
 					dv.stopWorker();
@@ -174,12 +186,23 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	public void windowClosing(WindowEvent arg0) {
 		doQuit();
 	}
-	
-	public void windowActivated(WindowEvent arg0) {}
-	public void windowClosed(WindowEvent arg0) {}
-	public void windowDeactivated(WindowEvent arg0) {}
-	public void windowDeiconified(WindowEvent arg0) {}
-	public void windowIconified(WindowEvent arg0) {}
-	public void windowOpened(WindowEvent arg0) {}
+
+	public void windowActivated(WindowEvent arg0) {
+	}
+
+	public void windowClosed(WindowEvent arg0) {
+	}
+
+	public void windowDeactivated(WindowEvent arg0) {
+	}
+
+	public void windowDeiconified(WindowEvent arg0) {
+	}
+
+	public void windowIconified(WindowEvent arg0) {
+	}
+
+	public void windowOpened(WindowEvent arg0) {
+	}
 
 }
