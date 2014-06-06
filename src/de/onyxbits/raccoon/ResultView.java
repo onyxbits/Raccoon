@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
@@ -78,9 +79,9 @@ public class ResultView extends JPanel implements ActionListener {
 		// date + " &mdash; "
 		// + price + "</p><p>" + installs + " / " + rating + "</p><cite>" + summary
 		// + "</cite></html>";
-		String boiler = "<html><style>table {border-collapse: collapse;} table, th {border: 1px solid black;}  th {text-align: left;	background-color: black;color: gray;} td	{padding-right: 15px;} </style><p><big>"
+		String boiler = "<html><style>table {border: 1px solid black;}  th {text-align: left;	background-color: black;color: gray;} td	{padding-right: 15px;} </style><p><big><u>"
 				+ title
-				+ "</big></p><p><strong>"
+				+ "</u></big></p><p><strong>"
 				+ author
 				+ "</strong> (<code>"
 				+ pack
@@ -108,6 +109,9 @@ public class ResultView extends JPanel implements ActionListener {
 		JPanel container = new JPanel();
 		container.setOpaque(false);
 		container.add(buttons);
+		JSeparator sep = new JSeparator(JSeparator.VERTICAL);
+		sep.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+		add(sep);
 		add(container);
 	}
 

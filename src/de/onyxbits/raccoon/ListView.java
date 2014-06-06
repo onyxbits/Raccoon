@@ -3,9 +3,10 @@ package de.onyxbits.raccoon;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.Rectangle;
 
-import javax.swing.BoxLayout;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
@@ -25,13 +26,20 @@ class ListView extends JPanel implements Scrollable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
 	private boolean zebra;
 
+	public ListView() {
+		setLayout(new GridLayout(0, 1, 0, 10));
+		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+	}
+
 	public void add(JComponent comp) {
-		if (getComponentCount()==0) {
-			setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
-		}
+		comp.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY,2,false));
+		comp.getInsets().bottom=10;
+		comp.getInsets().top=10;
+		comp.getInsets().right=10;
+		comp.getInsets().left=10;
 		if (zebra) {
 			comp.setBackground(Color.GRAY);
 		}
