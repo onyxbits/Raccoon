@@ -1,10 +1,12 @@
-package de.onyxbits.raccoon;
+package de.onyxbits.raccoon.io;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
+
+import de.onyxbits.raccoon.App;
 
 /**
  * For directly downloading an APK file without going through search (the user

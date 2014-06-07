@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 
-import de.onyxbits.raccoon.Archive;
+import de.onyxbits.raccoon.io.Archive;
 
 /**
  * Display download progress and give the user a chance to cancel.

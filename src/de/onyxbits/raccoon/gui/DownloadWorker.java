@@ -16,7 +16,7 @@ import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 
 import de.onyxbits.raccoon.App;
-import de.onyxbits.raccoon.Archive;
+import de.onyxbits.raccoon.io.Archive;
 
 class DownloadWorker extends SwingWorker<Exception, Integer> {
 

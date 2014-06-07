@@ -14,8 +14,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import de.onyxbits.raccoon.Archive;
 import de.onyxbits.raccoon.BrowseUtil;
+import de.onyxbits.raccoon.io.Archive;
 
 public class InitView extends JPanel implements ActionListener {
 

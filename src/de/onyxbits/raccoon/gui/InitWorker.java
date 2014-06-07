@@ -8,7 +8,7 @@ import javax.swing.SwingWorker;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 import com.akdeniz.googleplaycrawler.GooglePlayException;
 
-import de.onyxbits.raccoon.Archive;
+import de.onyxbits.raccoon.io.Archive;
 
 /**
  * A worker for initializing a new archive. This class will log into the

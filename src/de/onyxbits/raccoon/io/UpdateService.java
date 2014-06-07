@@ -1,4 +1,4 @@
-package de.onyxbits.raccoon;
+package de.onyxbits.raccoon.io;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -8,6 +8,8 @@ import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsEntry;
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsResponse;
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
+
+import de.onyxbits.raccoon.App;
 
 /**
  * Scans the apk storage, downloads the latest APKs

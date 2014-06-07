@@ -20,7 +20,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import de.onyxbits.raccoon.Archive;
+import de.onyxbits.raccoon.io.Archive;
 
 /**
  * A container for putting search results in.

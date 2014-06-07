@@ -19,8 +19,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import de.onyxbits.raccoon.Archive;
 import de.onyxbits.raccoon.BrowseUtil;
+import de.onyxbits.raccoon.io.Archive;
 
 public class MainActivity extends JFrame implements ActionListener, WindowListener {
 

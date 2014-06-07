@@ -16,7 +16,7 @@ import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 import com.akdeniz.googleplaycrawler.GooglePlayException;
 
 import de.onyxbits.raccoon.App;
-import de.onyxbits.raccoon.Archive;
+import de.onyxbits.raccoon.io.Archive;
 
 /**
  * Perform a search query.

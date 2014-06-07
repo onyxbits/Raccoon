@@ -15,6 +15,9 @@ import org.apache.commons.cli.ParseException;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 
 import de.onyxbits.raccoon.gui.MainActivity;
+import de.onyxbits.raccoon.io.Archive;
+import de.onyxbits.raccoon.io.FetchService;
+import de.onyxbits.raccoon.io.UpdateService;
 
 /**
  * Just the application launcher.

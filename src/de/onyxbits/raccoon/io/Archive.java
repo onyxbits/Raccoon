@@ -1,4 +1,4 @@
-package de.onyxbits.raccoon;
+package de.onyxbits.raccoon.io;
 
 import java.io.File;
 import java.io.FileInputStream;
