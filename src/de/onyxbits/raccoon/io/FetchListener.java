@@ -9,7 +9,7 @@ public interface FetchListener {
 	 *          who is calling
 	 * @param numBytes
 	 *          number of bytes received so far.
-	 * @return true to continue, false to abort and to delete the file
+	 * @return true to abort and delete file. False to continue downloading.
 	 */
 	public boolean onChunk(Object src, long numBytes);
 

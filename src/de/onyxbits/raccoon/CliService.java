@@ -32,7 +32,7 @@ public class CliService implements UpdateListener, Runnable {
 
 	public boolean onChunk(Object src, long numBytes) {
 		System.out.print('.');
-		return true;
+		return false;
 	}
 
 	public void onComplete(Object src) {

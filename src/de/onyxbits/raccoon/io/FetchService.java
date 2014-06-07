@@ -62,7 +62,7 @@ public class FetchService implements Runnable {
 				out.write(buffer, 0, length);
 				received += length;
 				if (callback != null) {
-					if (!callback.onChunk(this, received)) {
+					if (callback.onChunk(this, received)) {
 						out.close();
 						in.close();
 						target.delete();
