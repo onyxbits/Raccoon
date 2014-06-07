@@ -1,8 +1,5 @@
 package de.onyxbits.raccoon.gui;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -11,19 +8,20 @@ import javax.swing.JButton;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
-
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
-import com.akdeniz.googleplaycrawler.GooglePlayAPI;
-
-import de.onyxbits.raccoon.App;
 import de.onyxbits.raccoon.io.Archive;
+import de.onyxbits.raccoon.io.FetchListener;
+import de.onyxbits.raccoon.io.FetchService;
 
-class DownloadWorker extends SwingWorker<Exception, Integer> {
+class DownloadWorker extends SwingWorker<Exception, Integer> implements FetchListener {
 
 	private Archive archive;
 	private DocV2 app;
 	protected JProgressBar progress;
 	protected JButton cancel;
+
+	private long totalBytes;
+	private Exception failure;
 
 	public DownloadWorker(DocV2 app, Archive archive) {
 		this.app = app;
@@ -45,36 +43,11 @@ class DownloadWorker extends SwingWorker<Exception, Integer> {
 	@Override
 	protected Exception doInBackground() throws Exception {
 		publish(0); // Just so there is no delay in the UI updating
-
-		GooglePlayAPI service = App.createConnection(archive);
 		String pn = app.getBackendDocid();
 		int vc = app.getDetails().getAppDetails().getVersionCode();
 		int ot = app.getOffer(0).getOfferType();
-		long size = app.getDetails().getAppDetails().getInstallationSize();
-		long complete = 0;
-		InputStream in = service.download(pn, vc, ot);
-
-		File dest = archive.fileUnder(pn, vc);
-		dest.getParentFile().mkdirs();
-		FileOutputStream out = new FileOutputStream(dest);
-		byte[] buffer = new byte[1024 * 16];
-		int length;
-		while ((length = in.read(buffer)) > 0) {
-			complete += length;
-			out.write(buffer, 0, length);
-			float percent = (float) complete / (float) size;
-			publish((int) (100f * percent));
-			if (isCancelled()) {
-				out.close();
-				in.close();
-				dest.delete();
-				return null;
-			}
-		}
-		out.close();
-		in.close();
-		archive.getDownloadLogger().addEntry(dest);
-
+		totalBytes = app.getDetails().getAppDetails().getInstallationSize();
+		new FetchService(archive, pn, vc, ot, this).run();
 		return null;
 	}
 
@@ -83,9 +56,12 @@ class DownloadWorker extends SwingWorker<Exception, Integer> {
 		progress.setString("Complete");
 		try {
 			get();
+			if (failure!=null) {
+				progress.setString("Failure!");
+			}
 		}
 		catch (CancellationException e) {
-			progress.setString("Aborted");
+			progress.setString("Cancelled");
 		}
 		catch (ExecutionException e) {
 			progress.setString("Error!");
@@ -95,6 +71,20 @@ class DownloadWorker extends SwingWorker<Exception, Integer> {
 			progress.setString("Aborted");
 		}
 		cancel.setEnabled(false);
+	}
+
+	public boolean onChunk(Object src, long numBytes) {
+		float percent = (float) numBytes / (float) totalBytes;
+		publish((int) (100f * percent));
+		return isCancelled();
+	}
+
+	public void onComplete(Object src) {
+
+	}
+
+	public void onFailure(Object src, Exception e) {
+		failure = e;
 	}
 
 }
