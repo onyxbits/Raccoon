@@ -39,7 +39,7 @@ class ListView extends JPanel implements Scrollable {
 		gbc.anchor = GridBagConstraints.CENTER;
 		gbc.insets = new Insets(0, 0, 10, 0);
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.weightx=1;
+		gbc.gridx=GridBagConstraints.REMAINDER;
 	}
 
 	public void add(JComponent comp) {
@@ -78,7 +78,12 @@ class ListView extends JPanel implements Scrollable {
 	}
 
 	public boolean getScrollableTracksViewportWidth() {
-		return true;
+		// FIXME: Setting this to true is desirable to force the entries to stretch
+		// to full width. Unfortunately this also disables the horizontal scroller
+		// and the layout breaks if an entry is too wide to fit into the scrollpane.
+		// So for the time being let's stick with arguably less pretty instead of
+		// potentially broken.
+		return false;
 	}
 
 	public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
