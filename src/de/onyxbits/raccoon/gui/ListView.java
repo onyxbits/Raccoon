@@ -67,7 +67,7 @@ class ListView extends JPanel implements Scrollable {
 
 	public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
 		// We want to roughly scroll by the the height of one line of text.
-		return 16;
+		return 24;
 	}
 
 	public boolean getScrollableTracksViewportHeight() {
