@@ -22,13 +22,26 @@ class DownloadWorker extends SwingWorker<Exception, Integer> implements FetchLis
 
 	private long totalBytes;
 	private Exception failure;
+	private SearchWorker next;
 
-	public DownloadWorker(DocV2 app, Archive archive) {
+	/**
+	 * Create an new worker
+	 * 
+	 * @param app
+	 *          app description
+	 * @param archive
+	 *          download target
+	 * @param next
+	 *          a worker to start when done. May be null
+	 */
+	public DownloadWorker(DocV2 app, Archive archive, SearchWorker next) {
 		this.app = app;
 		this.archive = archive;
+		this.next=next;
 		this.progress = new JProgressBar(0, 100);
 		this.cancel = new JButton("Cancel");
 		this.progress.setStringPainted(true);
+		this.progress.setString("Waiting");
 	}
 
 	@Override
@@ -56,7 +69,7 @@ class DownloadWorker extends SwingWorker<Exception, Integer> implements FetchLis
 		progress.setString("Complete");
 		try {
 			get();
-			if (failure!=null) {
+			if (failure != null) {
 				progress.setString("Failure!");
 			}
 		}
@@ -71,6 +84,10 @@ class DownloadWorker extends SwingWorker<Exception, Integer> implements FetchLis
 			progress.setString("Aborted");
 		}
 		cancel.setEnabled(false);
+		
+		if (next!=null) {
+			next.execute();
+		}
 	}
 
 	public boolean onChunk(Object src, long numBytes) {
