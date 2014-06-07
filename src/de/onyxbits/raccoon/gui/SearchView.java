@@ -70,17 +70,17 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		GridBagConstraints center = new GridBagConstraints();
 		center.anchor = GridBagConstraints.CENTER;
 		center.fill = GridBagConstraints.NONE;
-		
+
 		main = new JPanel();
 		main.setLayout(cardLayout);
 		JPanel container = new JPanel();
 		container.setLayout(new GridBagLayout());
-		container.add(message,center);
+		container.add(message, center);
 		main.add(container, CARDMESSAGE);
 		main.add(results, CARDRESULTS);
 		container = new JPanel();
 		container.setLayout(new GridBagLayout());
-		container.add(progress,center);
+		container.add(progress, center);
 		main.add(container, CARDPROGRESS);
 
 		container = new JPanel();
@@ -135,8 +135,7 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 			cardLayout.show(main, CARDPROGRESS);
 			int offset = (Integer) page.getValue();
 			offset = (offset - 1) * 10;
-			new SearchWorker(archive, query.getText(), this).withOffset(offset).withLimit(offset + 10)
-					.execute();
+			new SearchWorker(archive, query.getText(), this).withOffset(offset).withLimit(10).execute();
 		}
 	}
 
