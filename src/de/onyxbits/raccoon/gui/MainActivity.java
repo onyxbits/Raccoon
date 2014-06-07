@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 import java.util.prefs.Preferences;
 
 import javax.swing.JFileChooser;
@@ -22,7 +23,14 @@ import javax.swing.SwingUtilities;
 import de.onyxbits.raccoon.BrowseUtil;
 import de.onyxbits.raccoon.io.Archive;
 
-public class MainActivity extends JFrame implements ActionListener, WindowListener {
+/**
+ * The main UI. This class must be started by creating an object and passing it
+ * to SwingUtils.invokeLater()
+ * 
+ * @author patrick
+ * 
+ */
+public class MainActivity extends JFrame implements ActionListener, WindowListener, Runnable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -41,7 +49,16 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	private ListView downloadList;
 	private JScrollPane downloadListScroll;
 
-	public MainActivity() {
+	private Archive archive;
+
+	/**
+	 * New GUI
+	 * 
+	 * @param archive
+	 *          the archive to display. This may be null.
+	 */
+	public MainActivity(Archive archive) {
+		this.archive = archive;
 		views = new JTabbedPane();
 		downloadList = new ListView();
 
@@ -69,26 +86,32 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 
 		JMenu help = new JMenu("Help");
 		help.setMnemonic('h');
-		contents = new JMenuItem("Contents",'c');
+		contents = new JMenuItem("Contents", 'c');
 		contents.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
 		help.add(contents);
 		bar.add(help);
-		
+
 		setJMenuBar(bar);
-		setSize(800, 600);
 		setContentPane(views);
 	}
 
-	public static MainActivity create() {
-		MainActivity ret = new MainActivity();
-		ret.open.addActionListener(ret);
-		ret.quit.addActionListener(ret);
-		ret.search.addActionListener(ret);
-		ret.contents.addActionListener(ret);
-		ret.downloads.addActionListener(ret);
-		ret.addWindowListener(ret);
-		ret.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		return ret;
+	public void run() {
+		if (archive == null) {
+			Preferences prefs = Preferences.userNodeForPackage(getClass());
+			archive = new Archive(new File(prefs.get(MainActivity.LASTARCHIVE, "Raccoon")));
+		}
+		archive.getDownloadLogger().clear();
+		open.addActionListener(this);
+		quit.addActionListener(this);
+		search.addActionListener(this);
+		contents.addActionListener(this);
+		downloads.addActionListener(this);
+		addWindowListener(this);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		doMount(archive);
+		pack();
+		setSize(800, 600);
+		setVisible(true);
 	}
 
 	public void actionPerformed(ActionEvent event) {
@@ -105,7 +128,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		if (src == search) {
 			views.setSelectedIndex(0);
 		}
-		if (src==contents) {
+		if (src == contents) {
 			BrowseUtil.openUrl("http://www.onyxbits.de/raccoon/handbook");
 		}
 	}
@@ -116,7 +139,8 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	 * @param archive
 	 *          the archive to mount.
 	 */
-	public void doMount(Archive archive) {
+	protected void doMount(Archive archive) {
+		this.archive=archive;
 		archive.getRoot().mkdirs();
 		archive.getDownloadLogger().clear();
 		setTitle("Raccoon - " + archive.getRoot().getAbsolutePath());

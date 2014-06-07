@@ -1,8 +1,6 @@
 package de.onyxbits.raccoon.io;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsEntry;
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsResponse;
@@ -12,7 +10,17 @@ import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 import de.onyxbits.raccoon.App;
 
 /**
- * Scans the apk storage, downloads the latest APKs
+ * Scans the apk storage, downloads the latest APKs. Packages are downloaded
+ * single file:
+ * <ul>
+ * <li>If we wanted to download in parallel, we'd have to measure the speed of
+ * the uplink and calculate how many threads we could run at once without
+ * congesting the line. The speedup is not even remotely worth the trouble.
+ * <li>The callbacks would get tremendously more complex. Again, it's not worth
+ * the trouble.
+ * <li>Google may not be fond of massively parallel downloads, so let's not do
+ * anything that might trigger something.
+ * </ul>
  * 
  * @author patrick
  * 
@@ -21,69 +29,52 @@ public class UpdateService implements Runnable {
 
 	private Archive archive;
 	private GooglePlayAPI service;
+	private UpdateListener callback;
 
-	public UpdateService(Archive archive) {
+	/**
+	 * Construct a new service
+	 * 
+	 * @param archive
+	 *          the archive to update.
+	 * @param callback
+	 *          the listener to report back to. This may be null. Note:
+	 *          UpdateService internally uses FetchService for downloading and
+	 *          will pass the listener on. Listeners should be prepared to get
+	 *          called from a FetchService as well.
+	 */
+	public UpdateService(Archive archive, UpdateListener callback) {
 		this.archive = archive;
+		this.callback = callback;
 	}
 
+	/**
+	 * Start updating.
+	 */
 	public void run() {
 		BulkDetailsResponse response = null;
 		try {
-			System.err.println("# Login...");
-			service=App.createConnection(archive);
-			System.err.println("# Downloading packagelist");
+			service = App.createConnection(archive);
 			response = service.bulkDetails(archive.list());
 		}
 		catch (Exception e) {
-			System.err.println("# Error: " + e.getMessage());
+			if (callback != null) {
+				callback.onFailure(this, e);
+			}
 			return;
 		}
 
 		for (BulkDetailsEntry bulkDetailsEntry : response.getEntryList()) {
-			try {
-				download(bulkDetailsEntry.getDoc());
-			}
-			catch (Exception e) {
-				System.err.println("# Error: " + e.getMessage());
-			}
-		}
-	}
-
-	/**
-	 * Download an app
-	 * 
-	 * @param doc
-	 *          app description
-	 * @throws Exception
-	 *           if something went wrong.
-	 */
-	private void download(DocV2 doc) throws Exception {
-		String pn = doc.getBackendDocid();
-		if (pn == null || pn.length() == 0) {
-			throw new IllegalAccessException("Package not available");
-		}
-		int vc = doc.getDetails().getAppDetails().getVersionCode();
-		File target = archive.fileUnder(pn, vc);
-		if (!target.exists()) {
-			System.err.println("# Downloading: " + target.getAbsolutePath());
-			try {
-				int ot = doc.getOffer(0).getOfferType();
-				InputStream in = service.download(pn, vc, ot);
-
-				target.getParentFile().mkdirs();
-				FileOutputStream out = new FileOutputStream(target);
-				byte[] buffer = new byte[1024 * 16];
-				int length;
-				while ((length = in.read(buffer)) > 0) {
-					out.write(buffer, 0, length);
+			DocV2 doc = bulkDetailsEntry.getDoc();
+			String pn = doc.getBackendDocid();
+			int vc = doc.getDetails().getAppDetails().getVersionCode();
+			int ot = doc.getOffer(0).getOfferType();
+			File target = archive.fileUnder(pn, vc);
+			if (!target.exists()) {
+				if (callback != null) {
+					callback.onBeginDownload(this, doc);
 				}
-				out.close();
-				in.close();
-				archive.getDownloadLogger().addEntry(target);
-			}
-			catch (Exception e) {
-				target.delete();
-				throw e;
+				FetchService fs = new FetchService(archive, pn, vc, ot, callback);
+				fs.run();
 			}
 		}
 	}

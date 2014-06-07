@@ -9,8 +9,7 @@ import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 import de.onyxbits.raccoon.App;
 
 /**
- * For directly downloading an APK file without going through search (the user
- * must discover packagename, versioncode and offertype by other means).
+ * Download an APK.
  * 
  * @author patrick
  * 
@@ -22,36 +21,66 @@ public class FetchService implements Runnable {
 	private Archive archive;
 	private GooglePlayAPI service;
 	private int offerType;
+	private FetchListener callback;
 
-	public FetchService(Archive archive, String appId, int versionCode, int offerType) {
+	/**
+	 * Create a new downloader
+	 * 
+	 * @param archive
+	 *          archive to download to
+	 * @param appId
+	 *          app packagename
+	 * @param versionCode
+	 *          app version code
+	 * @param offerType
+	 *          app offertype
+	 * @param callback
+	 *          optional callback to notify about progress (may be null).
+	 */
+	public FetchService(Archive archive, String appId, int versionCode, int offerType,
+			FetchListener callback) {
 		this.appId = appId;
 		this.versionCode = versionCode;
 		this.archive = archive;
 		this.offerType = offerType;
+		this.callback = callback;
 	}
 
 	public void run() {
 		try {
-			System.err.println("# Login...");
 			service = App.createConnection(archive);
 			File target = archive.fileUnder(appId, versionCode);
 			InputStream in = service.download(appId, versionCode, offerType);
-			System.err.println("# Downloading: "+target.getAbsolutePath());
 
 			target.getParentFile().mkdirs();
 			FileOutputStream out = new FileOutputStream(target);
 			byte[] buffer = new byte[1024 * 16];
 			int length;
+			long received = 0;
+			callback.onChunk(this, 0);
 			while ((length = in.read(buffer)) > 0) {
 				out.write(buffer, 0, length);
+				received += length;
+				if (callback != null) {
+					if (!callback.onChunk(this, received)) {
+						out.close();
+						in.close();
+						target.delete();
+						return;
+					}
+				}
 			}
 			out.close();
 			in.close();
 			archive.getDownloadLogger().addEntry(target);
-			System.err.println("# Success");
+			if (callback != null) {
+				callback.onComplete(this);
+			}
 		}
 		catch (Exception e) {
-			System.err.println("# Error: "+e.getMessage());
+			if (callback != null) {
+				callback.onFailure(this, e);
+			}
 		}
 	}
 }
