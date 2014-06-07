@@ -71,7 +71,14 @@ public class UpdateService implements Runnable {
 			File target = archive.fileUnder(pn, vc);
 			if (!target.exists()) {
 				if (callback != null) {
-					callback.onBeginDownload(this, doc);
+					switch (callback.onBeginDownload(this, doc)) {
+						case UpdateListener.SKIP: {
+							continue;
+						}
+						case UpdateListener.ABORT: {
+							return;
+						}
+					}
 				}
 				FetchService fs = new FetchService(archive, pn, vc, ot, callback);
 				fs.run();

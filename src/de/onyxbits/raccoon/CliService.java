@@ -43,8 +43,9 @@ public class CliService implements UpdateListener, Runnable {
 		System.err.println("Failure: "+e.getMessage());
 	}
 
-	public void onBeginDownload(Object src, DocV2 doc) {
+	public int onBeginDownload(Object src, DocV2 doc) {
 		System.out.println("Starting: "+doc.getTitle());
+		return UpdateListener.PROCEED;
 	}
 
 	public void run() {
