@@ -80,7 +80,7 @@ public class ResultView extends JPanel implements ActionListener {
 		String date = doc.getDetails().getAppDetails().getUploadDate();
 		String size = humanReadableByteCount(doc.getDetails().getAppDetails().getInstallationSize(),
 				true);
-		appOverview = "<html><style>table {border: 1px solid black;}  th {text-align: left;	background-color: #9E9E9E;color: black;} td	{padding-right: 15px;} </style><p><big><u>"
+		appOverview = "<html><style>table {border: 1px solid #9E9E9E;}  th {text-align: left;	background-color: #9E9E9E;color: black;} td	{padding-right: 15px;} </style><p><big><u>"
 				+ title
 				+ "</u></big></p><p><strong>"
 				+ author
