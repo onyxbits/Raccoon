@@ -1,7 +1,6 @@
 package de.onyxbits.raccoon.gui;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -39,7 +38,10 @@ class ListView extends JPanel implements Scrollable {
 		gbc.anchor = GridBagConstraints.CENTER;
 		gbc.insets = new Insets(0, 0, 10, 0);
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.gridx=GridBagConstraints.REMAINDER;
+		gbc.gridx = GridBagConstraints.REMAINDER;
+		// We don't stretch aand depending on the LAF, the underlying container
+		// might have a different color.
+		setOpaque(false);
 	}
 
 	public void add(JComponent comp) {
@@ -64,13 +66,8 @@ class ListView extends JPanel implements Scrollable {
 	}
 
 	public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-		Component c = getComponent(0);
-		if (c != null) {
-			return c.getHeight() / 2;
-		}
-		else {
-			return 1;
-		}
+		// We want to roughly scroll by the the height of one line of text.
+		return 16;
 	}
 
 	public boolean getScrollableTracksViewportHeight() {
