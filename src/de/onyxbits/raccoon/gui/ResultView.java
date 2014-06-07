@@ -20,6 +20,7 @@ import javax.swing.SwingUtilities;
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 
 import de.onyxbits.raccoon.BrowseUtil;
+import de.onyxbits.raccoon.io.Archive;
 
 /**
  * Displays and handles a single search result.
@@ -49,7 +50,7 @@ public class ResultView extends JPanel implements ActionListener {
 	private String appOverview;
 
 	private String appPermissions;
-	
+
 	private boolean showingPermissions;
 
 	/**
@@ -78,8 +79,8 @@ public class ResultView extends JPanel implements ActionListener {
 			price += " (+IAP)";
 		}
 		String date = doc.getDetails().getAppDetails().getUploadDate();
-		String size = humanReadableByteCount(doc.getDetails().getAppDetails().getInstallationSize(),
-				true);
+		String size = Archive.humanReadableByteCount(doc.getDetails().getAppDetails()
+				.getInstallationSize(), true);
 		appOverview = "<html><style>table {border: 1px solid #9E9E9E;}  th {text-align: left;	background-color: #9E9E9E;color: black;} td	{padding-right: 15px;} </style><p><big><u>"
 				+ title
 				+ "</u></big></p><p><strong>"
@@ -129,7 +130,7 @@ public class ResultView extends JPanel implements ActionListener {
 		entry = new JEditorPane("text/html", appOverview);
 		entry.setEditable(false);
 		entry.setOpaque(false);
-		entry.setMargin(new Insets(10,10,10,10));
+		entry.setMargin(new Insets(10, 10, 10, 10));
 		add(entry);
 		JPanel container = new JPanel();
 		container.setOpaque(false);
@@ -188,17 +189,7 @@ public class ResultView extends JPanel implements ActionListener {
 		else {
 			entry.setText(appPermissions);
 		}
-		showingPermissions=!showingPermissions;
+		showingPermissions = !showingPermissions;
 		SwingUtilities.invokeLater(searchView);
 	}
-
-	public static String humanReadableByteCount(long bytes, boolean si) {
-		int unit = si ? 1000 : 1024;
-		if (bytes < unit)
-			return bytes + " B";
-		int exp = (int) (Math.log(bytes) / Math.log(unit));
-		String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
-		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
-	}
-
 }
