@@ -230,8 +230,8 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	private void doQuit() {
 		boolean ask = false;
 		for (MainActivity ma : all) {
-			ask = ma.isDownloading();
-			if (ask) {
+			if (ma.isDownloading()) {
+				ask=true;
 				break;
 			}
 		}
