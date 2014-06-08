@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.util.Vector;
 import java.util.prefs.Preferences;
 
 import javax.swing.JFileChooser;
@@ -42,6 +43,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	private JMenuItem quit;
 	private JMenuItem open;
 	private JMenuItem search;
+	private JMenuItem close;
 	private JMenuItem downloads;
 	private JMenuItem contents;
 
@@ -50,6 +52,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	private JScrollPane downloadListScroll;
 
 	private Archive archive;
+	private static Vector<MainActivity> all = new Vector<MainActivity>();
 
 	/**
 	 * New GUI
@@ -67,8 +70,12 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		file.setMnemonic('f');
 		quit = new JMenuItem("Exit", 'x');
 		quit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Event.CTRL_MASK));
-		open = new JMenuItem("Switch archive");
+		open = new JMenuItem("Open archive");
+		open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK));
+		close = new JMenuItem("Close", 'c');
+		close.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Event.CTRL_MASK));
 		file.add(open);
+		file.add(close);
 		file.add(quit);
 		bar.add(file);
 
@@ -103,6 +110,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		archive.getDownloadLogger().clear();
 		open.addActionListener(this);
 		quit.addActionListener(this);
+		close.addActionListener(this);
 		search.addActionListener(this);
 		contents.addActionListener(this);
 		downloads.addActionListener(this);
@@ -112,12 +120,16 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		pack();
 		setSize(800, 600);
 		setVisible(true);
+		all.add(this);
 	}
 
 	public void actionPerformed(ActionEvent event) {
 		Object src = event.getSource();
 		if (src == quit) {
 			doQuit();
+		}
+		if (src == close) {
+			doClose();
 		}
 		if (src == open) {
 			doOpen();
@@ -133,6 +145,25 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		}
 	}
 
+	private void doClose() {
+		if (isDownloading()) {
+			int result = JOptionPane.showConfirmDialog(getRootPane(), "Really close?",
+					"Downloads in progress", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if (result == JOptionPane.NO_OPTION) {
+				return;
+			}
+			for (int i = 0; i < downloadList.getComponentCount(); i++) {
+				DownloadView dv = (DownloadView) downloadList.getComponent(i);
+				dv.stopWorker();
+			}
+		}
+		all.remove(this);
+		setVisible(false);
+		if (all.size() == 0) {
+			System.exit(0);
+		}
+	}
+
 	/**
 	 * Must be called to connect to an archive.
 	 * 
@@ -140,7 +171,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	 *          the archive to mount.
 	 */
 	protected void doMount(Archive archive) {
-		this.archive=archive;
+		this.archive = archive;
 		archive.getRoot().mkdirs();
 		archive.getDownloadLogger().clear();
 		setTitle("Raccoon - " + archive.getRoot().getAbsolutePath());
@@ -165,22 +196,12 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	}
 
 	private void doOpen() {
-		if (isDownloading()) {
-			int result = JOptionPane.showConfirmDialog(getRootPane(),
-					"This will cancel your current downloads. Really proceed?", "Still Downloading",
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if (result == JOptionPane.YES_OPTION) {
-				for (int i = 0; i < downloadList.getComponentCount(); i++) {
-					DownloadView dv = (DownloadView) downloadList.getComponent(i);
-					dv.stopWorker();
-				}
-			}
-		}
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int ret = chooser.showOpenDialog(this);
 		if (ret == JFileChooser.APPROVE_OPTION) {
-			doMount(new Archive(chooser.getSelectedFile()));
+			MainActivity ma = new MainActivity(new Archive(chooser.getSelectedFile()));
+			SwingUtilities.invokeLater(ma);
 		}
 	}
 
@@ -207,25 +228,32 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	}
 
 	private void doQuit() {
-		if (isDownloading()) {
-			int result = JOptionPane.showConfirmDialog(getRootPane(), "Really quit?",
-					"Still Downloading", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if (result == JOptionPane.YES_OPTION) {
-				for (int i = 0; i < downloadList.getComponentCount(); i++) {
-					DownloadView dv = (DownloadView) downloadList.getComponent(i);
-					dv.stopWorker();
-				}
-				System.exit(0);
+		boolean ask = false;
+		for (MainActivity ma : all) {
+			ask = ma.isDownloading();
+			if (ask) {
+				break;
 			}
-			else {
+		}
+
+		if (ask) {
+			int result = JOptionPane.showConfirmDialog(getRootPane(), "Really quit?",
+					"Downloads in progress", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if (result == JOptionPane.NO_OPTION) {
 				return;
+			}
+		}
+		for (MainActivity ma : all) {
+			for (int i = 0; i < downloadList.getComponentCount(); i++) {
+				DownloadView dv = (DownloadView) ma.downloadList.getComponent(i);
+				dv.stopWorker();
 			}
 		}
 		System.exit(0);
 	}
 
 	public void windowClosing(WindowEvent arg0) {
-		doQuit();
+		doClose();
 	}
 
 	public void windowActivated(WindowEvent arg0) {
