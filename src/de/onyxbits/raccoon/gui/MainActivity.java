@@ -146,7 +146,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		setTitle("Raccoon - " + archive.getRoot().getAbsolutePath());
 		views.removeAll();
 		if (archive.getAndroidId().length() == 0) {
-			views.addTab("Init", InitView.create(this, archive));
+			views.addTab("Archive setup", InitView.create(this, archive));
 		}
 		else {
 			SearchView sv = SearchView.create(this, archive);

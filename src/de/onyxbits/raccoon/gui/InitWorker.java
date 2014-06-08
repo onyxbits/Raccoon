@@ -8,6 +8,7 @@ import javax.swing.SwingWorker;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 import com.akdeniz.googleplaycrawler.GooglePlayException;
 
+import de.onyxbits.raccoon.App;
 import de.onyxbits.raccoon.io.Archive;
 
 /**
@@ -37,25 +38,16 @@ public class InitWorker extends SwingWorker<String, Object> {
 
 	@Override
 	protected String doInBackground() throws Exception {
-		String uid = archive.getUserId();
-		String pwd = archive.getPassword();
-		String aid = archive.getAndroidId();
-		String loc = Locale.getDefault().getCountry();
 		// Register the account with GPlay.
-		GooglePlayAPI service = new GooglePlayAPI(uid, pwd, aid);
-		service.setLocalization(loc);
-		if (aid.length() == 0) {
-			service.checkin();
-			service.login();
-			service.uploadDeviceConfig();
-		}
-		else {
-			service.login();
-		}
+		GooglePlayAPI service = App.createConnection(archive);
+		service.setLocalization(Locale.getDefault().getCountry());
+		service.checkin();
+		service.login();
+		service.uploadDeviceConfig();
 		// Persist credentials through a separate object...
 		Archive a = new Archive(archive.getRoot());
-		a.setUserId(uid);
-		a.setPassword(pwd);
+		a.setUserId(archive.getUserId());
+		a.setPassword(archive.getPassword());
 		a.setAndroidId(service.getAndroidID());
 		a.saveCredentials();
 		// ... and transport back the new aid, so we only modify the submitted
@@ -76,8 +68,7 @@ public class InitWorker extends SwingWorker<String, Object> {
 			if (e.getCause() instanceof GooglePlayException) {
 				initView.doErrorMessage();
 			}
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
-
 }

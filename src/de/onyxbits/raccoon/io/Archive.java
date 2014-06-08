@@ -152,7 +152,7 @@ public class Archive {
 			credentials.load(new FileInputStream(new File(root, CREDCFG)));
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		downloadLogger = new DownloadLogger(new File(new File(root, LOGDIR), DOWNLOADCOMPLETELOG));
 	}

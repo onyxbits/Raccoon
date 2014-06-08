@@ -1,7 +1,9 @@
 package de.onyxbits.raccoon.gui;
 
 import java.awt.Component;
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -38,33 +40,54 @@ public class InitView extends JPanel implements ActionListener {
 		this.mainActivity = mainActivity;
 		this.archive = archive;
 		password = new JTextField();
-		userId = new JTextField();
+		userId = new JTextField("", 20);
 		androidId = new JTextField();
 		create = new JButton("Create");
 		help = new JButton("Help");
 		JLabel instr = new JLabel(
-				"<html>Creating a new archive. A Google account is requried, the Android ID is optional. Press 'Help' for details.</html>");
+				"<html>This archive needs to be linked to a Google account and a device. The Google account is required, the Android ID is optional (a new one will automatically be generated if none is given). Press 'Help' for details.</html>");
 		instr.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(instr);
 		add(Box.createVerticalGlue());
-		JPanel container = new JPanel();
-		container.setLayout(new GridLayout(3, 2, 10, 5));
-		container.add(new JLabel("Username:"));
-		container.add(userId);
-		container.add(new JLabel("Password:"));
-		container.add(password);
-		container.add(new JLabel("Android ID:"));
-		container.add(androidId);
-		container.setBorder(BorderFactory.createTitledBorder("Credentials"));
+
 		JPanel outer = new JPanel();
 
-		outer.add(container);
+		outer.add(createCredentials());
 		add(outer);
-		container = new JPanel();
+		JPanel container = new JPanel();
 		container.add(create);
 		container.add(help);
 		add(container);
 		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+	}
+
+	private JPanel createCredentials() {
+		JPanel ret = new JPanel();
+		ret.setLayout(new GridBagLayout());
+		ret.setBorder(BorderFactory.createTitledBorder("Credentials"));
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(2, 2, 2, 2);
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		ret.add(new JLabel("Username:"), gbc);
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		ret.add(userId, gbc);
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		ret.add(new JLabel("Password:"), gbc);
+		gbc.gridx = 1;
+		gbc.gridy = 1;
+		ret.add(password, gbc);
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		gbc.insets = new Insets(14, 2, 2, 2);
+		ret.add(new JLabel("Android ID:"), gbc);
+		gbc.gridx = 1;
+		gbc.gridy = 2;
+		ret.add(androidId, gbc);
+		return ret;
 	}
 
 	public static InitView create(MainActivity mainActivity, Archive archive) {
