@@ -129,7 +129,7 @@ public class InitView extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent event) {
 		Object src = event.getSource();
 		if (src == login) {
-			archive.setPassword(password.getText());
+			archive.setPassword(new String(password.getPassword()));
 			archive.setUserId(userId.getText());
 			archive.setAndroidId(androidId.getText());
 			login.setEnabled(false);
