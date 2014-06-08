@@ -12,7 +12,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -29,6 +28,7 @@ public class InitView extends JPanel implements ActionListener {
 	private JTextField password;
 	private JTextField userId;
 	private JTextField androidId;
+	private JLabel status;
 	private JButton create;
 	private JButton help;
 
@@ -42,6 +42,7 @@ public class InitView extends JPanel implements ActionListener {
 		password = new JTextField();
 		userId = new JTextField("", 20);
 		androidId = new JTextField();
+		status = new JLabel(" ");
 		create = new JButton("Create");
 		help = new JButton("Help");
 		JLabel instr = new JLabel(
@@ -58,6 +59,7 @@ public class InitView extends JPanel implements ActionListener {
 		container.add(create);
 		container.add(help);
 		add(container);
+		add(status);
 		setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 	}
 
@@ -117,9 +119,12 @@ public class InitView extends JPanel implements ActionListener {
 	}
 
 	protected void doErrorMessage() {
-		JOptionPane.showMessageDialog(getRootPane(), "Could not login", "Bad credentials",
-				JOptionPane.ERROR_MESSAGE);
+		status.setText("Bad credentials");
 		create.setEnabled(true);
+	}
+
+	protected void doInProgress() {
+		status.setText("Login... (Please wait)");
 	}
 
 }

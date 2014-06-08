@@ -1,5 +1,6 @@
 package de.onyxbits.raccoon.gui;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
@@ -19,7 +20,7 @@ import de.onyxbits.raccoon.io.Archive;
  * @author patrick
  * 
  */
-public class InitWorker extends SwingWorker<String, Object> {
+public class InitWorker extends SwingWorker<String, String> {
 
 	private Archive archive;
 	private InitView initView;
@@ -35,9 +36,15 @@ public class InitWorker extends SwingWorker<String, Object> {
 		this.archive = a;
 		this.initView = callback;
 	}
+	
+	protected void process(List<String> chunks) {
+		initView.doInProgress();
+	}
+	
 
 	@Override
 	protected String doInBackground() throws Exception {
+		publish("");
 		// Register the account with GPlay.
 		GooglePlayAPI service = App.createConnection(archive);
 		service.setLocalization(Locale.getDefault().getCountry());
