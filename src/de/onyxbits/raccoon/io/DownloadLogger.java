@@ -14,7 +14,8 @@ import java.io.IOException;
  */
 public class DownloadLogger {
 
-	private File logfile;
+	public static final String LOGCOMPLETE = "downloads-complete.txt";
+	private File completeLog;
 
 	/**
 	 * Create a new logger
@@ -22,16 +23,16 @@ public class DownloadLogger {
 	 * @param logfile
 	 *          the file to log to.
 	 */
-	public DownloadLogger(File logfile) {
-		this.logfile = logfile;
+	public DownloadLogger(Archive archive) {
+		completeLog = new File(new File(archive.getRoot(), Archive.LOGDIR), LOGCOMPLETE);
 	}
 
 	/**
 	 * Clears the download log. This should be called when starting the session.
 	 */
 	public synchronized void clear() {
-		if (logfile.exists()) {
-			logfile.delete();
+		if (completeLog.exists()) {
+			completeLog.delete();
 		}
 	}
 
@@ -44,8 +45,8 @@ public class DownloadLogger {
 	 *           if writing fails.
 	 */
 	public synchronized void addEntry(File file) throws IOException {
-		logfile.getParentFile().mkdirs();
-		FileWriter fw = new FileWriter(logfile, true);
+		completeLog.getParentFile().mkdirs();
+		FileWriter fw = new FileWriter(completeLog, true);
 		fw.write(file.getAbsolutePath() + "\n");
 		fw.close();
 	}

@@ -66,13 +66,13 @@ public class FetchService implements Runnable {
 						out.close();
 						in.close();
 						target.delete();
+						callback.onAborted(this);
 						return;
 					}
 				}
 			}
 			out.close();
 			in.close();
-			archive.getDownloadLogger().addEntry(target);
 			if (callback != null) {
 				callback.onComplete(this);
 			}

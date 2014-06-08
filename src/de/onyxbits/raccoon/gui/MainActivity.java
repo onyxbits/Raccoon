@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
@@ -23,6 +24,8 @@ import javax.swing.SwingUtilities;
 
 import de.onyxbits.raccoon.BrowseUtil;
 import de.onyxbits.raccoon.io.Archive;
+import de.onyxbits.raccoon.io.DownloadLogger;
+import de.onyxbits.raccoon.io.FetchListener;
 
 /**
  * The main UI. This class must be started by creating an object and passing it
@@ -31,7 +34,8 @@ import de.onyxbits.raccoon.io.Archive;
  * @author patrick
  * 
  */
-public class MainActivity extends JFrame implements ActionListener, WindowListener, Runnable {
+public class MainActivity extends JFrame implements ActionListener, WindowListener, Runnable,
+		FetchListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -50,6 +54,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	private JTabbedPane views;
 	private ListView downloadList;
 	private JScrollPane downloadListScroll;
+	private DownloadLogger logger;
 
 	private Archive archive;
 	private static Vector<MainActivity> all = new Vector<MainActivity>();
@@ -107,7 +112,6 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 			Preferences prefs = Preferences.userNodeForPackage(getClass());
 			archive = new Archive(new File(prefs.get(MainActivity.LASTARCHIVE, "Raccoon")));
 		}
-		archive.getDownloadLogger().clear();
 		open.addActionListener(this);
 		quit.addActionListener(this);
 		close.addActionListener(this);
@@ -173,7 +177,8 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	protected void doMount(Archive archive) {
 		this.archive = archive;
 		archive.getRoot().mkdirs();
-		archive.getDownloadLogger().clear();
+		logger = new DownloadLogger(archive);
+		logger.clear();
 		setTitle("Raccoon - " + archive.getRoot().getAbsolutePath());
 		views.removeAll();
 		if (archive.getAndroidId().length() == 0) {
@@ -214,6 +219,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	public void doDownload(DownloadView d) {
 		downloadList.add(d);
 		d.startWorker();
+		d.addFetchListener(this);
 		views.setSelectedComponent(downloadListScroll);
 	}
 
@@ -231,7 +237,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		boolean ask = false;
 		for (MainActivity ma : all) {
 			if (ma.isDownloading()) {
-				ask=true;
+				ask = true;
 				break;
 			}
 		}
@@ -272,6 +278,26 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	}
 
 	public void windowOpened(WindowEvent arg0) {
+	}
+
+	public boolean onChunk(Object src, long numBytes) {
+		return false;
+	}
+
+	public void onComplete(Object src) {
+		try {
+			logger.addEntry(((DownloadWorker)src).getTarget());
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void onFailure(Object src, Exception e) {
+		e.printStackTrace();
+	}
+
+	public void onAborted(Object src) {
 	}
 
 }

@@ -6,12 +6,15 @@ import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 
 import de.onyxbits.raccoon.io.Archive;
+import de.onyxbits.raccoon.io.FetchListener;
 
 /**
  * Display download progress and give the user a chance to cancel.
@@ -19,7 +22,7 @@ import de.onyxbits.raccoon.io.Archive;
  * @author patrick
  * 
  */
-public class DownloadView extends JPanel implements ActionListener {
+public class DownloadView extends JPanel implements ActionListener, FetchListener {
 
 	/**
 	 * 
@@ -27,12 +30,18 @@ public class DownloadView extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 1L;
 
 	private DownloadWorker worker;
+	private JProgressBar progress;
+	private JButton cancel;
 	private DocV2 doc;
 	private Archive archive;
 
 	private DownloadView(Archive archive, DocV2 doc) {
 		this.doc = doc;
 		this.archive = archive;
+		this.cancel = new JButton("Cancel");
+		this.progress = new JProgressBar(0,100);
+		this.progress.setString("Waiting");
+		this.progress.setStringPainted(true);
 		String pn = doc.getBackendDocid();
 		int vc = doc.getDetails().getAppDetails().getVersionCode();
 		String title = doc.getTitle();
@@ -42,8 +51,8 @@ public class DownloadView extends JPanel implements ActionListener {
 				+ "</code></html>";
 		JPanel container = new JPanel();
 		container.setOpaque(false);
-		container.add(worker.progress);
-		container.add(worker.cancel);
+		container.add(progress);
+		container.add(cancel);
 		JEditorPane info = new JEditorPane("text/html", boiler);
 		info.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		info.setEditable(false);
@@ -54,8 +63,9 @@ public class DownloadView extends JPanel implements ActionListener {
 
 	public static DownloadView create(Archive archive, DocV2 doc) {
 		DownloadView ret = new DownloadView(archive, doc);
-		ret.worker.cancel.addActionListener(ret);
+		ret.cancel.addActionListener(ret);
 		ret.setLayout(new BoxLayout(ret, BoxLayout.Y_AXIS));
+		ret.worker.addFetchListener(ret);
 		return ret;
 	}
 
@@ -63,6 +73,10 @@ public class DownloadView extends JPanel implements ActionListener {
 		String pn = doc.getBackendDocid();
 		int vc = doc.getDetails().getAppDetails().getVersionCode();
 		return archive.fileUnder(pn, vc).exists();
+	}
+	
+	public void addFetchListener(FetchListener listener) {
+		worker.addFetchListener(listener);
 	}
 
 	public void startWorker() {
@@ -78,9 +92,31 @@ public class DownloadView extends JPanel implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent event) {
-		if (event.getSource() == worker.cancel) {
+		if (event.getSource() == cancel) {
 			worker.cancel(true);
 		}
 	}
 
+	public boolean onChunk(Object src, long numBytes) {
+		float percent = (float) numBytes / (float) worker.totalBytes;
+		int tmp = (int)(100f*percent);
+		progress.setValue(tmp);
+		progress.setString(tmp+"%");
+		return false;
+	}
+
+	public void onComplete(Object src) {
+		progress.setString("Complete");
+		cancel.setEnabled(false);
+	}
+
+	public void onFailure(Object src, Exception e) {
+		progress.setString("Error!");
+		cancel.setEnabled(false);
+	}
+
+	public void onAborted(Object src) {
+		progress.setString("Cancelled");
+		cancel.setEnabled(false);
+	}
 }

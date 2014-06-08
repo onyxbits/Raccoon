@@ -1,5 +1,6 @@
 package de.onyxbits.raccoon.io;
 
+
 public interface FetchListener {
 
 	/**
@@ -30,4 +31,12 @@ public interface FetchListener {
 	 *          the exception that was thrown.
 	 */
 	public void onFailure(Object src, Exception e);
+
+	/**
+	 * Called to signal that the download was aborted by the user.
+	 * 
+	 * @param src
+	 *          who is calling
+	 */
+	public void onAborted(Object src);
 }

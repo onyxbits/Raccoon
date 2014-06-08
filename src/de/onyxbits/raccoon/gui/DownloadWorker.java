@@ -1,11 +1,11 @@
 package de.onyxbits.raccoon.gui;
 
+import java.io.File;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.JButton;
-import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
@@ -13,16 +13,16 @@ import de.onyxbits.raccoon.io.Archive;
 import de.onyxbits.raccoon.io.FetchListener;
 import de.onyxbits.raccoon.io.FetchService;
 
-class DownloadWorker extends SwingWorker<Exception, Integer> implements FetchListener {
+class DownloadWorker extends SwingWorker<Object, Long> implements FetchListener {
 
 	private Archive archive;
 	private DocV2 app;
-	protected JProgressBar progress;
-	protected JButton cancel;
 
-	private long totalBytes;
+	protected long totalBytes;
+	private long received;
 	private Exception failure;
 	private SearchWorker next;
+	private Vector<FetchListener> listeners;
 
 	/**
 	 * Create an new worker
@@ -37,25 +37,36 @@ class DownloadWorker extends SwingWorker<Exception, Integer> implements FetchLis
 	public DownloadWorker(DocV2 app, Archive archive, SearchWorker next) {
 		this.app = app;
 		this.archive = archive;
-		this.next=next;
-		this.progress = new JProgressBar(0, 100);
-		this.cancel = new JButton("Cancel");
-		this.progress.setStringPainted(true);
-		this.progress.setString("Waiting");
+		this.next = next;
+		this.listeners = new Vector<FetchListener>();
+	}
+
+	public void addFetchListener(FetchListener listener) {
+		if (!listeners.contains(listener)) {
+			listeners.add(listener);
+		}
+	}
+
+	public File getTarget() {
+		return archive.fileUnder(app.getBackendDocid(), app.getDetails().getAppDetails()
+				.getVersionCode());
 	}
 
 	@Override
-	protected void process(List<Integer> chunks) {
+	protected void process(List<Long> chunks) {
 		if (!isCancelled()) {
-			int val = chunks.get(chunks.size() - 1);
-			progress.setValue(chunks.get(chunks.size() - 1));
-			progress.setString(val + "%");
+			for (FetchListener fl : listeners) {
+				// NOTE: get it straight from the horses mouth instead of figuring out
+				// which chunk contains the latest value (which it doesn't anyway).
+				// There is not potential for a race condition here.
+				fl.onChunk(this, received);
+			}
 		}
 	}
 
 	@Override
-	protected Exception doInBackground() throws Exception {
-		publish(0); // Just so there is no delay in the UI updating
+	protected Object doInBackground() throws Exception {
+		publish(0l); // Just so there is no delay in the UI updating
 		String pn = app.getBackendDocid();
 		int vc = app.getDetails().getAppDetails().getVersionCode();
 		int ot = app.getOffer(0).getOfferType();
@@ -66,33 +77,38 @@ class DownloadWorker extends SwingWorker<Exception, Integer> implements FetchLis
 
 	@Override
 	protected void done() {
-		progress.setString("Complete");
 		try {
 			get();
 			if (failure != null) {
-				progress.setString("Failure!");
+				for (FetchListener fl : listeners) {
+					fl.onFailure(this, failure);
+				}
+			}
+			else {
+				for (FetchListener fl : listeners) {
+					fl.onComplete(this);
+				}
 			}
 		}
 		catch (CancellationException e) {
-			progress.setString("Cancelled");
+			for (FetchListener fl : listeners) {
+				fl.onAborted(this);
+			}
 		}
 		catch (ExecutionException e) {
-			progress.setString("Error!");
 			e.printStackTrace();
 		}
 		catch (InterruptedException e) {
-			progress.setString("Aborted");
 		}
-		cancel.setEnabled(false);
-		
-		if (next!=null) {
+
+		if (next != null) {
 			next.execute();
 		}
 	}
 
 	public boolean onChunk(Object src, long numBytes) {
-		float percent = (float) numBytes / (float) totalBytes;
-		publish((int) (100f * percent));
+		received = numBytes;
+		publish(numBytes);
 		return isCancelled();
 	}
 
@@ -102,6 +118,9 @@ class DownloadWorker extends SwingWorker<Exception, Integer> implements FetchLis
 
 	public void onFailure(Object src, Exception e) {
 		failure = e;
+	}
+
+	public void onAborted(Object src) {
 	}
 
 }

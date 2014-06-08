@@ -39,9 +39,9 @@ public class Archive {
 	private static final String APKDIR = "apk_storage";
 
 	/**
-	 * Name of the logdir
+	 * Name of the logdir (relative to the root dir).
 	 */
-	private static final String LOGDIR = "logs";
+	public static final String LOGDIR = "logs";
 
 	/**
 	 * Name of the file containing the credentials for connecting to GPlay.
@@ -53,11 +53,6 @@ public class Archive {
 	 */
 	public static final String NETCFG = "network.cfg";
 
-	/**
-	 * Name of the file where downloads should be logged.
-	 */
-	private static final String DOWNLOADCOMPLETELOG = "download-complete.txt";
-
 	public static final String PASSWORD = "password";
 	public static final String USERID = "userid";
 	public static final String ANDROIDID = "androidid";
@@ -65,7 +60,6 @@ public class Archive {
 	public static final String PROXYPORT = "proxyport";
 
 	private File root;
-	private DownloadLogger downloadLogger;
 
 	private Properties credentials;
 
@@ -154,7 +148,6 @@ public class Archive {
 		catch (Exception e) {
 			//e.printStackTrace();
 		}
-		downloadLogger = new DownloadLogger(new File(new File(root, LOGDIR), DOWNLOADCOMPLETELOG));
 	}
 
 	/**
@@ -245,14 +238,6 @@ public class Archive {
 		return tmp;
 	}
 
-	/**
-	 * Get the download logger.
-	 * 
-	 * @return the downloadlogger.
-	 */
-	public DownloadLogger getDownloadLogger() {
-		return downloadLogger;
-	}
 
 	/**
 	 * Turn a raw filesize into a human readable one

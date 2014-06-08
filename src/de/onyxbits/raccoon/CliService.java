@@ -1,6 +1,7 @@
 package de.onyxbits.raccoon;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -12,6 +13,7 @@ import org.apache.commons.cli.ParseException;
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 
 import de.onyxbits.raccoon.io.Archive;
+import de.onyxbits.raccoon.io.DownloadLogger;
 import de.onyxbits.raccoon.io.FetchService;
 import de.onyxbits.raccoon.io.UpdateListener;
 import de.onyxbits.raccoon.io.UpdateService;
@@ -25,6 +27,9 @@ import de.onyxbits.raccoon.io.UpdateService;
 public class CliService implements UpdateListener, Runnable {
 
 	private String[] cmdLine;
+	private DownloadLogger logger;
+	private Archive destination;
+	private File current;
 
 	public CliService(String[] cmdLine) {
 		this.cmdLine = cmdLine;
@@ -36,16 +41,27 @@ public class CliService implements UpdateListener, Runnable {
 	}
 
 	public void onComplete(Object src) {
-		System.out.println("Success");
+		try {
+			logger.addEntry(current);
+			System.out.println("Success");
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void onFailure(Object src, Exception e) {
-		System.err.println("Failure: "+e.getMessage());
+		System.err.println("Failure: " + e.getMessage());
 	}
 
 	public int onBeginDownload(Object src, DocV2 doc) {
-		System.out.println("Starting: "+doc.getTitle());
+		System.out.println("Starting: " + doc.getTitle());
+		current = destination.fileUnder(doc.getBackendDocid(), doc.getDetails().getAppDetails()
+				.getVersionCode());
 		return UpdateListener.PROCEED;
+	}
+
+	public void onAborted(Object src) {
 	}
 
 	public void run() {
@@ -69,7 +85,6 @@ public class CliService implements UpdateListener, Runnable {
 			System.err.println(e1.getMessage());
 			System.exit(1);
 		}
-		Archive dest = null;
 
 		if (cmd.hasOption('h')) {
 			new HelpFormatter().printHelp("Raccoon", opts);
@@ -77,19 +92,21 @@ public class CliService implements UpdateListener, Runnable {
 		}
 
 		if (cmd.hasOption('a')) {
-			dest = new Archive(new File(cmd.getOptionValue('a')));
+			destination = new Archive(new File(cmd.getOptionValue('a')));
+			logger = new DownloadLogger(destination);
+			logger.clear();
 		}
 
 		if (cmd.hasOption("u")) {
-			if (dest == null) {
+			if (destination == null) {
 				System.err.println("No archive specified!");
 				System.exit(1);
 			}
-			new UpdateService(dest, this).run();
+			new UpdateService(destination, this).run();
 		}
 
 		if (cmd.hasOption("f")) {
-			if (dest == null) {
+			if (destination == null) {
 				System.err.println("No archive specified!");
 				System.exit(1);
 			}
@@ -98,7 +115,7 @@ public class CliService implements UpdateListener, Runnable {
 				String appId = tmp[0];
 				int vc = Integer.parseInt(tmp[1]);
 				int ot = Integer.parseInt(tmp[2]);
-				new FetchService(dest, appId, vc, ot, this).run();
+				new FetchService(destination, appId, vc, ot, this).run();
 			}
 			catch (Exception e) {
 				System.err.println("Format: packagename,versioncode,offertype");
