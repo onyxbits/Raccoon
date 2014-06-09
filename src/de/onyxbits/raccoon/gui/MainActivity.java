@@ -48,6 +48,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	private JMenuItem open;
 	private JMenuItem search;
 	private JMenuItem close;
+	private JMenuItem updates;
 	private JMenuItem downloads;
 	private JMenuItem contents;
 
@@ -55,6 +56,8 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	private ListView downloadList;
 	private JScrollPane downloadListScroll;
 	private DownloadLogger logger;
+	
+	private SearchView searchView;
 
 	private Archive archive;
 	private static Vector<MainActivity> all = new Vector<MainActivity>();
@@ -79,8 +82,12 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK));
 		close = new JMenuItem("Close", 'c');
 		close.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Event.CTRL_MASK));
+		updates = new JMenuItem("Updates",'u');
+		updates.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, Event.CTRL_MASK));
+		updates.setEnabled(false);
 		file.add(open);
 		file.add(close);
+		file.add(updates);
 		file.add(quit);
 		bar.add(file);
 
@@ -118,6 +125,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		search.addActionListener(this);
 		contents.addActionListener(this);
 		downloads.addActionListener(this);
+		updates.addActionListener(this);
 		addWindowListener(this);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		doMount(archive);
@@ -146,6 +154,9 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		}
 		if (src == contents) {
 			BrowseUtil.openUrl("http://www.onyxbits.de/raccoon/handbook");
+		}
+		if (src==updates) {
+			searchView.doUpdateSearch();
 		}
 	}
 
@@ -185,9 +196,10 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 			views.addTab("Archive setup", InitView.create(this, archive));
 		}
 		else {
-			SearchView sv = SearchView.create(this, archive);
-			views.addTab("Search", sv);
-			views.addChangeListener(sv);
+			searchView = SearchView.create(this, archive);
+			updates.setEnabled(true);
+			views.addTab("Search", searchView);
+			views.addChangeListener(searchView);
 			search.setEnabled(true);
 			downloads.setEnabled(true);
 			downloadListScroll = new JScrollPane();
@@ -196,7 +208,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 			views.addTab("Downloads", downloadListScroll);
 			Preferences prefs = Preferences.userNodeForPackage(getClass());
 			prefs.put(LASTARCHIVE, archive.getRoot().getAbsolutePath());
-			SwingUtilities.invokeLater(sv);
+			SwingUtilities.invokeLater(searchView);
 		}
 	}
 

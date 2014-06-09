@@ -152,6 +152,13 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		cardLayout.show(main, CARDRESULTS);
 		results.setViewportView(listing);
 	}
+	
+	public void doUpdateSearch() {
+		query.setEnabled(false);
+		page.setEnabled(false);
+		cardLayout.show(main, CARDPROGRESS);
+		new SearchWorker(archive, null, this).execute();
+	}
 
 	protected void doDownload(DownloadView d) {
 		if (d.isDownloaded()) {

@@ -19,12 +19,12 @@ import de.onyxbits.raccoon.App;
 import de.onyxbits.raccoon.io.Archive;
 
 /**
- * Perform a search query.
+ * A background task for performing searches on Google Play.
  * 
  * @author patrick
  * 
  */
-class SearchWorker extends SwingWorker<BulkDetailsResponse, String> {
+class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 
 	private String search;
 	private SearchView searchView;
@@ -35,15 +35,12 @@ class SearchWorker extends SwingWorker<BulkDetailsResponse, String> {
 
 	/**
 	 * 
-	 * @param androidId
-	 *          device id
-	 * @param userId
-	 *          username
-	 * @param password
-	 *          password
+	 * @param archive
+	 *          storage area.
 	 * @param search
 	 *          what to submit to google (ideally a packagename, but the search
-	 *          engine also accpets anything else)
+	 *          engine also accepts anything else). May be null to search for
+	 *          updates.
 	 * @param callback
 	 *          where to report back when the results are in.
 	 */
@@ -55,10 +52,6 @@ class SearchWorker extends SwingWorker<BulkDetailsResponse, String> {
 		this.localization = Locale.getDefault().getCountry();
 		if (callback == null) {
 			throw new NullPointerException();
-		}
-
-		if (search == null || search.length() == 0) {
-			throw new IllegalArgumentException("Bad search query");
 		}
 	}
 
@@ -99,7 +92,31 @@ class SearchWorker extends SwingWorker<BulkDetailsResponse, String> {
 	}
 
 	@Override
-	protected BulkDetailsResponse doInBackground() throws Exception {
+	protected Vector<BulkDetailsEntry> doInBackground() throws Exception {
+		if (search != null) {
+			return doQuerySearch();
+		}
+		else {
+			return doUpdateSearch();
+		}
+	}
+
+	private Vector<BulkDetailsEntry> doUpdateSearch() throws Exception {
+		GooglePlayAPI service = App.createConnection(archive);
+		BulkDetailsResponse response = service.bulkDetails(archive.list());
+		Vector<BulkDetailsEntry> ret = new Vector<BulkDetailsEntry>();
+		for (BulkDetailsEntry bulkDetailsEntry : response.getEntryList()) {
+			DocV2 doc = bulkDetailsEntry.getDoc();
+			String pn = doc.getBackendDocid();
+			int vc = doc.getDetails().getAppDetails().getVersionCode();
+			if (!archive.fileUnder(pn, vc).exists()) {
+				ret.add(bulkDetailsEntry);
+			}
+		}
+		return ret;
+	}
+
+	private Vector<BulkDetailsEntry> doQuerySearch() throws Exception {
 		GooglePlayAPI service = App.createConnection(archive);
 		service.setLocalization(localization);
 		SearchResponse response = service.search(search, offset, limit);
@@ -111,23 +128,33 @@ class SearchWorker extends SwingWorker<BulkDetailsResponse, String> {
 				apps.add(all.getChild(i).getBackendDocid());
 			}
 		}
-		return service.bulkDetails(apps);
+		BulkDetailsResponse bdr = service.bulkDetails(apps);
+		Vector<BulkDetailsEntry> ret = new Vector<BulkDetailsEntry>();
+		for (int i = 0; i < bdr.getEntryCount(); i++) {
+			ret.add(bdr.getEntry(i));
+		}
+		return ret;
 	}
 
 	@Override
 	protected void done() {
 		try {
-			BulkDetailsResponse response = get();
-			if (response.getEntryCount() > 0) {
+			Vector<BulkDetailsEntry> response = get();
+			if (response.size() > 0) {
 				ListView listing = new ListView();
-				for (BulkDetailsEntry bulkDetailsEntry : response.getEntryList()) {
+				for (BulkDetailsEntry bulkDetailsEntry : response) {
 					DocV2 doc = bulkDetailsEntry.getDoc();
 					listing.add(ResultView.create(searchView, doc));
 				}
 				searchView.doResultList(listing);
 			}
 			else {
-				searchView.doMessage("No results");
+				if (search == null) {
+					searchView.doMessage("No updates");
+				}
+				else {
+					searchView.doMessage("No results");
+				}
 			}
 		}
 		catch (InterruptedException e) {
