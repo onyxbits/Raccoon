@@ -158,6 +158,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 			BrowseUtil.openUrl("http://www.onyxbits.de/raccoon/handbook");
 		}
 		if (src==updates) {
+			views.setSelectedIndex(0);
 			searchView.doUpdateSearch();
 		}
 	}
