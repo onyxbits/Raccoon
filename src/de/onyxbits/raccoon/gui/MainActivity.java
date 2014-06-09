@@ -18,6 +18,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -86,8 +87,9 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		updates.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, Event.CTRL_MASK));
 		updates.setEnabled(false);
 		file.add(open);
-		file.add(close);
 		file.add(updates);
+		file.add(close);
+		file.add(new JSeparator());
 		file.add(quit);
 		bar.add(file);
 
