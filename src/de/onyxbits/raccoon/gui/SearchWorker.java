@@ -138,27 +138,14 @@ class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 
 	@Override
 	protected void done() {
+		Vector<BulkDetailsEntry> response = new Vector<BulkDetailsEntry>();
 		try {
-			Vector<BulkDetailsEntry> response = get();
-			if (response.size() > 0) {
-				ListView listing = new ListView();
-				for (BulkDetailsEntry bulkDetailsEntry : response) {
-					DocV2 doc = bulkDetailsEntry.getDoc();
-					listing.add(ResultView.create(searchView, doc));
-				}
-				searchView.doResultList(listing);
-			}
-			else {
-				if (search == null) {
-					searchView.doMessage("No updates");
-				}
-				else {
-					searchView.doMessage("No results");
-				}
-			}
+			response = get();
 		}
 		catch (InterruptedException e) {
 			searchView.doMessage("Search aborted");
+			SwingUtilities.invokeLater(searchView);
+			return;
 		}
 		catch (ExecutionException e) {
 			// Stuff that happened on the backgroundthread.
@@ -169,6 +156,37 @@ class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 			}
 			else {
 				searchView.doMessage(e.getMessage());
+			}
+			SwingUtilities.invokeLater(searchView);
+			return;
+		}
+
+		ListView listing = new ListView();
+		for (BulkDetailsEntry bulkDetailsEntry : response) {
+			DocV2 doc = bulkDetailsEntry.getDoc();
+			try {
+				listing.add(ResultView.create(searchView, doc));
+			}
+			catch (Exception e) {
+				// We likely get here when trying to update an archive and the user
+				// either had the brilliant idea of creating his/her own directories
+				// in the APK storage or if a stored app is no longer listed on
+				// Google. Maybe, the user even thought it clever to dump externally
+				// downloaded apps into the storage. Design decision: silently
+				// ignore, don't bother alerting the user and most certainly don't
+				// try to automatically fix anything.
+			}
+		}
+
+		if (listing.getComponentCount() > 0) {
+			searchView.doResultList(listing);
+		}
+		else {
+			if (search == null) {
+				searchView.doMessage("No updates");
+			}
+			else {
+				searchView.doMessage("No results");
 			}
 		}
 		SwingUtilities.invokeLater(searchView);

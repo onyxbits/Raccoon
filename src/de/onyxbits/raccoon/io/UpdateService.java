@@ -66,8 +66,19 @@ public class UpdateService implements Runnable {
 		for (BulkDetailsEntry bulkDetailsEntry : response.getEntryList()) {
 			DocV2 doc = bulkDetailsEntry.getDoc();
 			String pn = doc.getBackendDocid();
-			int vc = doc.getDetails().getAppDetails().getVersionCode();
-			int ot = doc.getOffer(0).getOfferType();
+			int vc = -1;
+			int ot = -1;
+			try {
+				vc = doc.getDetails().getAppDetails().getVersionCode();
+				ot = doc.getOffer(0).getOfferType();
+			}
+			catch (Exception e) {
+				// Somethign in the apk storage did not resolve. This could be an app
+				// that was puleld from Google Play or a directory s/he created. Design
+				// decission: ignore silently. In the first case the user doesn't want
+				// to bother in the second, s/hedoes not need to.
+				continue;
+			}
 			File target = archive.fileUnder(pn, vc);
 			if (!target.exists()) {
 				if (callback != null) {
