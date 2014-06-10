@@ -47,7 +47,7 @@ public class DownloadLogger {
 	public synchronized void addEntry(File file) throws IOException {
 		completeLog.getParentFile().mkdirs();
 		FileWriter fw = new FileWriter(completeLog, true);
-		fw.write(file.getAbsolutePath() + "\n");
+		fw.write(completeLog.getAbsolutePath() + "\n");
 		fw.close();
 	}
 }
