@@ -1,0 +1,35 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+*.html text diff=html
+*.htm  text diff=html
+
+# These will always have LF line endings (for bash/sh shebangs)
+*.command text eol=lf
+*.sh      text eol=lf
+*.py      text eol=lf diff=python
+
+# These will always have CRLF line endings
+*.bat      text eol=crlf
+*.ini      text eol=crlf
+*.manifest text eol=crlf
+
+# Custom for Visual Studio
+*.cs     diff=csharp
+*.sln    merge=union
+*.csproj merge=union
+*.vbproj merge=union
+*.fsproj merge=union
+*.dbproj merge=union
+
+# Standard to msysgit
+*.doc	 diff=astextplain
+*.DOC	 diff=astextplain
+*.docx diff=astextplain
+*.DOCX diff=astextplain
+*.dot  diff=astextplain
+*.DOT  diff=astextplain
+*.pdf  diff=astextplain
+*.PDF	 diff=astextplain
+*.rtf	 diff=astextplain
+*.RTF	 diff=astextplain
