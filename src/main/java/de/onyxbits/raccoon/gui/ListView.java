@@ -45,7 +45,7 @@ class ListView extends JPanel implements Scrollable {
 	}
 
 	public void add(JComponent comp) {
-		comp.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2, false));
+		comp.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
 		comp.getInsets().bottom = 10;
 		comp.getInsets().top = 10;
 		comp.getInsets().right = 10;
