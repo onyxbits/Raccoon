@@ -1,0 +1,99 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.onyxbits</groupId>
+	<artifactId>raccoon</artifactId>
+	<version>2.0</version>
+	<name>Raccoon</name>
+
+	<properties>
+		<jdk.version>1.6</jdk.version>
+	</properties>
+
+	<!--
+	Don't include meta-packages as dependencies.
+	They cause the "jar-with-dependencies" task
+	to throw an error about "Negative Time",
+	probably for setting timestamps on their
+	non-existent class files.
+	-->
+	<dependencies>
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-cli</groupId>
+			<artifactId>commons-cli</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.2.2</version>
+		</dependency>
+	</dependencies>
+  
+	<build>
+	<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>3.1</version>
+			<configuration>
+				<target>1.6</target>
+				<compilerArgument>-Xlint:unchecked</compilerArgument>
+			</configuration>
+		</plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-assembly-plugin</artifactId>
+			<version>2.4</version>  <!-- Plexus Archiver had bad tar support before. -->
+			<dependencies>
+				<dependency> <!-- Newer Archiver than required fixing tar bugs. -->
+					<groupId>org.codehaus.plexus</groupId>
+					<artifactId>plexus-archiver</artifactId>
+					<version>2.4.3</version>
+				</dependency>
+				<dependency> <!-- Newer IO than Archiver required fixing another bug. -->
+					<groupId>org.codehaus.plexus</groupId>
+					<artifactId>plexus-io</artifactId>
+					<version>2.0.8</version>
+				</dependency>
+			</dependencies>
+			<executions>
+				<execution>  <!-- Build jar. -->
+					<id>jar-with-dependencies</id>
+					<phase>package</phase>
+					<goals>
+						<goal>single</goal>
+					</goals>
+					<configuration>
+						<descriptorRefs>
+							<descriptorRef>jar-with-dependencies</descriptorRef>
+						</descriptorRefs>
+						<archive>
+							<manifest>
+								<mainClass>de.onyxbits.raccoon.App</mainClass>
+							</manifest>
+						</archive>
+						<finalName>raccoon</finalName> <!-- Manually sets the jar's name. -->
+						<appendAssemblyId>false</appendAssemblyId>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+  </build>
+
+</project>
