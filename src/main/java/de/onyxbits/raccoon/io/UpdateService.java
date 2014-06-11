@@ -68,13 +68,15 @@ public class UpdateService implements Runnable {
 			String pn = doc.getBackendDocid();
 			int vc = -1;
 			int ot = -1;
+			boolean paid=false;
 			try {
 				vc = doc.getDetails().getAppDetails().getVersionCode();
 				ot = doc.getOffer(0).getOfferType();
+				paid = doc.getOffer(0).getCheckoutFlowRequired();
 			}
 			catch (Exception e) {
 				// Somethign in the apk storage did not resolve. This could be an app
-				// that was puleld from Google Play or a directory s/he created. Design
+				// that was pulled from Google Play or a directory s/he created. Design
 				// decission: ignore silently. In the first case the user doesn't want
 				// to bother in the second, s/hedoes not need to.
 				continue;
@@ -91,7 +93,7 @@ public class UpdateService implements Runnable {
 						}
 					}
 				}
-				FetchService fs = new FetchService(archive, pn, vc, ot, callback);
+				FetchService fs = new FetchService(archive, pn, vc, ot, paid, callback);
 				fs.run();
 			}
 		}

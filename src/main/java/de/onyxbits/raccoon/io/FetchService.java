@@ -22,6 +22,7 @@ public class FetchService implements Runnable {
 	private GooglePlayAPI service;
 	private int offerType;
 	private FetchListener callback;
+	private boolean paid;
 
 	/**
 	 * Create a new downloader
@@ -34,23 +35,32 @@ public class FetchService implements Runnable {
 	 *          app version code
 	 * @param offerType
 	 *          app offertype
+	 * @param paid
+	 *          true if this is a paid application.
 	 * @param callback
 	 *          optional callback to notify about progress (may be null).
 	 */
-	public FetchService(Archive archive, String appId, int versionCode, int offerType,
+	public FetchService(Archive archive, String appId, int versionCode, int offerType, boolean paid,
 			FetchListener callback) {
 		this.appId = appId;
 		this.versionCode = versionCode;
 		this.archive = archive;
 		this.offerType = offerType;
 		this.callback = callback;
+		this.paid=paid;
 	}
 
 	public void run() {
 		try {
 			service = App.createConnection(archive);
 			File target = archive.fileUnder(appId, versionCode);
-			InputStream in = service.download(appId, versionCode, offerType);
+			InputStream in = null;
+			if (paid) {
+				in = service.delivery(appId, versionCode, offerType);
+			}
+			else {
+				in = service.download(appId, versionCode, offerType);
+			}
 
 			target.getParentFile().mkdirs();
 			FileOutputStream out = new FileOutputStream(target);

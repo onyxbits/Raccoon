@@ -118,10 +118,6 @@ public class ResultView extends JPanel implements ActionListener {
 		buttons.setLayout(new GridLayout(3, 1, 0, 4));
 		buttons.setOpaque(false);
 		download = new JButton("Download");
-		if (doc.getOffer(0).getCheckoutFlowRequired()) {
-			// Paid apps - no idea how to do a checkout.
-			download.setEnabled(false);
-		}
 		details = new JButton("Google Play");
 		permissions = new JButton("Permissions");
 		buttons.add(download);

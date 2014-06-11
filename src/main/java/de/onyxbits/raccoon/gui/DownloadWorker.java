@@ -71,7 +71,8 @@ class DownloadWorker extends SwingWorker<Object, Long> implements FetchListener 
 		int vc = app.getDetails().getAppDetails().getVersionCode();
 		int ot = app.getOffer(0).getOfferType();
 		totalBytes = app.getDetails().getAppDetails().getInstallationSize();
-		new FetchService(archive, pn, vc, ot, this).run();
+		boolean paid = app.getOffer(0).getCheckoutFlowRequired();
+		new FetchService(archive, pn, vc, ot, paid, this).run();
 		return null;
 	}
 
