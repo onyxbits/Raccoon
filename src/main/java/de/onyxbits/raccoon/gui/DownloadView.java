@@ -39,7 +39,7 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		this.doc = doc;
 		this.archive = archive;
 		this.cancel = new JButton("Cancel");
-		this.progress = new JProgressBar(0,100);
+		this.progress = new JProgressBar(0, 100);
 		this.progress.setString("Waiting");
 		this.progress.setStringPainted(true);
 		String pn = doc.getBackendDocid();
@@ -74,7 +74,7 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		int vc = doc.getDetails().getAppDetails().getVersionCode();
 		return archive.fileUnder(pn, vc).exists();
 	}
-	
+
 	public void addFetchListener(FetchListener listener) {
 		worker.addFetchListener(listener);
 	}
@@ -99,9 +99,9 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 
 	public boolean onChunk(Object src, long numBytes) {
 		float percent = (float) numBytes / (float) worker.totalBytes;
-		int tmp = (int)(100f*percent);
+		int tmp = (int) (100f * percent);
 		progress.setValue(tmp);
-		progress.setString(tmp+"%");
+		progress.setString(tmp + "%");
 		return false;
 	}
 
@@ -111,7 +111,12 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 	}
 
 	public void onFailure(Object src, Exception e) {
-		progress.setString("Error!");
+		if (e instanceof IndexOutOfBoundsException) {
+			progress.setString("Not paid for");
+		}
+		else {
+			progress.setString("Error!");
+		}
 		cancel.setEnabled(false);
 	}
 
