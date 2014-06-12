@@ -68,6 +68,8 @@ public class CliService implements UpdateListener, Runnable {
 		Option help = new Option("h", false, "Show commandline usage");
 		Option update = new Option("u", false, "Update archive (requires -a).");
 		Option archive = new Option("a", true, "Archive to work on");
+		Option paid = new Option("p", true,
+				"Use with -f to download paid apps (the app must already have been bought).");
 		archive.setArgName("directory");
 
 		Option fetch = new Option("f", true, "Fetch an app (requires -a).");
@@ -77,6 +79,7 @@ public class CliService implements UpdateListener, Runnable {
 		opts.addOption(help);
 		opts.addOption(update);
 		opts.addOption(fetch);
+		opts.addOption(paid);
 		CommandLine cmd = null;
 		try {
 			cmd = new BasicParser().parse(opts, cmdLine);
@@ -115,7 +118,7 @@ public class CliService implements UpdateListener, Runnable {
 				String appId = tmp[0];
 				int vc = Integer.parseInt(tmp[1]);
 				int ot = Integer.parseInt(tmp[2]);
-				new FetchService(destination, appId, vc, ot, this).run();
+				new FetchService(destination, appId, vc, ot, cmd.hasOption('p'), this).run();
 			}
 			catch (Exception e) {
 				System.err.println("Format: packagename,versioncode,offertype");
