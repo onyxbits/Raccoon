@@ -36,11 +36,10 @@ public class InitWorker extends SwingWorker<String, String> {
 		this.archive = a;
 		this.initView = callback;
 	}
-	
+
 	protected void process(List<String> chunks) {
 		initView.doInProgress();
 	}
-	
 
 	@Override
 	protected String doInBackground() throws Exception {
@@ -48,9 +47,14 @@ public class InitWorker extends SwingWorker<String, String> {
 		// Register the account with GPlay.
 		GooglePlayAPI service = App.createConnection(archive);
 		service.setLocalization(Locale.getDefault().getCountry());
-		service.checkin();
-		service.login();
-		service.uploadDeviceConfig();
+		if ("".equals(archive.getAndroidId())) {
+			service.checkin();
+			service.login();
+			service.uploadDeviceConfig();
+		}
+		else {
+			service.login();
+		}
 		// Persist credentials through a separate object...
 		Archive a = new Archive(archive.getRoot());
 		a.setUserId(archive.getUserId());
@@ -75,7 +79,7 @@ public class InitWorker extends SwingWorker<String, String> {
 			if (e.getCause() instanceof GooglePlayException) {
 				initView.doErrorMessage();
 			}
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 }
