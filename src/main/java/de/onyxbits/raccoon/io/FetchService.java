@@ -51,9 +51,9 @@ public class FetchService implements Runnable {
 	}
 
 	public void run() {
+		File target = archive.fileUnder(appId, versionCode);
 		try {
 			service = App.createConnection(archive);
-			File target = archive.fileUnder(appId, versionCode);
 			InputStream in = null;
 			if (paid) {
 				in = service.delivery(appId, versionCode, offerType);
@@ -88,6 +88,7 @@ public class FetchService implements Runnable {
 			}
 		}
 		catch (Exception e) {
+			target.delete();
 			if (callback != null) {
 				callback.onFailure(this, e);
 			}
