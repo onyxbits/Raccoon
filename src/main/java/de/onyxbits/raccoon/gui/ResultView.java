@@ -10,9 +10,13 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
@@ -53,6 +57,29 @@ public class ResultView extends JPanel implements ActionListener {
 
 	private boolean showingPermissions;
 
+	private static Icon iconNetwork;
+	private static Icon iconIap;
+	private static Icon iconLocation;
+	private static Icon iconMicrophone;
+	private static Icon iconPersonal;
+	private static Icon iconPhone;
+	private static Icon iconCamera;
+	private static Icon iconSystem;
+	private static Icon iconStorage;
+
+	static {
+		Class<?> clazz = new Object().getClass();
+		iconNetwork = new ImageIcon(clazz.getResource("/badges/wi-fi-outline.png"));
+		iconIap = new ImageIcon(clazz.getResource("/badges/shopping-cart.png"));
+		iconLocation = new ImageIcon(clazz.getResource("/badges/location-outline.png"));
+		iconMicrophone = new ImageIcon(clazz.getResource("/badges/microphone-outline.png"));
+		iconPersonal = new ImageIcon(clazz.getResource("/badges/contacts.png"));
+		iconPhone = new ImageIcon(clazz.getResource("/badges/phone-outline.png"));
+		iconCamera = new ImageIcon(clazz.getResource("/badges/camera-outline.png"));
+		iconSystem = new ImageIcon(clazz.getResource("/badges/spanner-outline.png"));
+		iconStorage = new ImageIcon(clazz.getResource("/badges/folder.png"));
+	}
+
 	/**
 	 * Construct a new app listing
 	 * 
@@ -75,9 +102,6 @@ public class ResultView extends JPanel implements ActionListener {
 		String pack = doc.getBackendDocid();
 		String author = doc.getCreator();
 		String price = doc.getOffer(0).getFormattedAmount();
-		if (hasInAppPurchase(doc)) {
-			price += " (+IAP)";
-		}
 		String date = doc.getDetails().getAppDetails().getUploadDate();
 		String size = Archive.humanReadableByteCount(doc.getDetails().getAppDetails()
 				.getInstallationSize(), true);
@@ -128,13 +152,143 @@ public class ResultView extends JPanel implements ActionListener {
 		entry.setOpaque(false);
 		entry.setMargin(new Insets(10, 10, 10, 10));
 		add(entry);
+		JPanel outer = new JPanel(); // Needed to simplify the layout code.
+		outer.setOpaque(false);
 		JPanel container = new JPanel();
+		container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 		container.setOpaque(false);
 		container.add(buttons);
+		container.add(Box.createVerticalStrut(10));
+		container.add(createBadges(perms));
+		container.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		outer.add(container);
 		JSeparator sep = new JSeparator(JSeparator.VERTICAL);
 		sep.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		add(sep);
-		add(container);
+		add(outer);
+	}
+
+	private JPanel createBadges(List<String> perms) {
+		JPanel ret = new JPanel();
+		ret.setLayout(new GridLayout(0, 3));
+		ret.setOpaque(false);
+		String[][] groups = {
+				{
+						"android.permission.INTERNET",
+						"android.permission.ACCESS_NETWORK_STATE",
+						"android.permission.CHANGE_NETWORK_STATE",
+						"android.permission.CHANGE_WIFI_MULTICAST_STATE",
+						"android.permission.CHANGE_WIFI_STATE",
+						"android.permission.ACCESS_WIFI_STATE",
+						"android.permission.BIND_VPN_SERVICE" },
+				{ "com.android.vending.BILLING" },
+				{ "android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION" },
+				{ "android.permission.RECORD_AUDIO" },
+				{ "android.permission.CAMERA" },
+				{
+						"android.permission.CALL_PHONE",
+						"android.permission.PROCESS_OUTGOING_CALLS",
+						"android.permission.READ_CALL_LOG",
+						"android.permission.READ_PHONE_STATE",
+						"android.permission.READ_SMS",
+						"android.permission.RECEIVE_SMS",
+						"android.permission.SEND_SMS",
+						"android.permission.USE_SIP",
+						"android.permission.WRITE_CALL_LOG",
+						"android.permission.WRITE_SMS" },
+				{
+						"android.permission.BIND_DEVICE_ADMIN",
+						"android.permission.CHANGE_CONFIGURATION",
+						"android.permission.DISABLE_KEYGUARD",
+						"android.permission.EXPAND_STATUS_BAR",
+						"android.permission.GET_TASKS",
+						"android.permission.KILL_BACKGROUND_PROCESSES",
+						"android.permission.MODIFY_AUDIO_SETTINGS",
+						"android.permission.RECEIVE_BOOT_COMPLETED",
+						"android.permission.REORDER_TASKS",
+						"android.permission.SYSTEM_ALERT_WINDOW",
+						"android.permission.SET_WALLPAPER",
+						"com.android.launcher.permission.UNINSTALL_SHORTCUT" },
+				{
+						"android.permission.GET_ACCOUNTS",
+						"android.permission.READ_PHONE_STATE",
+						"android.permission.GLOBAL_SEARCH",
+						"android.permission.MANAGE_DOCUMENTS",
+						"android.permission.READ_CALENDAR",
+						"android.permission.READ_CALL_LOG",
+						"android.permission.READ_CONTACTS",
+						"com.android.browser.permission.READ_HISTORY_BOOKMARKS",
+						"android.permission.READ_LOGS",
+						"android.permission.READ_USER_DICTIONARY",
+						"android.permission.USE_CREDENTIALS",
+						"android.permission.WRITE_CALENDAR",
+						"android.permission.WRITE_CALL_LOG",
+						"android.permission.WRITE_CONTACTS",
+						"com.android.browser.permission.WRITE_HISTORY_BOOKMARKS",
+						"android.permission.WRITE_SOCIAL_STREAM",
+						"android.permission.READ_PROFILE",
+						"android.permission.USE_CREDENTIALS",
+						"android.permission.WRITE_USER_DICTIONARY" },
+				{ "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE" } };
+		for (int x = 0; x < groups.length; x++) {
+			for (int y = 0; y < groups[x].length; y++) {
+				if (x == 0 && perms.contains(groups[x][y])) {
+					JLabel lbl = new JLabel(iconNetwork);
+					lbl.setToolTipText("Internet access");
+					ret.add(lbl);
+					break;
+				}
+				if (x == 1 && perms.contains(groups[x][y])) {
+					JLabel lbl = new JLabel(iconIap);
+					lbl.setToolTipText("In App Purchases");
+					ret.add(lbl);
+					break;
+				}
+				if (x == 2 && perms.contains(groups[x][y])) {
+					JLabel lbl = new JLabel(iconLocation);
+					lbl.setToolTipText("Location access");
+					ret.add(lbl);
+					break;
+				}
+				if (x == 3 && perms.contains(groups[x][y])) {
+					JLabel lbl = new JLabel(iconMicrophone);
+					lbl.setToolTipText("Microphone access");
+					ret.add(lbl);
+					break;
+				}
+				if (x == 4 && perms.contains(groups[x][y])) {
+					JLabel lbl = new JLabel(iconCamera);
+					lbl.setToolTipText("Camera access");
+					ret.add(lbl);
+					break;
+				}
+				if (x == 5 && perms.contains(groups[x][y])) {
+					JLabel lbl = new JLabel(iconPhone);
+					lbl.setToolTipText("Telephone access");
+					ret.add(lbl);
+					break;
+				}
+				if (x == 6 && perms.contains(groups[x][y])) {
+					JLabel lbl = new JLabel(iconSystem);
+					lbl.setToolTipText("System access");
+					ret.add(lbl);
+					break;
+				}
+				if (x == 7 && perms.contains(groups[x][y])) {
+					JLabel lbl = new JLabel(iconPersonal);
+					lbl.setToolTipText("Personal data access");
+					ret.add(lbl);
+					break;
+				}
+				if (x == 8 && perms.contains(groups[x][y])) {
+					JLabel lbl = new JLabel(iconStorage);
+					lbl.setToolTipText("Storage access");
+					ret.add(lbl);
+					break;
+				}
+			}
+		}
+		return ret;
 	}
 
 	public static ResultView create(SearchView searchView, DocV2 doc) {
@@ -166,16 +320,6 @@ public class ResultView extends JPanel implements ActionListener {
 		if (src == permissions) {
 			doShowPermissions();
 		}
-	}
-
-	private static boolean hasInAppPurchase(DocV2 doc) {
-		List<String> perms = doc.getDetails().getAppDetails().getPermissionList();
-		for (String perm : perms) {
-			if (perm.equals("com.android.vending.BILLING")) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private void doShowPermissions() {
