@@ -13,6 +13,7 @@ import javax.swing.JProgressBar;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 
+import de.onyxbits.raccoon.Messages;
 import de.onyxbits.raccoon.io.Archive;
 import de.onyxbits.raccoon.io.FetchListener;
 
@@ -38,22 +39,22 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 	private DownloadView(Archive archive, DocV2 doc) {
 		this.doc = doc;
 		this.archive = archive;
-		this.cancel = new JButton("Cancel");
+		this.cancel = new JButton(Messages.getString("DownloadView.0")); //$NON-NLS-1$
 		this.progress = new JProgressBar(0, 100);
-		this.progress.setString("Waiting");
+		this.progress.setString(Messages.getString("DownloadView.1")); //$NON-NLS-1$
 		this.progress.setStringPainted(true);
 		String pn = doc.getBackendDocid();
 		int vc = doc.getDetails().getAppDetails().getVersionCode();
 		String title = doc.getTitle();
 		File dest = archive.fileUnder(pn, vc);
 		worker = new DownloadWorker(doc, archive, null);
-		String boiler = "<html><h2>" + title + "</h2><code>" + dest.getAbsolutePath()
-				+ "</code></html>";
+		String boiler = "<html><h2>" + title + "</h2><code>" + dest.getAbsolutePath() //$NON-NLS-1$ //$NON-NLS-2$
+				+ "</code></html>"; //$NON-NLS-1$
 		JPanel container = new JPanel();
 		container.setOpaque(false);
 		container.add(progress);
 		container.add(cancel);
-		JEditorPane info = new JEditorPane("text/html", boiler);
+		JEditorPane info = new JEditorPane("text/html", boiler); //$NON-NLS-1$
 		info.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		info.setEditable(false);
 		info.setOpaque(false);
@@ -101,27 +102,27 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		float percent = (float) numBytes / (float) worker.totalBytes;
 		int tmp = (int) (100f * percent);
 		progress.setValue(tmp);
-		progress.setString(tmp + "%");
+		progress.setString(tmp + "%"); //$NON-NLS-1$
 		return false;
 	}
 
 	public void onComplete(Object src) {
-		progress.setString("Complete");
+		progress.setString(Messages.getString("DownloadView.7")); //$NON-NLS-1$
 		cancel.setEnabled(false);
 	}
 
 	public void onFailure(Object src, Exception e) {
 		if (e instanceof IndexOutOfBoundsException) {
-			progress.setString("Not paid for");
+			progress.setString(Messages.getString("DownloadView.8")); //$NON-NLS-1$
 		}
 		else {
-			progress.setString("Error!");
+			progress.setString(Messages.getString("DownloadView.9")); //$NON-NLS-1$
 		}
 		cancel.setEnabled(false);
 	}
 
 	public void onAborted(Object src) {
-		progress.setString("Cancelled");
+		progress.setString(Messages.getString("DownloadView.10")); //$NON-NLS-1$
 		cancel.setEnabled(false);
 	}
 }

@@ -16,6 +16,7 @@ import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 import com.akdeniz.googleplaycrawler.GooglePlayException;
 
 import de.onyxbits.raccoon.App;
+import de.onyxbits.raccoon.Messages;
 import de.onyxbits.raccoon.io.Archive;
 
 /**
@@ -143,7 +144,7 @@ class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 			response = get();
 		}
 		catch (InterruptedException e) {
-			searchView.doMessage("Search aborted");
+			searchView.doMessage(Messages.getString("SearchWorker.0")); //$NON-NLS-1$
 			SwingUtilities.invokeLater(searchView);
 			return;
 		}
@@ -151,7 +152,7 @@ class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 			// Stuff that happened on the backgroundthread.
 			Throwable wrapped = e.getCause();
 			if (wrapped instanceof GooglePlayException) {
-				searchView.doMessage("Authentication error");
+				searchView.doMessage(Messages.getString("SearchWorker.1")); //$NON-NLS-1$
 				e.printStackTrace();
 			}
 			else {
@@ -183,10 +184,10 @@ class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 		}
 		else {
 			if (search == null) {
-				searchView.doMessage("No updates");
+				searchView.doMessage(Messages.getString("SearchWorker.2")); //$NON-NLS-1$
 			}
 			else {
-				searchView.doMessage("No results");
+				searchView.doMessage(Messages.getString("SearchWorker.3")); //$NON-NLS-1$
 			}
 		}
 		SwingUtilities.invokeLater(searchView);

@@ -20,6 +20,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import de.onyxbits.raccoon.Messages;
 import de.onyxbits.raccoon.io.Archive;
 
 /**
@@ -37,9 +38,9 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 
 	protected Archive archive;
 
-	private static final String CARDRESULTS = "results";
-	private static final String CARDPROGRESS = "progress";
-	private static final String CARDMESSAGE = "message";
+	private static final String CARDRESULTS = "results"; //$NON-NLS-1$
+	private static final String CARDPROGRESS = "progress"; //$NON-NLS-1$
+	private static final String CARDMESSAGE = "message"; //$NON-NLS-1$
 
 	private JTextField query;
 	private JSpinner page;
@@ -55,16 +56,16 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		this.mainActivity = mainActivity;
 		setLayout(new BorderLayout());
 		query = new JTextField();
-		query.setToolTipText("Keywords or packagename");
+		query.setToolTipText(Messages.getString("SearchView.3")); //$NON-NLS-1$
 		page = new JSpinner(new SpinnerNumberModel(1, 1, 10000, 1));
-		page.setToolTipText("Result page");
+		page.setToolTipText(Messages.getString("SearchView.4")); //$NON-NLS-1$
 		results = new JScrollPane();
 		cardLayout = new CardLayout();
 
 		message = new JLabel();
 		progress = new JProgressBar();
 		progress.setIndeterminate(true);
-		progress.setString("Searching");
+		progress.setString(Messages.getString("SearchView.5")); //$NON-NLS-1$
 		progress.setStringPainted(true);
 
 		GridBagConstraints center = new GridBagConstraints();
@@ -127,7 +128,7 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 
 	protected void doSearch() {
 		if (query.getText().length() == 0) {
-			doMessage("Enter keywords, app name, vendor name, app id or a Google Play url");
+			doMessage(Messages.getString("SearchView.6")); //$NON-NLS-1$
 		}
 		else {
 			query.setEnabled(false);
@@ -162,7 +163,7 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 
 	protected void doDownload(DownloadView d) {
 		if (d.isDownloaded()) {
-			int result = JOptionPane.showConfirmDialog(getRootPane(), "Overwrite file?", "File exists",
+			int result = JOptionPane.showConfirmDialog(getRootPane(), Messages.getString("SearchView.7"), Messages.getString("SearchView.8"), //$NON-NLS-1$ //$NON-NLS-2$
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (result == JOptionPane.YES_OPTION) {
 				mainActivity.doDownload(d);

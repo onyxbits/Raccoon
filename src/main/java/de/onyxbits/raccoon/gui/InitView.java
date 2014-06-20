@@ -14,6 +14,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import de.onyxbits.raccoon.BrowseUtil;
+import de.onyxbits.raccoon.Messages;
 import de.onyxbits.raccoon.io.Archive;
 
 public class InitView extends JPanel implements ActionListener {
@@ -37,14 +38,14 @@ public class InitView extends JPanel implements ActionListener {
 	private InitView(MainActivity mainActivity, Archive archive) {
 		this.mainActivity = mainActivity;
 		this.archive = archive;
-		password = new JPasswordField("", 20);
-		userId = new JTextField("", 20);
-		androidId = new JTextField("", 20);
-		status = new JLabel(" ");
-		login = new JButton("Login");
-		help = new JButton("Help");
+		password = new JPasswordField("", 20); //$NON-NLS-1$
+		userId = new JTextField("", 20); //$NON-NLS-1$
+		androidId = new JTextField("", 20); //$NON-NLS-1$
+		status = new JLabel(" "); //$NON-NLS-1$
+		login = new JButton(Messages.getString("InitView.4")); //$NON-NLS-1$
+		help = new JButton(Messages.getString("InitView.5")); //$NON-NLS-1$
 		JLabel instr = new JLabel(
-				"<html>This archive needs to be linked to a Google account and a device. The Google account is required, the device ID will automatically be generated if none is given. Press 'Help' for details.</html>");
+				Messages.getString("InitView.6")); //$NON-NLS-1$
 
 		JPanel container = new JPanel();
 		container.add(help);
@@ -87,14 +88,14 @@ public class InitView extends JPanel implements ActionListener {
 	private JPanel createCredentials() {
 		JPanel ret = new JPanel();
 		ret.setLayout(new GridBagLayout());
-		ret.setBorder(BorderFactory.createTitledBorder("Credentials"));
+		ret.setBorder(BorderFactory.createTitledBorder(Messages.getString("InitView.7"))); //$NON-NLS-1$
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.insets = new Insets(2, 2, 2, 2);
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.weightx = 0;
-		ret.add(new JLabel("Username:"), gbc);
+		ret.add(new JLabel(Messages.getString("InitView.8")), gbc); //$NON-NLS-1$
 		gbc.gridx = 1;
 		gbc.gridy = 0;
 		gbc.weightx = 1;
@@ -102,7 +103,7 @@ public class InitView extends JPanel implements ActionListener {
 		gbc.gridx = 0;
 		gbc.gridy = 1;
 		gbc.weightx = 0;
-		ret.add(new JLabel("Password:"), gbc);
+		ret.add(new JLabel(Messages.getString("InitView.9")), gbc); //$NON-NLS-1$
 		gbc.gridx = 1;
 		gbc.gridy = 1;
 		gbc.weightx = 1;
@@ -111,7 +112,7 @@ public class InitView extends JPanel implements ActionListener {
 		gbc.gridy = 2;
 		gbc.insets = new Insets(14, 2, 2, 2);
 		gbc.weightx = 0;
-		ret.add(new JLabel("Android ID:"), gbc);
+		ret.add(new JLabel(Messages.getString("InitView.10")), gbc); //$NON-NLS-1$
 		gbc.gridx = 1;
 		gbc.gridy = 2;
 		gbc.weightx = 1;
@@ -136,7 +137,7 @@ public class InitView extends JPanel implements ActionListener {
 			new InitWorker(archive, this).execute();
 		}
 		if (src == help) {
-			BrowseUtil.openUrl("http://www.onyxbits.de/faq/raccoon");
+			BrowseUtil.openUrl(Messages.getString("InitView.11")); //$NON-NLS-1$
 		}
 	}
 
@@ -145,12 +146,12 @@ public class InitView extends JPanel implements ActionListener {
 	}
 
 	protected void doErrorMessage() {
-		status.setText("Bad credentials");
+		status.setText(Messages.getString("InitView.12")); //$NON-NLS-1$
 		login.setEnabled(true);
 	}
 
 	protected void doInProgress() {
-		status.setText("Login... (Please wait)");
+		status.setText(Messages.getString("InitView.13")); //$NON-NLS-1$
 	}
 
 }

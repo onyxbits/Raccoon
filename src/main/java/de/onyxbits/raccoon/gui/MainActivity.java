@@ -24,6 +24,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import de.onyxbits.raccoon.BrowseUtil;
+import de.onyxbits.raccoon.Messages;
 import de.onyxbits.raccoon.io.Archive;
 import de.onyxbits.raccoon.io.DownloadLogger;
 import de.onyxbits.raccoon.io.FetchListener;
@@ -43,7 +44,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	/**
 	 * Preferences key for storing the last opened archive directory.
 	 */
-	public static final String LASTARCHIVE = "lastarchive";
+	public static final String LASTARCHIVE = "lastarchive"; //$NON-NLS-1$
 
 	private JMenuItem quit;
 	private JMenuItem open;
@@ -75,15 +76,15 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		downloadList = new ListView();
 
 		JMenuBar bar = new JMenuBar();
-		JMenu file = new JMenu("File");
+		JMenu file = new JMenu(Messages.getString("MainActivity.1")); //$NON-NLS-1$
 		file.setMnemonic('f');
-		quit = new JMenuItem("Exit", 'x');
+		quit = new JMenuItem(Messages.getString("MainActivity.2"), 'x'); //$NON-NLS-1$
 		quit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Event.CTRL_MASK));
-		open = new JMenuItem("Open archive");
+		open = new JMenuItem(Messages.getString("MainActivity.3")); //$NON-NLS-1$
 		open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK));
-		close = new JMenuItem("Close", 'c');
+		close = new JMenuItem(Messages.getString("MainActivity.4"), 'c'); //$NON-NLS-1$
 		close.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Event.CTRL_MASK));
-		updates = new JMenuItem("Updates",'u');
+		updates = new JMenuItem(Messages.getString("MainActivity.5"),'u'); //$NON-NLS-1$
 		updates.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, Event.CTRL_MASK));
 		updates.setEnabled(false);
 		file.add(open);
@@ -93,11 +94,11 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		file.add(quit);
 		bar.add(file);
 
-		JMenu view = new JMenu("View");
+		JMenu view = new JMenu(Messages.getString("MainActivity.6")); //$NON-NLS-1$
 		view.setMnemonic('v');
-		search = new JMenuItem("Search", 's');
+		search = new JMenuItem(Messages.getString("MainActivity.7"), 's'); //$NON-NLS-1$
 		search.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK));
-		downloads = new JMenuItem("Downloads", 'd');
+		downloads = new JMenuItem(Messages.getString("MainActivity.8"), 'd'); //$NON-NLS-1$
 		downloads.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, Event.CTRL_MASK));
 		view.add(search);
 		view.add(downloads);
@@ -105,9 +106,9 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		downloads.setEnabled(false);
 		bar.add(view);
 
-		JMenu help = new JMenu("Help");
+		JMenu help = new JMenu(Messages.getString("MainActivity.9")); //$NON-NLS-1$
 		help.setMnemonic('h');
-		contents = new JMenuItem("Contents", 'c');
+		contents = new JMenuItem(Messages.getString("MainActivity.10"), 'c'); //$NON-NLS-1$
 		contents.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
 		help.add(contents);
 		bar.add(help);
@@ -119,7 +120,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	public void run() {
 		if (archive == null) {
 			Preferences prefs = Preferences.userNodeForPackage(getClass());
-			archive = new Archive(new File(prefs.get(MainActivity.LASTARCHIVE, "Raccoon")));
+			archive = new Archive(new File(prefs.get(MainActivity.LASTARCHIVE, Messages.getString("MainActivity.11")))); //$NON-NLS-1$
 		}
 		open.addActionListener(this);
 		quit.addActionListener(this);
@@ -155,7 +156,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 			views.setSelectedIndex(0);
 		}
 		if (src == contents) {
-			BrowseUtil.openUrl("http://www.onyxbits.de/raccoon/handbook");
+			BrowseUtil.openUrl(Messages.getString("MainActivity.12")); //$NON-NLS-1$
 		}
 		if (src==updates) {
 			views.setSelectedIndex(0);
@@ -165,8 +166,8 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 
 	private void doClose() {
 		if (isDownloading()) {
-			int result = JOptionPane.showConfirmDialog(getRootPane(), "Really close?",
-					"Downloads in progress", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			int result = JOptionPane.showConfirmDialog(getRootPane(), Messages.getString("MainActivity.13"), //$NON-NLS-1$
+					Messages.getString("MainActivity.14"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE); //$NON-NLS-1$
 			if (result == JOptionPane.NO_OPTION) {
 				return;
 			}
@@ -193,22 +194,22 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		archive.getRoot().mkdirs();
 		logger = new DownloadLogger(archive);
 		logger.clear();
-		setTitle("Raccoon - " + archive.getRoot().getAbsolutePath());
+		setTitle("Raccoon - " + archive.getRoot().getAbsolutePath()); //$NON-NLS-1$
 		views.removeAll();
 		if (archive.getAndroidId().length() == 0) {
-			views.addTab("Archive setup", InitView.create(this, archive));
+			views.addTab(Messages.getString("MainActivity.16"), InitView.create(this, archive)); //$NON-NLS-1$
 		}
 		else {
 			searchView = SearchView.create(this, archive);
 			updates.setEnabled(true);
-			views.addTab("Search", searchView);
+			views.addTab(Messages.getString("MainActivity.17"), searchView); //$NON-NLS-1$
 			views.addChangeListener(searchView);
 			search.setEnabled(true);
 			downloads.setEnabled(true);
 			downloadListScroll = new JScrollPane();
 			downloadListScroll.setViewportView(downloadList);
 			downloadListScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-			views.addTab("Downloads", downloadListScroll);
+			views.addTab(Messages.getString("MainActivity.18"), downloadListScroll); //$NON-NLS-1$
 			Preferences prefs = Preferences.userNodeForPackage(getClass());
 			prefs.put(LASTARCHIVE, archive.getRoot().getAbsolutePath());
 			SwingUtilities.invokeLater(searchView);
@@ -258,8 +259,8 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		}
 
 		if (ask) {
-			int result = JOptionPane.showConfirmDialog(getRootPane(), "Really quit?",
-					"Downloads in progress", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			int result = JOptionPane.showConfirmDialog(getRootPane(), Messages.getString("MainActivity.19"), //$NON-NLS-1$
+					Messages.getString("MainActivity.20"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE); //$NON-NLS-1$
 			if (result == JOptionPane.NO_OPTION) {
 				return;
 			}
