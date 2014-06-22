@@ -77,14 +77,14 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 
 		JMenuBar bar = new JMenuBar();
 		JMenu file = new JMenu(Messages.getString("MainActivity.1")); //$NON-NLS-1$
-		file.setMnemonic('f');
-		quit = new JMenuItem(Messages.getString("MainActivity.2"), 'x'); //$NON-NLS-1$
+		file.setMnemonic(KeyStroke.getKeyStroke(Messages.getString("MainActivity.0")).getKeyCode()); //$NON-NLS-1$
+		quit = new JMenuItem(Messages.getString("MainActivity.2"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.22")).getKeyCode() ); //$NON-NLS-1$ //$NON-NLS-2$
 		quit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Event.CTRL_MASK));
-		open = new JMenuItem(Messages.getString("MainActivity.3")); //$NON-NLS-1$
+		open = new JMenuItem(Messages.getString("MainActivity.3"),KeyStroke.getKeyStroke(Messages.getString("MainActivity.23")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
 		open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK));
-		close = new JMenuItem(Messages.getString("MainActivity.4"), 'c'); //$NON-NLS-1$
+		close = new JMenuItem(Messages.getString("MainActivity.4"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.24")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
 		close.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Event.CTRL_MASK));
-		updates = new JMenuItem(Messages.getString("MainActivity.5"),'u'); //$NON-NLS-1$
+		updates = new JMenuItem(Messages.getString("MainActivity.5"),KeyStroke.getKeyStroke(Messages.getString("MainActivity.25")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
 		updates.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, Event.CTRL_MASK));
 		updates.setEnabled(false);
 		file.add(open);
@@ -95,10 +95,10 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		bar.add(file);
 
 		JMenu view = new JMenu(Messages.getString("MainActivity.6")); //$NON-NLS-1$
-		view.setMnemonic('v');
-		search = new JMenuItem(Messages.getString("MainActivity.7"), 's'); //$NON-NLS-1$
+		view.setMnemonic(KeyStroke.getKeyStroke(Messages.getString("MainActivity.15")).getKeyCode()); //$NON-NLS-1$
+		search = new JMenuItem(Messages.getString("MainActivity.7"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.26")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
 		search.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK));
-		downloads = new JMenuItem(Messages.getString("MainActivity.8"), 'd'); //$NON-NLS-1$
+		downloads = new JMenuItem(Messages.getString("MainActivity.8"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.27")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
 		downloads.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, Event.CTRL_MASK));
 		view.add(search);
 		view.add(downloads);
@@ -107,8 +107,8 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		bar.add(view);
 
 		JMenu help = new JMenu(Messages.getString("MainActivity.9")); //$NON-NLS-1$
-		help.setMnemonic('h');
-		contents = new JMenuItem(Messages.getString("MainActivity.10"), 'c'); //$NON-NLS-1$
+		help.setMnemonic(KeyStroke.getKeyStroke(Messages.getString("MainActivity.21")).getKeyCode()); //$NON-NLS-1$
+		contents = new JMenuItem(Messages.getString("MainActivity.10"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.28")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
 		contents.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
 		help.add(contents);
 		bar.add(help);
