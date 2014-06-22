@@ -70,15 +70,15 @@ public class ResultView extends JPanel implements ActionListener {
 
 	static {
 		Class<?> clazz = new Object().getClass();
-		iconNetwork = new ImageIcon(clazz.getResource("/badges/wi-fi-outline.png")); //$NON-NLS-1$
-		iconIap = new ImageIcon(clazz.getResource("/badges/shopping-cart.png")); //$NON-NLS-1$
-		iconLocation = new ImageIcon(clazz.getResource("/badges/location-outline.png")); //$NON-NLS-1$
-		iconMicrophone = new ImageIcon(clazz.getResource("/badges/microphone-outline.png")); //$NON-NLS-1$
-		iconPersonal = new ImageIcon(clazz.getResource("/badges/contacts.png")); //$NON-NLS-1$
-		iconPhone = new ImageIcon(clazz.getResource("/badges/phone-outline.png")); //$NON-NLS-1$
-		iconCamera = new ImageIcon(clazz.getResource("/badges/camera-outline.png")); //$NON-NLS-1$
-		iconSystem = new ImageIcon(clazz.getResource("/badges/spanner-outline.png")); //$NON-NLS-1$
-		iconStorage = new ImageIcon(clazz.getResource("/badges/folder.png")); //$NON-NLS-1$
+		iconNetwork = new ImageIcon(clazz.getResource("/rsrc/badges/wi-fi-outline.png")); //$NON-NLS-1$
+		iconIap = new ImageIcon(clazz.getResource("/rsrc/badges/shopping-cart.png")); //$NON-NLS-1$
+		iconLocation = new ImageIcon(clazz.getResource("/rsrc/badges/location-outline.png")); //$NON-NLS-1$
+		iconMicrophone = new ImageIcon(clazz.getResource("/rsrc/badges/microphone-outline.png")); //$NON-NLS-1$
+		iconPersonal = new ImageIcon(clazz.getResource("/rsrc/badges/contacts.png")); //$NON-NLS-1$
+		iconPhone = new ImageIcon(clazz.getResource("/rsrc/badges/phone-outline.png")); //$NON-NLS-1$
+		iconCamera = new ImageIcon(clazz.getResource("/rsrc/badges/camera-outline.png")); //$NON-NLS-1$
+		iconSystem = new ImageIcon(clazz.getResource("/rsrc/badges/spanner-outline.png")); //$NON-NLS-1$
+		iconStorage = new ImageIcon(clazz.getResource("/rsrc/badges/folder.png")); //$NON-NLS-1$
 	}
 
 	/**
