@@ -4,6 +4,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
+import com.akdeniz.googleplaycrawler.CryptoBlob;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 
 import de.onyxbits.raccoon.App;
@@ -47,7 +53,7 @@ public class FetchService implements Runnable {
 		this.archive = archive;
 		this.offerType = offerType;
 		this.callback = callback;
-		this.paid=paid;
+		this.paid = paid;
 	}
 
 	public void run() {
@@ -56,7 +62,19 @@ public class FetchService implements Runnable {
 			service = App.createConnection(archive);
 			InputStream in = null;
 			if (paid) {
-				in = service.delivery(appId, versionCode, offerType);
+				CryptoBlob cb = service.delivery(appId, versionCode, offerType);
+				in = cb.in;
+				int version = in.read();
+				if (version != 0) {
+					throw new Exception("Unknown crypto container!");
+				}
+				in.skip(4); // Meta data
+				byte[] iv = new byte[16];
+				in.read(iv);
+				Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding", "SunJCE");
+				SecretKeySpec key = new SecretKeySpec(cb.hmac, "AES");
+				cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
+				in = new CipherInputStream(in,cipher);
 			}
 			else {
 				in = service.download(appId, versionCode, offerType);

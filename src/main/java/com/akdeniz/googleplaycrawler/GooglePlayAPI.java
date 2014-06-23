@@ -317,15 +317,16 @@ public class GooglePlayAPI {
 
     }
 
-	public InputStream delivery (String packageName, int versionCode, int offerType) throws IOException {
+	public CryptoBlob delivery (String packageName, int versionCode, int offerType) throws IOException {
 		ResponseWrapper responseWrapper = executeGETRequest(DELIVERY_URL, new String[][] { { "ot", String.valueOf(offerType) },
 				{ "doc", packageName }, { "vc", String.valueOf(versionCode) }, });
 
 		AndroidAppDeliveryData appDeliveryData = responseWrapper.getPayload().getDeliveryResponse().getAppDeliveryData();
 		String downloadUrl = appDeliveryData.getDownloadUrl();
 		HttpCookie downloadAuthCookie = appDeliveryData.getDownloadAuthCookie(0);
+		CryptoBlob ret = new CryptoBlob(executeDownload(downloadUrl, downloadAuthCookie.getName() + "=" + downloadAuthCookie.getValue()),appDeliveryData.getEncryptionParams().getHmacKey().getBytes("UTF-8"));
 
-		return executeDownload(downloadUrl, downloadAuthCookie.getName() + "=" + downloadAuthCookie.getValue());
+		return ret;
 	}
 
     /**
