@@ -72,7 +72,7 @@ public class FetchService implements Runnable {
 				byte[] iv = new byte[16];
 				in.read(iv);
 				Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding", "SunJCE");
-				SecretKeySpec key = new SecretKeySpec(cb.hmac, "AES");
+				SecretKeySpec key = new SecretKeySpec(cb.key, "AES");
 				cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
 				in = new CipherInputStream(in,cipher);
 			}

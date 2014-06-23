@@ -324,7 +324,7 @@ public class GooglePlayAPI {
 		AndroidAppDeliveryData appDeliveryData = responseWrapper.getPayload().getDeliveryResponse().getAppDeliveryData();
 		String downloadUrl = appDeliveryData.getDownloadUrl();
 		HttpCookie downloadAuthCookie = appDeliveryData.getDownloadAuthCookie(0);
-		CryptoBlob ret = new CryptoBlob(executeDownload(downloadUrl, downloadAuthCookie.getName() + "=" + downloadAuthCookie.getValue()),appDeliveryData.getEncryptionParams().getHmacKey().getBytes("UTF-8"));
+		CryptoBlob ret = new CryptoBlob(executeDownload(downloadUrl, downloadAuthCookie.getName() + "=" + downloadAuthCookie.getValue()),appDeliveryData.getEncryptionParams().getEncryptionKey().getBytes("UTF-8"));
 
 		return ret;
 	}

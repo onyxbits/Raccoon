@@ -2,6 +2,8 @@ package com.akdeniz.googleplaycrawler;
 
 import java.io.InputStream;
 
+import com.akdeniz.googleplaycrawler.misc.Base64;
+
 
 /**
  * Just a container for a a return type.
@@ -12,10 +14,18 @@ import java.io.InputStream;
 public class CryptoBlob {
 
 	public InputStream in;
-	public byte[] hmac;
+	public byte[] key;
 
-	public CryptoBlob(InputStream in, byte[] hmac) {
+	/**
+	 * New containter
+	 * 
+	 * @param in
+	 *          the inputstream to download from
+	 * @param encKey
+	 *          base64 encoded encryption key.
+	 */
+	public CryptoBlob(InputStream in, byte[] encKey) {
 		this.in = in;
-		this.hmac = hmac;
+		this.key = Base64.decode(encKey,Base64.DEFAULT);
 	}
 }
