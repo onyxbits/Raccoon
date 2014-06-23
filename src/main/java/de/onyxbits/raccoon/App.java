@@ -15,6 +15,11 @@ import de.onyxbits.raccoon.io.Archive;
 public class App {
 
 	/**
+	 * Version identifier.
+	 */
+	public static final String VERSIONSTRING = "2.3";
+
+	/**
 	 * Application Entry
 	 * 
 	 * @param args

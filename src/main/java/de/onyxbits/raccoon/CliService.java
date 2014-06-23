@@ -66,6 +66,7 @@ public class CliService implements UpdateListener, Runnable {
 
 	public void run() {
 		Option help = new Option("h", false, "Show commandline usage");
+		Option version = new Option("v",false, "Show version and exit");
 		Option update = new Option("u", false, "Update archive (requires -a).");
 		Option archive = new Option("a", true, "Archive to work on");
 		Option paid = new Option("p", true,
@@ -75,6 +76,7 @@ public class CliService implements UpdateListener, Runnable {
 		Option fetch = new Option("f", true, "Fetch an app (requires -a).");
 		fetch.setArgName("packId,versionCode,offerType");
 		Options opts = new Options();
+		opts.addOption(version);
 		opts.addOption(archive);
 		opts.addOption(help);
 		opts.addOption(update);
@@ -91,6 +93,11 @@ public class CliService implements UpdateListener, Runnable {
 
 		if (cmd.hasOption('h')) {
 			new HelpFormatter().printHelp("Raccoon", opts);
+			System.exit(0);
+		}
+		
+		if (cmd.hasOption('v')) {
+			System.out.println(App.VERSIONSTRING);
 			System.exit(0);
 		}
 
