@@ -17,7 +17,7 @@ public class App {
 	/**
 	 * Version identifier.
 	 */
-	public static final String VERSIONSTRING = "2.3";
+	public static final String VERSIONSTRING = "2.4";
 
 	/**
 	 * Application Entry
