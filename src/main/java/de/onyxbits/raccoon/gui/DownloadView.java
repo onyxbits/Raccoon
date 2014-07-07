@@ -13,6 +13,7 @@ import javax.swing.JProgressBar;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 
+import de.onyxbits.raccoon.BrowseUtil;
 import de.onyxbits.raccoon.Messages;
 import de.onyxbits.raccoon.io.Archive;
 import de.onyxbits.raccoon.io.FetchListener;
@@ -33,6 +34,7 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 	private DownloadWorker worker;
 	private JProgressBar progress;
 	private JButton cancel;
+	private JButton open;
 	private DocV2 doc;
 	private Archive archive;
 
@@ -40,6 +42,8 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		this.doc = doc;
 		this.archive = archive;
 		this.cancel = new JButton(Messages.getString("DownloadView.0")); //$NON-NLS-1$
+		this.open = new JButton(Messages.getString("DownloadView.2")); //$NON-NLS-1$
+		this.open.setEnabled(false);
 		this.progress = new JProgressBar(0, 100);
 		this.progress.setString(Messages.getString("DownloadView.1")); //$NON-NLS-1$
 		this.progress.setStringPainted(true);
@@ -54,6 +58,7 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		container.setOpaque(false);
 		container.add(progress);
 		container.add(cancel);
+		container.add(open);
 		JEditorPane info = new JEditorPane("text/html", boiler); //$NON-NLS-1$
 		info.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		info.setEditable(false);
@@ -65,6 +70,7 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 	public static DownloadView create(Archive archive, DocV2 doc) {
 		DownloadView ret = new DownloadView(archive, doc);
 		ret.cancel.addActionListener(ret);
+		ret.open.addActionListener(ret);
 		ret.setLayout(new BoxLayout(ret, BoxLayout.Y_AXIS));
 		ret.worker.addFetchListener(ret);
 		return ret;
@@ -96,6 +102,11 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		if (event.getSource() == cancel) {
 			worker.cancel(true);
 		}
+		if (event.getSource() == open) {
+			String pn = doc.getBackendDocid();
+			int vc = doc.getDetails().getAppDetails().getVersionCode();
+			BrowseUtil.openFile(archive.fileUnder(pn, vc).getParentFile());
+		}
 	}
 
 	public boolean onChunk(Object src, long numBytes) {
@@ -109,6 +120,7 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 	public void onComplete(Object src) {
 		progress.setString(Messages.getString("DownloadView.7")); //$NON-NLS-1$
 		cancel.setEnabled(false);
+		open.setEnabled(true);
 	}
 
 	public void onFailure(Object src, Exception e) {
