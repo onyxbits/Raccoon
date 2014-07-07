@@ -77,12 +77,14 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		JPanel container = new JPanel();
 		container.setLayout(new GridBagLayout());
 		container.add(message, center);
-		main.add(container, CARDMESSAGE);
+		JScrollPane scroller = new JScrollPane(container);
+		main.add(scroller, CARDMESSAGE);
 		main.add(results, CARDRESULTS);
 		container = new JPanel();
 		container.setLayout(new GridBagLayout());
 		container.add(progress, center);
-		main.add(container, CARDPROGRESS);
+		scroller = new JScrollPane(container);
+		main.add(scroller, CARDPROGRESS);
 
 		container = new JPanel();
 		container.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
