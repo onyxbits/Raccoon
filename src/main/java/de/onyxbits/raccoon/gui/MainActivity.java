@@ -23,6 +23,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import de.onyxbits.raccoon.App;
 import de.onyxbits.raccoon.BrowseUtil;
 import de.onyxbits.raccoon.Messages;
 import de.onyxbits.raccoon.io.Archive;
@@ -58,7 +59,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	private ListView downloadList;
 	private JScrollPane downloadListScroll;
 	private DownloadLogger logger;
-	
+
 	private SearchView searchView;
 
 	private Archive archive;
@@ -78,13 +79,17 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		JMenuBar bar = new JMenuBar();
 		JMenu file = new JMenu(Messages.getString("MainActivity.1")); //$NON-NLS-1$
 		file.setMnemonic(KeyStroke.getKeyStroke(Messages.getString("MainActivity.0")).getKeyCode()); //$NON-NLS-1$
-		quit = new JMenuItem(Messages.getString("MainActivity.2"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.22")).getKeyCode() ); //$NON-NLS-1$ //$NON-NLS-2$
+		quit = new JMenuItem(
+				Messages.getString("MainActivity.2"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.22")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
 		quit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Event.CTRL_MASK));
-		open = new JMenuItem(Messages.getString("MainActivity.3"),KeyStroke.getKeyStroke(Messages.getString("MainActivity.23")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
+		open = new JMenuItem(
+				Messages.getString("MainActivity.3"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.23")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
 		open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK));
-		close = new JMenuItem(Messages.getString("MainActivity.4"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.24")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
+		close = new JMenuItem(
+				Messages.getString("MainActivity.4"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.24")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
 		close.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Event.CTRL_MASK));
-		updates = new JMenuItem(Messages.getString("MainActivity.5"),KeyStroke.getKeyStroke(Messages.getString("MainActivity.25")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
+		updates = new JMenuItem(
+				Messages.getString("MainActivity.5"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.25")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
 		updates.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, Event.CTRL_MASK));
 		updates.setEnabled(false);
 		file.add(open);
@@ -96,9 +101,11 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 
 		JMenu view = new JMenu(Messages.getString("MainActivity.6")); //$NON-NLS-1$
 		view.setMnemonic(KeyStroke.getKeyStroke(Messages.getString("MainActivity.15")).getKeyCode()); //$NON-NLS-1$
-		search = new JMenuItem(Messages.getString("MainActivity.7"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.26")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
+		search = new JMenuItem(
+				Messages.getString("MainActivity.7"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.26")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
 		search.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK));
-		downloads = new JMenuItem(Messages.getString("MainActivity.8"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.27")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
+		downloads = new JMenuItem(
+				Messages.getString("MainActivity.8"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.27")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
 		downloads.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, Event.CTRL_MASK));
 		view.add(search);
 		view.add(downloads);
@@ -108,7 +115,8 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 
 		JMenu help = new JMenu(Messages.getString("MainActivity.9")); //$NON-NLS-1$
 		help.setMnemonic(KeyStroke.getKeyStroke(Messages.getString("MainActivity.21")).getKeyCode()); //$NON-NLS-1$
-		contents = new JMenuItem(Messages.getString("MainActivity.10"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.28")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
+		contents = new JMenuItem(
+				Messages.getString("MainActivity.10"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.28")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
 		contents.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
 		help.add(contents);
 		bar.add(help);
@@ -120,7 +128,14 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	public void run() {
 		if (archive == null) {
 			Preferences prefs = Preferences.userNodeForPackage(getClass());
-			archive = new Archive(new File(prefs.get(MainActivity.LASTARCHIVE, Messages.getString("MainActivity.11")))); //$NON-NLS-1$
+			String tmp = prefs.get(MainActivity.LASTARCHIVE, null);
+			if (tmp != null) {
+				archive = new Archive(new File(tmp));
+			}
+			else {
+				archive = new Archive(new File(App.getDir(App.ARCHIVEDIR),
+						Messages.getString("MainActivity.11")));
+			}
 		}
 		open.addActionListener(this);
 		quit.addActionListener(this);
@@ -158,7 +173,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		if (src == contents) {
 			BrowseUtil.openUrl(Messages.getString("MainActivity.12")); //$NON-NLS-1$
 		}
-		if (src==updates) {
+		if (src == updates) {
 			views.setSelectedIndex(0);
 			searchView.doUpdateSearch();
 		}
@@ -166,8 +181,11 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 
 	private void doClose() {
 		if (isDownloading()) {
-			int result = JOptionPane.showConfirmDialog(getRootPane(), Messages.getString("MainActivity.13"), //$NON-NLS-1$
-					Messages.getString("MainActivity.14"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE); //$NON-NLS-1$
+			int result = JOptionPane
+					.showConfirmDialog(
+							getRootPane(),
+							Messages.getString("MainActivity.13"), //$NON-NLS-1$
+							Messages.getString("MainActivity.14"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE); //$NON-NLS-1$
 			if (result == JOptionPane.NO_OPTION) {
 				return;
 			}
@@ -217,7 +235,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	}
 
 	private void doOpen() {
-		JFileChooser chooser = new JFileChooser();
+		JFileChooser chooser = new JFileChooser(App.getDir(App.ARCHIVEDIR));
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int ret = chooser.showOpenDialog(this);
 		if (ret == JFileChooser.APPROVE_OPTION) {
@@ -259,8 +277,11 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		}
 
 		if (ask) {
-			int result = JOptionPane.showConfirmDialog(getRootPane(), Messages.getString("MainActivity.19"), //$NON-NLS-1$
-					Messages.getString("MainActivity.20"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE); //$NON-NLS-1$
+			int result = JOptionPane
+					.showConfirmDialog(
+							getRootPane(),
+							Messages.getString("MainActivity.19"), //$NON-NLS-1$
+							Messages.getString("MainActivity.20"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE); //$NON-NLS-1$
 			if (result == JOptionPane.NO_OPTION) {
 				return;
 			}
@@ -302,7 +323,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 
 	public void onComplete(Object src) {
 		try {
-			logger.addEntry(((DownloadWorker)src).getTarget());
+			logger.addEntry(((DownloadWorker) src).getTarget());
 		}
 		catch (IOException e) {
 			e.printStackTrace();

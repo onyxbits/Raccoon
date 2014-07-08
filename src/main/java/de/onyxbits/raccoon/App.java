@@ -1,5 +1,7 @@
 package de.onyxbits.raccoon;
 
+import java.io.File;
+
 import javax.swing.SwingUtilities;
 import org.apache.commons.cli.ParseException;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
@@ -20,18 +22,53 @@ public class App {
 	public static final String VERSIONSTRING = "2.4";
 
 	/**
+	 * Relative path for keeping extension jars in
+	 */
+	public static final String EXTDIR = "ext";
+
+	/**
+	 * Relative path for keeping archives in (the user is not required to put
+	 * archives here, its just the suggested folder).
+	 */
+	public static final String ARCHIVEDIR = "archives";
+
+	/**
+	 * Relative path, root directory for the app.
+	 */
+	public static final String HOMEDIR = "Raccoon";
+
+	/**
 	 * Application Entry
 	 * 
 	 * @param args
 	 * @throws ParseException
 	 */
 	public static void main(String[] args) throws ParseException {
+		getDir(HOMEDIR).mkdirs();
+		getDir(EXTDIR).mkdirs();
+		getDir(ARCHIVEDIR).mkdirs();
+		
 		if (args == null || args.length == 0) {
 			SwingUtilities.invokeLater(new MainActivity(null));
 		}
 		else {
 			new CliService(args).run();
 		}
+	}
+
+	/**
+	 * Query the location of a directory.
+	 * 
+	 * @param which
+	 *          EXTDIR, ARCHIVEDIR, or HOMEDIR.
+	 * @return the file (may or may not exist).
+	 */
+	public static File getDir(String which) {
+		File root = new File(System.getProperty("user.home"), HOMEDIR);
+		if (which.equals(HOMEDIR)) {
+			return root;
+		}
+		return new File(root, which);
 	}
 
 	/**
