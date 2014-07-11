@@ -3,13 +3,9 @@ package de.onyxbits.raccoon.io;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-
-import com.akdeniz.googleplaycrawler.CryptoBlob;
+import com.akdeniz.googleplaycrawler.DownloadData;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 
 import de.onyxbits.raccoon.App;
@@ -57,59 +53,109 @@ public class FetchService implements Runnable {
 	}
 
 	public void run() {
-		File target = archive.fileUnder(appId, versionCode);
+		File appFile = null;
+		File mainFile = null;
+		File patchFile = null;
+		InputStream in = null;
+		OutputStream out = null;
 		try {
 			service = App.createConnection(archive);
-			InputStream in = null;
+			DownloadData data = null;
 			if (paid) {
-				CryptoBlob cb = service.delivery(appId, versionCode, offerType);
-				in = cb.in;
-				int version = in.read();
-				if (version != 0) {
-					throw new Exception("Unknown crypto container!");
-				}
-				in.skip(4); // Meta data
-				byte[] iv = new byte[16];
-				in.read(iv);
-				Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding", "SunJCE");
-				SecretKeySpec key = new SecretKeySpec(cb.key, "AES");
-				cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
-				in = new CipherInputStream(in,cipher);
+				data = service.delivery(appId, versionCode, offerType);
 			}
 			else {
-				in = service.download(appId, versionCode, offerType);
+				data = service.download(appId, versionCode, offerType);
+			}
+			appFile = archive.fileUnder(appId, versionCode);
+			mainFile = archive.fileExpansionUnder("main", appId, data.getMainFileVersion());
+			patchFile = archive.fileExpansionUnder("patch", appId, data.getPatchFileVersion());
+
+			appFile.getParentFile().mkdirs();
+			out = new FileOutputStream(appFile);
+			in = data.openApp();
+			boolean keepApp = transfer(in, out);
+			in.close();
+			out.close();
+			if (!keepApp) {
+				appFile.delete();
+				return;
 			}
 
-			target.getParentFile().mkdirs();
-			FileOutputStream out = new FileOutputStream(target);
-			byte[] buffer = new byte[1024 * 16];
-			int length;
-			long received = 0;
-			callback.onChunk(this, 0);
-			while ((length = in.read(buffer)) > 0) {
-				out.write(buffer, 0, length);
-				received += length;
-				if (callback != null) {
-					if (callback.onChunk(this, received)) {
-						out.close();
-						in.close();
-						target.delete();
-						callback.onAborted(this);
-						return;
-					}
+			in = data.openMainExpansion();
+			if (in != null && !mainFile.exists()) {
+				out = new FileOutputStream(mainFile);
+				boolean keepMain = transfer(in, out);
+				in.close();
+				out.close();
+				if (!keepMain) {
+					appFile.delete();
+					mainFile.delete();
+					return;
 				}
 			}
-			out.close();
-			in.close();
+
+			in = data.openPatchExpansion();
+			if (in != null && !patchFile.exists()) {
+				out = new FileOutputStream(patchFile);
+				boolean keepPatch = transfer(in, out);
+				in.close();
+				out.close();
+				if (!keepPatch) {
+					appFile.delete();
+					mainFile.delete();
+					patchFile.delete();
+					return;
+				}
+			}
+
 			if (callback != null) {
 				callback.onComplete(this);
 			}
 		}
 		catch (Exception e) {
-			target.delete();
+			if (appFile != null) {
+				appFile.delete();
+			}
+			if (mainFile != null) {
+				mainFile.delete();
+			}
+			if (patchFile != null) {
+				patchFile.delete();
+			}
+
 			if (callback != null) {
 				callback.onFailure(this, e);
 			}
 		}
+	}
+
+	/**
+	 * Download from Google Play to file
+	 * 
+	 * @param in
+	 *          source
+	 * @param out
+	 *          destination
+	 * @return true to keep the file, false if the user has cancelled the download
+	 * @throws Exception
+	 *           if something goes wrong.
+	 */
+	private boolean transfer(InputStream in, OutputStream out) throws Exception {
+		byte[] buffer = new byte[1024 * 16];
+		int length;
+		long received = 0;
+		callback.onChunk(this, 0);
+		while ((length = in.read(buffer)) > 0) {
+			out.write(buffer, 0, length);
+			received += length;
+			if (callback != null) {
+				if (callback.onChunk(this, received)) {
+					callback.onAborted(this);
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }
