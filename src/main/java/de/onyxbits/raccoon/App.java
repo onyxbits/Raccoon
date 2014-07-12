@@ -47,7 +47,7 @@ public class App {
 		getDir(HOMEDIR).mkdirs();
 		getDir(EXTDIR).mkdirs();
 		getDir(ARCHIVEDIR).mkdirs();
-		
+
 		if (args == null || args.length == 0) {
 			SwingUtilities.invokeLater(new MainActivity(null));
 		}
@@ -65,6 +65,9 @@ public class App {
 	 */
 	public static File getDir(String which) {
 		File root = new File(System.getProperty("user.home"), HOMEDIR);
+		if (System.getProperty("raccoon.home") != null) {
+			root = new File(System.getProperty("raccoon.home"));
+		}
 		if (which.equals(HOMEDIR)) {
 			return root;
 		}
