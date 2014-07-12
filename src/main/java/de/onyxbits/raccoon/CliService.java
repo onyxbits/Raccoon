@@ -1,6 +1,8 @@
 package de.onyxbits.raccoon;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 
 import org.apache.commons.cli.BasicParser;
@@ -66,9 +68,13 @@ public class CliService implements UpdateListener, Runnable {
 
 	public void run() {
 		Option help = new Option("h", false, "Show commandline usage");
-		Option version = new Option("v",false, "Show version and exit");
+		Option version = new Option("v", false, "Show version and exit");
 		Option update = new Option("u", false, "Update archive (requires -a).");
 		Option archive = new Option("a", true, "Archive to work on");
+		Option importer = new Option(
+				"i",
+				true,
+				"Import apps. A text file, containing one market url per line must be given (requires -a and -u to actually download).");
 		Option paid = new Option("p", true,
 				"Use with -f to download paid apps (the app must already have been bought).");
 		archive.setArgName("directory");
@@ -80,6 +86,7 @@ public class CliService implements UpdateListener, Runnable {
 		opts.addOption(archive);
 		opts.addOption(help);
 		opts.addOption(update);
+		opts.addOption(importer);
 		opts.addOption(fetch);
 		opts.addOption(paid);
 		CommandLine cmd = null;
@@ -95,7 +102,7 @@ public class CliService implements UpdateListener, Runnable {
 			new HelpFormatter().printHelp("Raccoon", opts);
 			System.exit(0);
 		}
-		
+
 		if (cmd.hasOption('v')) {
 			System.out.println(App.VERSIONSTRING);
 			System.exit(0);
@@ -107,19 +114,24 @@ public class CliService implements UpdateListener, Runnable {
 			logger.clear();
 		}
 
-		if (cmd.hasOption("u")) {
-			if (destination == null) {
-				System.err.println("No archive specified!");
-				System.exit(1);
+		if (cmd.hasOption("i")) {
+			requireArchive();
+			try {
+				doImport(new File(cmd.getOptionValue('i')));
 			}
+			catch (IOException e) {
+				System.err.println(e.getMessage());
+			}
+		}
+
+		if (cmd.hasOption("u")) {
+			requireArchive();
 			new UpdateService(destination, this).run();
 		}
 
 		if (cmd.hasOption("f")) {
-			if (destination == null) {
-				System.err.println("No archive specified!");
-				System.exit(1);
-			}
+			requireArchive();
+
 			String[] tmp = cmd.getOptionValues('f')[0].split(",");
 			try {
 				String appId = tmp[0];
@@ -131,6 +143,31 @@ public class CliService implements UpdateListener, Runnable {
 				System.err.println("Format: packagename,versioncode,offertype");
 				System.exit(1);
 			}
+		}
+	}
+
+	private void doImport(File file) throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		String line;
+		String prefix = "market://details?id=";
+		while ((line = br.readLine()) != null) {
+			if (line.startsWith(prefix) && line.length() > prefix.length()) {
+				// Let's keep it simple.
+				String id = line.substring(prefix.length(), line.length());
+				destination.fileUnder(id, 0).getParentFile().mkdirs();
+				System.out.println("Adding: "+id);
+			}
+		}
+		br.close();
+	}
+
+	/**
+	 * Check if an archive is specified, bail out if not.
+	 */
+	private void requireArchive() {
+		if (destination == null) {
+			System.err.println("No archive specified!");
+			System.exit(1);
 		}
 	}
 }
