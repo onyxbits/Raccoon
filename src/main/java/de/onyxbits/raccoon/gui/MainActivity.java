@@ -54,6 +54,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	private JMenuItem updates;
 	private JMenuItem downloads;
 	private JMenuItem contents;
+	private JMenuItem newArchive;
 
 	private JTabbedPane views;
 	private ListView downloadList;
@@ -92,7 +93,13 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 				Messages.getString("MainActivity.5"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.25")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
 		updates.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, Event.CTRL_MASK));
 		updates.setEnabled(false);
+		newArchive = new JMenuItem(
+				Messages.getString("MainActivity.29"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.30")) //$NON-NLS-1$ //$NON-NLS-2$
+						.getKeyCode());
+		newArchive.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK));
+		file.add(newArchive);
 		file.add(open);
+		file.add(new JSeparator());
 		file.add(updates);
 		file.add(close);
 		file.add(new JSeparator());
@@ -134,9 +141,10 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 			}
 			else {
 				archive = new Archive(new File(App.getDir(App.ARCHIVEDIR),
-						Messages.getString("MainActivity.11")));
+						Messages.getString("MainActivity.11"))); //$NON-NLS-1$
 			}
 		}
+		newArchive.addActionListener(this);
 		open.addActionListener(this);
 		quit.addActionListener(this);
 		close.addActionListener(this);
@@ -155,6 +163,9 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 
 	public void actionPerformed(ActionEvent event) {
 		Object src = event.getSource();
+		if (src == newArchive) {
+			doNewArchive();
+		}
 		if (src == quit) {
 			doQuit();
 		}
@@ -176,6 +187,16 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		if (src == updates) {
 			views.setSelectedIndex(0);
 			searchView.doUpdateSearch();
+		}
+	}
+
+	private void doNewArchive() {
+		String res = JOptionPane.showInputDialog(this,
+				Messages.getString("MainActivity.32"), Messages.getString("MainActivity.31"), JOptionPane.QUESTION_MESSAGE); //$NON-NLS-1$ //$NON-NLS-2$
+		if (res != null && res.length() > 0) {
+			File file = new File(App.getDir(App.ARCHIVEDIR), res);
+			MainActivity ma = new MainActivity(new Archive(file));
+			SwingUtilities.invokeLater(ma);
 		}
 	}
 
