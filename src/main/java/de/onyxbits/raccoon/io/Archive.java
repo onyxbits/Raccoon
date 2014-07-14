@@ -146,7 +146,7 @@ public class Archive {
 			credentials.load(new FileInputStream(new File(root, CREDCFG)));
 		}
 		catch (Exception e) {
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 
@@ -221,6 +221,23 @@ public class Archive {
 	}
 
 	/**
+	 * Figure our where to save an expansion file for an app
+	 * 
+	 * @param type
+	 *          this should either be "main" or "patch", depending on which
+	 *          expansion to file
+	 * @param packName
+	 *          package name of the app.
+	 * @param vc
+	 *          version code of the expansion
+	 * @return where to save.
+	 */
+	public File fileExpansionUnder(String type, String packName, int vc) {
+		File appRoot = new File(new File(root, APKDIR), packName.replace('.', '-'));
+		return new File(appRoot, type + "." + vc + "." + packName + ".obb");
+	}
+
+	/**
 	 * List all apps in the archive
 	 * 
 	 * @return a list of packagenames.
@@ -237,7 +254,6 @@ public class Archive {
 		}
 		return tmp;
 	}
-
 
 	/**
 	 * Turn a raw filesize into a human readable one
