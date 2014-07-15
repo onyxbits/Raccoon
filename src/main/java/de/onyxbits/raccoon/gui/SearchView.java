@@ -4,11 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -46,7 +48,7 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 	private JSpinner page;
 	private JScrollPane results;
 	private JProgressBar progress;
-	private JLabel message;
+	private JEditorPane message;
 	private JPanel main;
 	private CardLayout cardLayout;
 	private MainActivity mainActivity;
@@ -62,7 +64,9 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		results = new JScrollPane();
 		cardLayout = new CardLayout();
 
-		message = new JLabel();
+		message = new JEditorPane("text/html","");
+		message.setEditable(false);
+		message.setOpaque(false);
 		progress = new JProgressBar();
 		progress.setIndeterminate(true);
 		progress.setString(Messages.getString("SearchView.5")); //$NON-NLS-1$
@@ -74,19 +78,13 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 
 		main = new JPanel();
 		main.setLayout(cardLayout);
+		main.add(new JScrollPane(message), CARDMESSAGE);
+		main.add(results, CARDRESULTS);
 		JPanel container = new JPanel();
 		container.setOpaque(false);
 		container.setLayout(new GridBagLayout());
-		container.add(message, center);
-		JScrollPane scroller = new JScrollPane(container);
-		main.add(scroller, CARDMESSAGE);
-		main.add(results, CARDRESULTS);
-		container = new JPanel();
-		container.setOpaque(false);
-		container.setLayout(new GridBagLayout());
 		container.add(progress, center);
-		scroller = new JScrollPane(container);
-		main.add(scroller, CARDPROGRESS);
+		main.add(new JScrollPane(container), CARDPROGRESS);
 
 		container = new JPanel();
 		container.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -148,7 +146,7 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		query.setEnabled(true);
 		page.setEnabled(true);
 		cardLayout.show(main, CARDMESSAGE);
-		message.setText(status);
+		message.setText("<html><body><div align=\"center\" style=\"margin-top: 50px\"><strong>"+status+"</strong></div></body></html>");
 	}
 
 	protected void doResultList(JPanel listing) {
