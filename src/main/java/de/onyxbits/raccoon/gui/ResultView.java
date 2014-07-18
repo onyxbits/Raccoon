@@ -5,8 +5,10 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -22,6 +24,7 @@ import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
+import com.floreysoft.jmte.Engine;
 
 import de.onyxbits.raccoon.BrowseUtil;
 import de.onyxbits.raccoon.Messages;
@@ -52,9 +55,7 @@ public class ResultView extends JPanel implements ActionListener {
 
 	private JEditorPane entry;
 
-	private String appOverview;
-
-	private String appPermissions;
+	private HashMap<String, Object> model;
 
 	private boolean showingPermissions;
 
@@ -97,47 +98,31 @@ public class ResultView extends JPanel implements ActionListener {
 		// FIXME: The api returns wrong values for the commentcount, number of
 		// ratings, version and summary.
 
-		String title = doc.getTitle();
-		String installs = doc.getDetails().getAppDetails().getNumDownloads();
-		String rating = String.format("%.2f", doc.getAggregateRating().getStarRating()); //$NON-NLS-1$
-		String pack = doc.getBackendDocid();
-		String author = doc.getCreator();
-		String price = doc.getOffer(0).getFormattedAmount();
-		String date = doc.getDetails().getAppDetails().getUploadDate();
-		String size = Archive.humanReadableByteCount(doc.getDetails().getAppDetails()
-				.getInstallationSize(), true);
-		appOverview = "<html><style>table {border: 1px solid #9E9E9E;}  th {text-align: left;	background-color: #9E9E9E;color: black;} td	{padding-right: 15px;} </style><p><big><u>" //$NON-NLS-1$
-				+ title
-				+ "</u></big></p><p><strong>" //$NON-NLS-1$
-				+ author
-				+ "</strong> <strong>&#124;</strong> <code>" //$NON-NLS-1$
-				+ pack
-				+ "</code></p><p><table><tr><th>Size</th><th>Published</th><th>Price</th><th>Installs</th><th>Rating</th></tr><tr><td>" //$NON-NLS-1$
-				+ size
-				+ "</td><td>" //$NON-NLS-1$
-				+ date
-				+ "</td><td>" //$NON-NLS-1$
-				+ price
-				+ "</td><td>" //$NON-NLS-1$
-				+ installs
-				+ "</td><td>" //$NON-NLS-1$
-				+ rating + "</td></tr></table>"; //$NON-NLS-1$
+		model = new HashMap<String, Object>();
+		model.put("i18n_installs", Messages.getString("ResultView.1")); //$NON-NLS-1$ //$NON-NLS-2$
+		model.put("i18n_rating", Messages.getString("ResultView.3")); //$NON-NLS-1$ //$NON-NLS-2$
+		model.put("i18n_price", Messages.getString("ResultView.5")); //$NON-NLS-1$ //$NON-NLS-2$
+		model.put("i18n_date", Messages.getString("ResultView.7")); //$NON-NLS-1$ //$NON-NLS-2$
+		model.put("i18n_size", Messages.getString("ResultView.9")); //$NON-NLS-1$ //$NON-NLS-2$
+		model.put("cover_title", doc.getTitle()); //$NON-NLS-1$
+		model.put("cover_installs", doc.getDetails().getAppDetails().getNumDownloads()); //$NON-NLS-1$
+		model.put("cover_rating", String.format("%.2f", doc.getAggregateRating().getStarRating())); //$NON-NLS-1$ //$NON-NLS-2$
+		model.put("cover_package", doc.getBackendDocid()); //$NON-NLS-1$
+		model.put("cover_author", doc.getCreator()); //$NON-NLS-1$
+		model.put("cover_price", doc.getOffer(0).getFormattedAmount()); //$NON-NLS-1$
+		model.put("cover_date", doc.getDetails().getAppDetails().getUploadDate()); //$NON-NLS-1$
+		model.put("cover_size", Archive.humanReadableByteCount(doc.getDetails().getAppDetails() //$NON-NLS-1$
+				.getInstallationSize(), true));
 
 		List<String> perms = doc.getDetails().getAppDetails().getPermissionList();
-		ArrayList<String> sortMe = new ArrayList<String>(perms);
-		Collections.sort(sortMe);
-		StringBuilder sb = new StringBuilder();
-		for (String perm : sortMe) {
-			sb.append("<li>"); //$NON-NLS-1$
-			sb.append(perm);
-			sb.append("\n"); //$NON-NLS-1$
+		if (perms.size() > 0) {
+			ArrayList<String> sortMe = new ArrayList<String>(perms);
+			Collections.sort(sortMe);
+			model.put("permissions_list", sortMe); //$NON-NLS-1$
 		}
-		if (sb.length() == 0) {
-			sb.append(Messages.getString("ResultView.21")); //$NON-NLS-1$
+		else {
+			model.put("permissions_none", Messages.getString("ResultView.22")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		sb.insert(0, "<html><p><big><u>" + title + "</u></big></p><ul>"); //$NON-NLS-1$ //$NON-NLS-2$
-		sb.append("</ul></html>"); //$NON-NLS-1$
-		appPermissions = sb.toString();
 
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new GridLayout(3, 1, 0, 4));
@@ -148,7 +133,8 @@ public class ResultView extends JPanel implements ActionListener {
 		buttons.add(download);
 		buttons.add(details);
 		buttons.add(permissions);
-		entry = new JEditorPane("text/html", appOverview); //$NON-NLS-1$
+		entry = new JEditorPane(
+				"text/html", new Engine().transform(getTemplate("/rsrc/templates/app.html"), model)); //$NON-NLS-1$ //$NON-NLS-2$
 		entry.setEditable(false);
 		entry.setOpaque(false);
 		entry.setMargin(new Insets(10, 10, 10, 10));
@@ -169,25 +155,44 @@ public class ResultView extends JPanel implements ActionListener {
 		add(outer);
 	}
 
+	/**
+	 * Read a resource file and return it as a sring
+	 * 
+	 * @param path
+	 *          resource path
+	 * @return content.
+	 */
+	private String getTemplate(String path) {
+		String tmpl = ""; //$NON-NLS-1$
+		try {
+			InputStream ins = getClass().getResourceAsStream(path);
+			byte[] b = new byte[ins.available()];
+			ins.read(b);
+			tmpl = new String(b);
+			ins.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return tmpl;
+	}
+
 	private JPanel createBadges(List<String> perms) {
 		JPanel ret = new JPanel();
 		ret.setLayout(new GridLayout(0, 3));
 		ret.setOpaque(false);
-		String[][] groups = {
-				{
-						"android.permission.INTERNET", //$NON-NLS-1$
-						"android.permission.ACCESS_NETWORK_STATE", //$NON-NLS-1$
-						"android.permission.CHANGE_NETWORK_STATE", //$NON-NLS-1$
-						"android.permission.CHANGE_WIFI_MULTICAST_STATE", //$NON-NLS-1$
-						"android.permission.CHANGE_WIFI_STATE", //$NON-NLS-1$
-						"android.permission.ACCESS_WIFI_STATE", //$NON-NLS-1$
-						"android.permission.BIND_VPN_SERVICE" }, //$NON-NLS-1$
+		String[][] groups = { { "android.permission.INTERNET", //$NON-NLS-1$
+				"android.permission.ACCESS_NETWORK_STATE", //$NON-NLS-1$
+				"android.permission.CHANGE_NETWORK_STATE", //$NON-NLS-1$
+				"android.permission.CHANGE_WIFI_MULTICAST_STATE", //$NON-NLS-1$
+				"android.permission.CHANGE_WIFI_STATE", //$NON-NLS-1$
+				"android.permission.ACCESS_WIFI_STATE", //$NON-NLS-1$
+				"android.permission.BIND_VPN_SERVICE" }, //$NON-NLS-1$
 				{ "com.android.vending.BILLING" }, //$NON-NLS-1$
 				{ "android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION" }, //$NON-NLS-1$ //$NON-NLS-2$
 				{ "android.permission.RECORD_AUDIO" }, //$NON-NLS-1$
 				{ "android.permission.CAMERA" }, //$NON-NLS-1$
-				{
-						"android.permission.CALL_PHONE", //$NON-NLS-1$
+				{ "android.permission.CALL_PHONE", //$NON-NLS-1$
 						"android.permission.PROCESS_OUTGOING_CALLS", //$NON-NLS-1$
 						"android.permission.READ_CALL_LOG", //$NON-NLS-1$
 						"android.permission.READ_PHONE_STATE", //$NON-NLS-1$
@@ -197,8 +202,7 @@ public class ResultView extends JPanel implements ActionListener {
 						"android.permission.USE_SIP", //$NON-NLS-1$
 						"android.permission.WRITE_CALL_LOG", //$NON-NLS-1$
 						"android.permission.WRITE_SMS" }, //$NON-NLS-1$
-				{
-						"android.permission.BIND_DEVICE_ADMIN", //$NON-NLS-1$
+				{ "android.permission.BIND_DEVICE_ADMIN", //$NON-NLS-1$
 						"android.permission.CHANGE_CONFIGURATION", //$NON-NLS-1$
 						"android.permission.DISABLE_KEYGUARD", //$NON-NLS-1$
 						"android.permission.EXPAND_STATUS_BAR", //$NON-NLS-1$
@@ -210,8 +214,7 @@ public class ResultView extends JPanel implements ActionListener {
 						"android.permission.SYSTEM_ALERT_WINDOW", //$NON-NLS-1$
 						"android.permission.SET_WALLPAPER", //$NON-NLS-1$
 						"com.android.launcher.permission.UNINSTALL_SHORTCUT" }, //$NON-NLS-1$
-				{
-						"android.permission.GET_ACCOUNTS", //$NON-NLS-1$
+				{ "android.permission.GET_ACCOUNTS", //$NON-NLS-1$
 						"android.permission.READ_PHONE_STATE", //$NON-NLS-1$
 						"android.permission.GLOBAL_SEARCH", //$NON-NLS-1$
 						"android.permission.MANAGE_DOCUMENTS", //$NON-NLS-1$
@@ -325,10 +328,10 @@ public class ResultView extends JPanel implements ActionListener {
 
 	private void doShowPermissions() {
 		if (showingPermissions) {
-			entry.setText(appOverview);
+			entry.setText(new Engine().transform(getTemplate("/rsrc/templates/app.html"), model)); //$NON-NLS-1$
 		}
 		else {
-			entry.setText(appPermissions);
+			entry.setText(new Engine().transform(getTemplate("/rsrc/templates/permissions.html"), model)); //$NON-NLS-1$
 		}
 		showingPermissions = !showingPermissions;
 		SwingUtilities.invokeLater(searchView);
