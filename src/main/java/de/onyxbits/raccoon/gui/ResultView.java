@@ -5,7 +5,6 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,7 +23,6 @@ import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
-import com.floreysoft.jmte.Engine;
 
 import de.onyxbits.raccoon.BrowseUtil;
 import de.onyxbits.raccoon.Messages;
@@ -133,8 +131,7 @@ public class ResultView extends JPanel implements ActionListener {
 		buttons.add(download);
 		buttons.add(details);
 		buttons.add(permissions);
-		entry = new JEditorPane(
-				"text/html", new Engine().transform(getTemplate("/rsrc/templates/app.html"), model)); //$NON-NLS-1$ //$NON-NLS-2$
+		entry = new JEditorPane("text/html", TmplTool.transform("cover.html", model)); //$NON-NLS-1$ //$NON-NLS-2$
 		entry.setEditable(false);
 		entry.setOpaque(false);
 		entry.setMargin(new Insets(10, 10, 10, 10));
@@ -153,28 +150,6 @@ public class ResultView extends JPanel implements ActionListener {
 		sep.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		add(sep);
 		add(outer);
-	}
-
-	/**
-	 * Read a resource file and return it as a sring
-	 * 
-	 * @param path
-	 *          resource path
-	 * @return content.
-	 */
-	private String getTemplate(String path) {
-		String tmpl = ""; //$NON-NLS-1$
-		try {
-			InputStream ins = getClass().getResourceAsStream(path);
-			byte[] b = new byte[ins.available()];
-			ins.read(b);
-			tmpl = new String(b);
-			ins.close();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		return tmpl;
 	}
 
 	private JPanel createBadges(List<String> perms) {
@@ -328,10 +303,10 @@ public class ResultView extends JPanel implements ActionListener {
 
 	private void doShowPermissions() {
 		if (showingPermissions) {
-			entry.setText(new Engine().transform(getTemplate("/rsrc/templates/app.html"), model)); //$NON-NLS-1$
+			entry.setText(TmplTool.transform("cover.html", model)); //$NON-NLS-1$
 		}
 		else {
-			entry.setText(new Engine().transform(getTemplate("/rsrc/templates/permissions.html"), model)); //$NON-NLS-1$
+			entry.setText(TmplTool.transform("permissions.html", model)); //$NON-NLS-1$
 		}
 		showingPermissions = !showingPermissions;
 		SwingUtilities.invokeLater(searchView);

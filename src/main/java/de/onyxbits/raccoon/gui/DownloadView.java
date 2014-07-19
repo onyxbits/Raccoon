@@ -3,6 +3,8 @@ package de.onyxbits.raccoon.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -47,19 +49,24 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		this.progress = new JProgressBar(0, 100);
 		this.progress.setString(Messages.getString("DownloadView.1")); //$NON-NLS-1$
 		this.progress.setStringPainted(true);
+
 		String pn = doc.getBackendDocid();
 		int vc = doc.getDetails().getAppDetails().getVersionCode();
-		String title = doc.getTitle();
 		File dest = archive.fileUnder(pn, vc);
+		HashMap<String, Object> model = new HashMap<String, Object>();
+		model.put("title", doc.getTitle());
+		model.put("path", dest.getParent());
+		Vector<String> files = new Vector<String>();
+		files.add(dest.getName());
+		model.put("files", files);
+
 		worker = new DownloadWorker(doc, archive, null);
-		String boiler = "<html><h2>" + title + "</h2><code>" + dest.getAbsolutePath() //$NON-NLS-1$ //$NON-NLS-2$
-				+ "</code></html>"; //$NON-NLS-1$
 		JPanel container = new JPanel();
 		container.setOpaque(false);
 		container.add(progress);
 		container.add(cancel);
 		container.add(open);
-		JEditorPane info = new JEditorPane("text/html", boiler); //$NON-NLS-1$
+		JEditorPane info = new JEditorPane("text/html", TmplTool.transform("download.html", model)); //$NON-NLS-1$
 		info.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		info.setEditable(false);
 		info.setOpaque(false);
