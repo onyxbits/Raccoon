@@ -3,6 +3,8 @@ package de.onyxbits.raccoon.gui;
 import java.io.InputStream;
 import java.util.HashMap;
 
+import org.apache.commons.io.IOUtils;
+
 import com.floreysoft.jmte.Engine;
 
 /**
@@ -43,9 +45,7 @@ class TmplTool {
 		String tmpl = ""; //$NON-NLS-1$
 		try {
 			InputStream ins = new Object().getClass().getResourceAsStream(path);
-			byte[] b = new byte[ins.available()];
-			ins.read(b);
-			tmpl = new String(b);
+			tmpl = IOUtils.toString(ins,"UTF-8");
 			ins.close();
 		}
 		catch (Exception e) {

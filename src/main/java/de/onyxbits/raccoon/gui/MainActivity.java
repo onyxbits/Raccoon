@@ -17,6 +17,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
@@ -47,6 +48,11 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	 */
 	public static final String LASTARCHIVE = "lastarchive"; //$NON-NLS-1$
 
+	/**
+	 * Preferences key for whether or not to fetch icons.
+	 */
+	public static final String FETCHICONS = "fetchicons"; //$NON-NLS-1$
+
 	private JMenuItem quit;
 	private JMenuItem open;
 	private JMenuItem search;
@@ -55,6 +61,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	private JMenuItem downloads;
 	private JMenuItem contents;
 	private JMenuItem newArchive;
+	private JRadioButtonMenuItem fetchIcons;
 
 	private JTabbedPane views;
 	private ListView downloadList;
@@ -97,6 +104,9 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 				Messages.getString("MainActivity.29"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.30")) //$NON-NLS-1$ //$NON-NLS-2$
 						.getKeyCode());
 		newArchive.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK));
+
+		Preferences prefs = Preferences.userNodeForPackage(getClass());
+		fetchIcons = new JRadioButtonMenuItem(Messages.getString("MainActivity.34"), prefs.getBoolean(FETCHICONS, false)); //$NON-NLS-1$
 		file.add(newArchive);
 		file.add(open);
 		file.add(new JSeparator());
@@ -116,6 +126,8 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		downloads.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, Event.CTRL_MASK));
 		view.add(search);
 		view.add(downloads);
+		view.add(new JSeparator());
+		view.add(fetchIcons);
 		search.setEnabled(false);
 		downloads.setEnabled(false);
 		bar.add(view);
@@ -152,6 +164,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		contents.addActionListener(this);
 		downloads.addActionListener(this);
 		updates.addActionListener(this);
+		fetchIcons.addActionListener(this);
 		addWindowListener(this);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		doMount(archive);
@@ -188,11 +201,17 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 			views.setSelectedIndex(0);
 			searchView.doUpdateSearch();
 		}
+		if (src == fetchIcons) {
+			Preferences prefs = Preferences.userNodeForPackage(getClass());
+			prefs.putBoolean(FETCHICONS, fetchIcons.isSelected());
+		}
 	}
 
 	private void doNewArchive() {
-		String res = JOptionPane.showInputDialog(this,
-				Messages.getString("MainActivity.32"), Messages.getString("MainActivity.31"), JOptionPane.QUESTION_MESSAGE); //$NON-NLS-1$ //$NON-NLS-2$
+		String res = JOptionPane
+				.showInputDialog(
+						this,
+						Messages.getString("MainActivity.32"), Messages.getString("MainActivity.31"), JOptionPane.QUESTION_MESSAGE); //$NON-NLS-1$ //$NON-NLS-2$
 		if (res != null && res.length() > 0) {
 			File file = new File(App.getDir(App.ARCHIVEDIR), res);
 			MainActivity ma = new MainActivity(new Archive(file));

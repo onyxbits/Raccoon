@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -111,6 +112,10 @@ public class ResultView extends JPanel implements ActionListener {
 		model.put("cover_date", doc.getDetails().getAppDetails().getUploadDate()); //$NON-NLS-1$
 		model.put("cover_size", Archive.humanReadableByteCount(doc.getDetails().getAppDetails() //$NON-NLS-1$
 				.getInstallationSize(), true));
+		File icon = SearchWorker.getImageCacheFile(doc.getBackendDocid(),4);
+		if (icon.exists()) {
+			model.put("cover_icon",icon.toURI());
+		}
 
 		List<String> perms = doc.getDetails().getAppDetails().getPermissionList();
 		if (perms.size() > 0) {

@@ -18,11 +18,17 @@ h1 {
 }
 </style>
 <body>
-	<u>
-		<h1>${cover_title}</h1>
-	</u>
-	<strong>${cover_author}</strong> |
-	<code>${cover_package}</code>
+	<table style="border: none">
+		<tr>
+			${if cover_icon}
+			<td><img src="${cover_icon}" width="100" height="100"></td>
+			${end}
+
+			<td valign="top"><u>
+					<h1>${cover_title}</h1>
+			</u> <strong>${cover_author}</strong><br><code>${cover_package}</code></td>
+		</tr>
+	</table>
 	<p>
 	<table>
 		<tr>

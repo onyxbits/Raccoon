@@ -33,6 +33,11 @@ public class App {
 	public static final String ARCHIVEDIR = "archives";
 
 	/**
+	 * Relative path to the homedir for caching files.
+	 */
+	public static final String CACHEDIR = "cache";
+
+	/**
 	 * Relative path, root directory for the app.
 	 */
 	public static final String HOMEDIR = "Raccoon";

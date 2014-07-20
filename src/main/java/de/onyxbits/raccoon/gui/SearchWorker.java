@@ -1,16 +1,23 @@
 package de.onyxbits.raccoon.gui;
 
+import java.io.File;
+import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
+import java.util.prefs.Preferences;
 
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import org.apache.commons.io.FileUtils;
+
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsEntry;
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsResponse;
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
+import com.akdeniz.googleplaycrawler.GooglePlay.Image;
 import com.akdeniz.googleplaycrawler.GooglePlay.SearchResponse;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 import com.akdeniz.googleplaycrawler.GooglePlayException;
@@ -33,6 +40,7 @@ class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 	private int limit;
 	private String localization;
 	private Archive archive;
+	private boolean fetchIcons;
 
 	/**
 	 * 
@@ -54,6 +62,8 @@ class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 		if (callback == null) {
 			throw new NullPointerException();
 		}
+		Preferences prefs = Preferences.userNodeForPackage(MainActivity.class);
+		fetchIcons = prefs.getBoolean(MainActivity.FETCHICONS, false);
 	}
 
 	/**
@@ -113,6 +123,9 @@ class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 			if (!archive.fileUnder(pn, vc).exists()) {
 				ret.add(bulkDetailsEntry);
 			}
+			if (fetchIcons) {
+				fetchIcon(doc);
+			}
 		}
 		return ret;
 	}
@@ -127,6 +140,9 @@ class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 			DocV2 all = response.getDoc(0);
 			for (int i = 0; i < all.getChildCount(); i++) {
 				apps.add(all.getChild(i).getBackendDocid());
+				if (fetchIcons) {
+					fetchIcon(all.getChild(i));
+				}
 			}
 		}
 		BulkDetailsResponse bdr = service.bulkDetails(apps);
@@ -135,6 +151,40 @@ class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 			ret.add(bdr.getEntry(i));
 		}
 		return ret;
+	}
+
+	private void fetchIcon(DocV2 doc) {
+		List<Image> lst = doc.getImageList();
+		Iterator<Image> it = lst.iterator();
+		while (it.hasNext()) {
+			Image img = it.next();
+			if (img.getImageType() == 4) {
+				try {
+					File f = getImageCacheFile(doc.getBackendDocid(), 4);
+					if (!f.exists()) {
+						URL u = new URL(img.getImageUrl());
+						FileUtils.copyURLToFile(u, f);
+					}
+					f.deleteOnExit();
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Figure out where to images
+	 * 
+	 * @param appId
+	 *          package id
+	 * @param type
+	 *          the numerical type of the image
+	 * @return where to cache the image.
+	 */
+	public static File getImageCacheFile(String appId, int type) {
+		return new File(App.getDir(App.CACHEDIR), appId + "-img-" + type);
 	}
 
 	@Override
