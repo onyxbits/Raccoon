@@ -8,9 +8,11 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -23,6 +25,8 @@ import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+
+
 
 import de.onyxbits.raccoon.App;
 import de.onyxbits.raccoon.BrowseUtil;
@@ -106,7 +110,8 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		newArchive.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK));
 
 		Preferences prefs = Preferences.userNodeForPackage(getClass());
-		fetchIcons = new JRadioButtonMenuItem(Messages.getString("MainActivity.34"), prefs.getBoolean(FETCHICONS, false)); //$NON-NLS-1$
+		fetchIcons = new JRadioButtonMenuItem(
+				Messages.getString("MainActivity.34"), prefs.getBoolean(FETCHICONS, false)); //$NON-NLS-1$
 		file.add(newArchive);
 		file.add(open);
 		file.add(new JSeparator());
@@ -167,6 +172,8 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		fetchIcons.addActionListener(this);
 		addWindowListener(this);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		URL img = getClass().getResource("/rsrc/icon.png");
+		setIconImage(new ImageIcon(img,"").getImage());
 		doMount(archive);
 		pack();
 		setSize(800, 600);
