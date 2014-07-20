@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -144,7 +145,9 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		query.setEnabled(true);
 		page.setEnabled(true);
 		cardLayout.show(main, CARDMESSAGE);
-		message.setText("<html><body><div align=\"center\" style=\"margin-top: 50px\"><strong>"+status+"</strong></div></body></html>");
+		HashMap<String,Object> model = new HashMap<String,Object>();
+		model.put("message",status);
+		message.setText(TmplTool.transform("message.html",model));
 	}
 
 	protected void doResultList(JPanel listing) {
