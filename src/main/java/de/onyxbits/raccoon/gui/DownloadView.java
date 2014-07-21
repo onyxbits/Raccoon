@@ -126,6 +126,7 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 
 	public void onComplete(Object src) {
 		progress.setString(Messages.getString("DownloadView.7")); //$NON-NLS-1$
+		progress.setValue(100);
 		cancel.setEnabled(false);
 		open.setEnabled(true);
 	}
