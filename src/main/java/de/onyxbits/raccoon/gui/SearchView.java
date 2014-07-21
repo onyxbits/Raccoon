@@ -89,14 +89,15 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		}
 		catch (Exception e) {
 			// We can do without the newsfeed
-			e.printStackTrace();
+			// e.printStackTrace();
 		}
 		try {
 			DownloadLogger dl = new DownloadLogger(archive);
 			model.put("lastsession", dl.getLastSessionDownloads()); //$NON-NLS-1$
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			// We can do without the latest downloads.
+			// e.printStackTrace();
 		}
 		message = new JEditorPane("text/html", TmplTool.transform("splash.html", model)); //$NON-NLS-1$ //$NON-NLS-2$
 		message.setEditable(false);
