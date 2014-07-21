@@ -1,0 +1,55 @@
+<html>
+
+<style>
+h1 {
+	text-decoration: underline;
+}
+
+th {
+	text-align: left;
+	background-color: #9E9E9E;
+	color: black;
+}
+</style>
+<body>
+
+
+	<table width="100%" style="border: 1px solid #9E9E9E;">
+		<tr>
+			<th>${i18n_archive_folder}</th>
+			<th>${i18n_archive_appcount}</th>
+		</tr>
+		<tr>
+			<td><a href="${archive_folder.path}">${archive_folder.name}</a></td>
+			<td>${archive_count}</td>
+		</tr>
+	</table>
+<p>
+	<hr>
+
+	<table width="100%">
+		<tr>
+			<td width="50%" valign="top" style="border-right: 1px solid;">
+				<h2>${i18n_latestnews}</h2> ${if newsfeed}
+				<ul>
+					${foreach newsfeed item}
+					<li><a href="${item.link}">${item.title}</a> ${end}
+				</ul> ${else} <em>${i18n_none}</em> ${end}
+			</td>
+			<td valign="top" >
+				<h2>${i18n_lastsession}</h2> ${if lastsession}
+				<ul>
+					${foreach lastsession item}
+					<li><a href="${item.parrent}">${item.name}</a>${end}
+				</ul> ${else} <em>${i18n_none}</em> ${end}
+			</td>
+		</tr>
+	</table>
+	<hr>
+	<div align="right">
+		<small><a href="http://www.onyxbits.de/raccoon">Raccoon</a>
+			v${app_version}</small>
+
+	</div>
+</body>
+</html>

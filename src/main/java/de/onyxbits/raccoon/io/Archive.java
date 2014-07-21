@@ -256,6 +256,27 @@ public class Archive {
 	}
 
 	/**
+	 * Statistics: count apps in this archive
+	 * 
+	 * @return the number of subdirectories in the APK_STORAGE
+	 */
+	public int countApps() {
+		int ret = 0;
+		try {
+			File[] lst = new File(root, APKDIR).listFiles();
+			for (File f : lst) {
+				if (f.isDirectory()) {
+					ret++;
+				}
+			}
+		}
+		catch (Exception e) {
+			// Obviously no apps.
+		}
+		return ret;
+	}
+
+	/**
 	 * Turn a raw filesize into a human readable one
 	 * 
 	 * @param bytes
@@ -272,4 +293,5 @@ public class Archive {
 		String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
 		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
 	}
+
 }

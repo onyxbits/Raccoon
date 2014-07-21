@@ -26,8 +26,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-
-
 import de.onyxbits.raccoon.App;
 import de.onyxbits.raccoon.BrowseUtil;
 import de.onyxbits.raccoon.Messages;
@@ -56,6 +54,11 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	 * Preferences key for whether or not to fetch icons.
 	 */
 	public static final String FETCHICONS = "fetchicons"; //$NON-NLS-1$
+
+	/**
+	 * Preferences key for whether or not to fetch news.
+	 */
+	public static final String FETCHNEWS = "fetchnews";
 
 	private JMenuItem quit;
 	private JMenuItem open;
@@ -173,7 +176,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		addWindowListener(this);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		URL img = getClass().getResource("/rsrc/icon.png");
-		setIconImage(new ImageIcon(img,"").getImage());
+		setIconImage(new ImageIcon(img, "").getImage());
 		doMount(archive);
 		pack();
 		setSize(800, 600);
