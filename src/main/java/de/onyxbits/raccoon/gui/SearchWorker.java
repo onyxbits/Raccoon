@@ -165,7 +165,6 @@ class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 						URL u = new URL(img.getImageUrl());
 						FileUtils.copyURLToFile(u, f);
 					}
-					f.deleteOnExit();
 				}
 				catch (Exception e) {
 					e.printStackTrace();

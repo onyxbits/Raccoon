@@ -45,6 +45,11 @@ public class App {
 	public static final String HOMEDIR = "Raccoon";
 
 	/**
+	 * Time to live in the cache (1 week).
+	 */
+	public static final long CACHETTL = 1000 * 60 * 60 * 24 * 7;
+
+	/**
 	 * Application Entry
 	 * 
 	 * @param args
@@ -63,6 +68,13 @@ public class App {
 			// There is also no need to show news on the first run. The user will
 			// want to explore the app instead of knowing what's new.
 			try {
+				long now = System.currentTimeMillis();
+				File[] lst = getDir(CACHEDIR).listFiles();
+				for (File f : lst) {
+					if (f.lastModified() < now - CACHETTL) {
+						f.delete();
+					}
+				}
 				Loader.update();
 			}
 			catch (IOException e) {
