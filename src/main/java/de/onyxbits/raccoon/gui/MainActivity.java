@@ -179,7 +179,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		setIconImage(new ImageIcon(img, "").getImage());
 		doMount(archive);
 		pack();
-		setSize(800, 600);
+		setSize(1024, 768);
 		setVisible(true);
 		all.add(this);
 	}
