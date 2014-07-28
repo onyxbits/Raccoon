@@ -114,7 +114,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 
 		Preferences prefs = Preferences.userNodeForPackage(getClass());
 		fetchIcons = new JRadioButtonMenuItem(
-				Messages.getString("MainActivity.34"), prefs.getBoolean(FETCHICONS, false)); //$NON-NLS-1$
+				Messages.getString("MainActivity.34"), prefs.getBoolean(FETCHICONS, true)); //$NON-NLS-1$
 		file.add(newArchive);
 		file.add(open);
 		file.add(new JSeparator());

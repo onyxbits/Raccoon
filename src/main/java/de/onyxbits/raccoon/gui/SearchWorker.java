@@ -63,7 +63,7 @@ class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 			throw new NullPointerException();
 		}
 		Preferences prefs = Preferences.userNodeForPackage(MainActivity.class);
-		fetchIcons = prefs.getBoolean(MainActivity.FETCHICONS, false);
+		fetchIcons = prefs.getBoolean(MainActivity.FETCHICONS, true);
 	}
 
 	/**
