@@ -122,6 +122,9 @@ public class ResultView extends JPanel implements ActionListener {
 		if (icon.exists()) {
 			model.put("icon", icon.toURI()); //$NON-NLS-1$
 		}
+		else {
+			model.put("icon",getClass().getResource("/rsrc/icons/icon_missing.png").toString());
+		}
 
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new GridLayout(0, 1, 0, 4));
