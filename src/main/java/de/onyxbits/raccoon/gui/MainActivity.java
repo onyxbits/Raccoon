@@ -175,7 +175,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		fetchIcons.addActionListener(this);
 		addWindowListener(this);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		URL img = getClass().getResource("/rsrc/icon.png");
+		URL img = getClass().getResource("/rsrc/icons/appicon.png");
 		setIconImage(new ImageIcon(img, "").getImage());
 		doMount(archive);
 		pack();
