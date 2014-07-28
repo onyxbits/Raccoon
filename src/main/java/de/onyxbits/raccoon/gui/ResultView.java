@@ -69,6 +69,7 @@ public class ResultView extends JPanel implements ActionListener {
 	private static Icon iconCamera;
 	private static Icon iconSystem;
 	private static Icon iconStorage;
+	private static Icon iconLicenseCheck;
 	private static Icon iconDownload;
 
 	static {
@@ -82,6 +83,7 @@ public class ResultView extends JPanel implements ActionListener {
 		iconCamera = new ImageIcon(clazz.getResource("/rsrc/badges/camera-outline.png")); //$NON-NLS-1$
 		iconSystem = new ImageIcon(clazz.getResource("/rsrc/badges/spanner-outline.png")); //$NON-NLS-1$
 		iconStorage = new ImageIcon(clazz.getResource("/rsrc/badges/folder.png")); //$NON-NLS-1$
+		iconLicenseCheck = new ImageIcon(clazz.getResource("/rsrc/badges/key-outline.png")); //$NON-NLS-1$
 		iconDownload = new ImageIcon(clazz.getResource("/rsrc/icons/download.png")); //$NON-NLS-1$
 	}
 
@@ -106,7 +108,7 @@ public class ResultView extends JPanel implements ActionListener {
 		model.put("i18n_version", Messages.getString("ResultView.2")); //$NON-NLS-1$ //$NON-NLS-2$
 		model.put("i18n_size", Messages.getString("ResultView.9")); //$NON-NLS-1$ //$NON-NLS-2$
 		model.put("i18n_permissions", Messages.getString("ResultView.27")); //$NON-NLS-1$ //$NON-NLS-2$
-		model.put("i18n_changelog",Messages.getString("ResultView.4")); //$NON-NLS-1$ //$NON-NLS-2$
+		model.put("i18n_changelog", Messages.getString("ResultView.4")); //$NON-NLS-1$ //$NON-NLS-2$
 		model.put("title", doc.getTitle()); //$NON-NLS-1$
 		model.put("installs", doc.getDetails().getAppDetails().getNumDownloads()); //$NON-NLS-1$
 		model.put("rating", String.format("%.2f", doc.getAggregateRating().getStarRating())); //$NON-NLS-1$ //$NON-NLS-2$
@@ -124,7 +126,7 @@ public class ResultView extends JPanel implements ActionListener {
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new GridLayout(0, 1, 0, 4));
 		buttons.setOpaque(false);
-		download = new JButton(Messages.getString("ResultView.25"),iconDownload); //$NON-NLS-1$
+		download = new JButton(Messages.getString("ResultView.25"), iconDownload); //$NON-NLS-1$
 		gplay = new JButton(Messages.getString("ResultView.26")); //$NON-NLS-1$
 		details = new JToggleButton(Messages.getString("ResultView.6")); //$NON-NLS-1$
 		permissions = new JToggleButton(Messages.getString("ResultView.27")); //$NON-NLS-1$
@@ -213,7 +215,8 @@ public class ResultView extends JPanel implements ActionListener {
 						"android.permission.READ_PROFILE", //$NON-NLS-1$
 						"android.permission.USE_CREDENTIALS", //$NON-NLS-1$
 						"android.permission.WRITE_USER_DICTIONARY" }, //$NON-NLS-1$
-				{ "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE" } }; //$NON-NLS-1$ //$NON-NLS-2$
+				{ "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE" }, //$NON-NLS-1$ //$NON-NLS-2$
+				{ "com.android.vending.CHECK_LICENSE" } }; //$NON-NLS-1$
 		for (int x = 0; x < groups.length; x++) {
 			for (int y = 0; y < groups[x].length; y++) {
 				if (x == 0 && perms.contains(groups[x][y])) {
@@ -267,6 +270,12 @@ public class ResultView extends JPanel implements ActionListener {
 				if (x == 8 && perms.contains(groups[x][y])) {
 					JLabel lbl = new JLabel(iconStorage);
 					lbl.setToolTipText(Messages.getString("ResultView.92")); //$NON-NLS-1$
+					ret.add(lbl);
+					break;
+				}
+				if (x == 9 && perms.contains(groups[x][y])) {
+					JLabel lbl = new JLabel(iconLicenseCheck);
+					lbl.setToolTipText(Messages.getString("ResultView.0")); //$NON-NLS-1$
 					ret.add(lbl);
 					break;
 				}
@@ -357,7 +366,7 @@ public class ResultView extends JPanel implements ActionListener {
 		model.put("website", doc.getDetails().getAppDetails().getDeveloperWebsite()); //$NON-NLS-1$
 		model.put("email", doc.getDetails().getAppDetails().getDeveloperEmail()); //$NON-NLS-1$
 		model.put("description", doc.getDescriptionHtml()); //$NON-NLS-1$
-		model.put("changelog",doc.getDetails().getAppDetails().getRecentChangesHtml()); //$NON-NLS-1$
+		model.put("changelog", doc.getDetails().getAppDetails().getRecentChangesHtml()); //$NON-NLS-1$
 		entry.setText(TmplTool.transform("app.html", model)); //$NON-NLS-1$
 		SwingUtilities.invokeLater(searchView);
 	}
