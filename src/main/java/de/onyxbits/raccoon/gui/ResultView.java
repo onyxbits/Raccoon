@@ -106,6 +106,7 @@ public class ResultView extends JPanel implements ActionListener {
 		model.put("i18n_version", Messages.getString("ResultView.2")); //$NON-NLS-1$ //$NON-NLS-2$
 		model.put("i18n_size", Messages.getString("ResultView.9")); //$NON-NLS-1$ //$NON-NLS-2$
 		model.put("i18n_permissions", Messages.getString("ResultView.27")); //$NON-NLS-1$ //$NON-NLS-2$
+		model.put("i18n_changelog",Messages.getString("ResultView.4")); //$NON-NLS-1$ //$NON-NLS-2$
 		model.put("title", doc.getTitle()); //$NON-NLS-1$
 		model.put("installs", doc.getDetails().getAppDetails().getNumDownloads()); //$NON-NLS-1$
 		model.put("rating", String.format("%.2f", doc.getAggregateRating().getStarRating())); //$NON-NLS-1$ //$NON-NLS-2$
@@ -310,9 +311,9 @@ public class ResultView extends JPanel implements ActionListener {
 	}
 
 	private void doTogglePermissions() {
-		if (model.containsKey("permissions_list")) {
-			model.remove("permissions_list");
-			model.remove("permissions_none");
+		if (model.containsKey("permissions_list")) { //$NON-NLS-1$
+			model.remove("permissions_list"); //$NON-NLS-1$
+			model.remove("permissions_none"); //$NON-NLS-1$
 		}
 		else {
 			List<String> perms = doc.getDetails().getAppDetails().getPermissionList();
@@ -332,12 +333,13 @@ public class ResultView extends JPanel implements ActionListener {
 	}
 
 	private void doToggleDetails() {
-		if (model.containsKey("description")) {
-			model.remove("version");
-			model.remove("vcode");
-			model.remove("email");
-			model.remove("website");
-			model.remove("description");
+		if (model.containsKey("description")) { //$NON-NLS-1$
+			model.remove("version"); //$NON-NLS-1$
+			model.remove("vcode"); //$NON-NLS-1$
+			model.remove("email"); //$NON-NLS-1$
+			model.remove("website"); //$NON-NLS-1$
+			model.remove("description"); //$NON-NLS-1$
+			model.remove("changelog"); //$NON-NLS-1$
 			entry.setText(TmplTool.transform("app.html", model)); //$NON-NLS-1$
 			SwingUtilities.invokeLater(searchView);
 		}
@@ -355,6 +357,7 @@ public class ResultView extends JPanel implements ActionListener {
 		model.put("website", doc.getDetails().getAppDetails().getDeveloperWebsite()); //$NON-NLS-1$
 		model.put("email", doc.getDetails().getAppDetails().getDeveloperEmail()); //$NON-NLS-1$
 		model.put("description", doc.getDescriptionHtml()); //$NON-NLS-1$
+		model.put("changelog",doc.getDetails().getAppDetails().getRecentChangesHtml()); //$NON-NLS-1$
 		entry.setText(TmplTool.transform("app.html", model)); //$NON-NLS-1$
 		SwingUtilities.invokeLater(searchView);
 	}

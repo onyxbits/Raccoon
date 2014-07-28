@@ -21,8 +21,7 @@ h1 {
 	<table style="border: none">
 		<tr>
 			${if icon}
-			<td><img src="${icon}" width="100" height="100"></td>
-			${end}
+			<td><img src="${icon}" width="100" height="100"></td> ${end}
 
 			<td valign="top"><u>
 					<h1>${title}</h1>
@@ -33,33 +32,48 @@ h1 {
 	${if description}
 	<p>
 	<div width="700">${description}</div>
-	${end}
-	
-	${if permissions_list}
+	${end} ${if permissions_list}
 	<p>
-	<table width="100%" >
-	<tr><th>${i18n_permissions}</th></tr>
-	<tr><td> 
-	<ul>
-		${foreach permissions_list item}
-		<li>${item} ${end}
-	</td></tr></ul></table>
+	<table width="100%">
+		<tr>
+			<th>${i18n_permissions}</th>
+		</tr>
+		<tr>
+			<td>
+				<ul>
+					${foreach permissions_list item}
+					<li>${item} ${end}
+			</td>
+		</tr>
+		</ul>
+	</table>
+	${end} ${if changelog}
+	<p>
+	<table width="100%">
+		<tr>
+			<th>${i18n_changelog}</th>
+		</tr>
+		<tr>
+			<td>${changelog}</td>
+		</tr>
+	</table>
 	${end}
-	
+
 	<p>
 	<table width="100%">
 		<tr>
 			<th>${i18n_size}</th>
-			<th>${i18n_date}</th> 
-			${if version}<th>${i18n_version}</th>${end}
+			<th>${i18n_date}</th> ${if version}
+			<th>${i18n_version}</th>${end}
 			<th>${i18n_price}</th>
 			<th>${i18n_installs}</th>
 			<th>${i18n_rating}</th>
 		</tr>
 		<tr>
 			<td>${size}</td>
-			<td>${date}</td>
-			${if version}<td>${version}<br>[${vcode}]</td>${end}
+			<td>${date}</td> ${if version}
+			<td>${version}<br>[${vcode}]
+			</td>${end}
 			<td>${price}</td>
 			<td>${installs}</td>
 			<td>${rating}</td>
