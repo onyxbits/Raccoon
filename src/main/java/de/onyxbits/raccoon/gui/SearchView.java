@@ -95,9 +95,7 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 			// We can do without the latest downloads.
 			// e.printStackTrace();
 		}
-		message = new JEditorPane("text/html", TmplTool.transform("splash.html", model)); //$NON-NLS-1$ //$NON-NLS-2$
-		message.setEditable(false);
-		message.setOpaque(false);
+		message = new HypertextPane(TmplTool.transform("splash.html", model)); //$NON-NLS-1$
 		message.setMargin(new Insets(10, 10, 10, 10));
 		progress = new JProgressBar();
 		progress.setIndeterminate(true);

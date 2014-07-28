@@ -137,9 +137,7 @@ public class ResultView extends JPanel implements ActionListener {
 		buttons.add(gplay);
 		buttons.add(details);
 		buttons.add(permissions);
-		entry = new JEditorPane("text/html", TmplTool.transform("app.html", model)); //$NON-NLS-1$ //$NON-NLS-2$
-		entry.setEditable(false);
-		entry.setOpaque(false);
+		entry = new HypertextPane(TmplTool.transform("app.html", model)); //$NON-NLS-1$
 		entry.setMargin(new Insets(10, 10, 10, 10));
 		entry.addHyperlinkListener(new BrowseUtil());
 		// Keep enclosing scrollpanes steady

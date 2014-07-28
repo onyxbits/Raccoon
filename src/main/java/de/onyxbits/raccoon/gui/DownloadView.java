@@ -66,7 +66,7 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		container.add(progress);
 		container.add(cancel);
 		container.add(open);
-		JEditorPane info = new JEditorPane("text/html", TmplTool.transform("download.html", model)); //$NON-NLS-1$
+		JEditorPane info = new HypertextPane(TmplTool.transform("download.html", model)); //$NON-NLS-1$
 		info.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		info.setEditable(false);
 		info.setOpaque(false);
