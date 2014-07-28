@@ -69,6 +69,7 @@ public class ResultView extends JPanel implements ActionListener {
 	private static Icon iconCamera;
 	private static Icon iconSystem;
 	private static Icon iconStorage;
+	private static Icon iconDownload;
 
 	static {
 		Class<?> clazz = new Object().getClass();
@@ -81,6 +82,7 @@ public class ResultView extends JPanel implements ActionListener {
 		iconCamera = new ImageIcon(clazz.getResource("/rsrc/badges/camera-outline.png")); //$NON-NLS-1$
 		iconSystem = new ImageIcon(clazz.getResource("/rsrc/badges/spanner-outline.png")); //$NON-NLS-1$
 		iconStorage = new ImageIcon(clazz.getResource("/rsrc/badges/folder.png")); //$NON-NLS-1$
+		iconDownload = new ImageIcon(clazz.getResource("/rsrc/icons/download.png")); //$NON-NLS-1$
 	}
 
 	/**
@@ -121,7 +123,7 @@ public class ResultView extends JPanel implements ActionListener {
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new GridLayout(0, 1, 0, 4));
 		buttons.setOpaque(false);
-		download = new JButton(Messages.getString("ResultView.25")); //$NON-NLS-1$
+		download = new JButton(Messages.getString("ResultView.25"),iconDownload); //$NON-NLS-1$
 		gplay = new JButton(Messages.getString("ResultView.26")); //$NON-NLS-1$
 		details = new JToggleButton(Messages.getString("ResultView.6")); //$NON-NLS-1$
 		permissions = new JToggleButton(Messages.getString("ResultView.27")); //$NON-NLS-1$
