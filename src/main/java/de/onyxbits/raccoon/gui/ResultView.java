@@ -171,6 +171,7 @@ public class ResultView extends JPanel implements ActionListener {
 				"android.permission.ACCESS_WIFI_STATE", //$NON-NLS-1$
 				"android.permission.BIND_VPN_SERVICE" }, //$NON-NLS-1$
 				{ "com.android.vending.BILLING" }, //$NON-NLS-1$
+				{ "com.android.vending.CHECK_LICENSE" }, //$NON-NLS-1$
 				{ "android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION" }, //$NON-NLS-1$ //$NON-NLS-2$
 				{ "android.permission.RECORD_AUDIO" }, //$NON-NLS-1$
 				{ "android.permission.CAMERA" }, //$NON-NLS-1$
@@ -215,8 +216,7 @@ public class ResultView extends JPanel implements ActionListener {
 						"android.permission.READ_PROFILE", //$NON-NLS-1$
 						"android.permission.USE_CREDENTIALS", //$NON-NLS-1$
 						"android.permission.WRITE_USER_DICTIONARY" }, //$NON-NLS-1$
-				{ "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE" }, //$NON-NLS-1$ //$NON-NLS-2$
-				{ "com.android.vending.CHECK_LICENSE" } }; //$NON-NLS-1$
+				{ "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE" } }; //$NON-NLS-1$ //$NON-NLS-2$
 		for (int x = 0; x < groups.length; x++) {
 			for (int y = 0; y < groups[x].length; y++) {
 				if (x == 0 && perms.contains(groups[x][y])) {
@@ -232,50 +232,50 @@ public class ResultView extends JPanel implements ActionListener {
 					break;
 				}
 				if (x == 2 && perms.contains(groups[x][y])) {
+					JLabel lbl = new JLabel(iconLicenseCheck);
+					lbl.setToolTipText(Messages.getString("ResultView.0")); //$NON-NLS-1$
+					ret.add(lbl);
+					break;
+				}
+				if (x == 3 && perms.contains(groups[x][y])) {
 					JLabel lbl = new JLabel(iconLocation);
 					lbl.setToolTipText(Messages.getString("ResultView.86")); //$NON-NLS-1$
 					ret.add(lbl);
 					break;
 				}
-				if (x == 3 && perms.contains(groups[x][y])) {
+				if (x == 4 && perms.contains(groups[x][y])) {
 					JLabel lbl = new JLabel(iconMicrophone);
 					lbl.setToolTipText(Messages.getString("ResultView.87")); //$NON-NLS-1$
 					ret.add(lbl);
 					break;
 				}
-				if (x == 4 && perms.contains(groups[x][y])) {
+				if (x == 5 && perms.contains(groups[x][y])) {
 					JLabel lbl = new JLabel(iconCamera);
 					lbl.setToolTipText(Messages.getString("ResultView.88")); //$NON-NLS-1$
 					ret.add(lbl);
 					break;
 				}
-				if (x == 5 && perms.contains(groups[x][y])) {
+				if (x == 6 && perms.contains(groups[x][y])) {
 					JLabel lbl = new JLabel(iconPhone);
 					lbl.setToolTipText(Messages.getString("ResultView.89")); //$NON-NLS-1$
 					ret.add(lbl);
 					break;
 				}
-				if (x == 6 && perms.contains(groups[x][y])) {
+				if (x == 7 && perms.contains(groups[x][y])) {
 					JLabel lbl = new JLabel(iconSystem);
 					lbl.setToolTipText(Messages.getString("ResultView.90")); //$NON-NLS-1$
 					ret.add(lbl);
 					break;
 				}
-				if (x == 7 && perms.contains(groups[x][y])) {
+				if (x == 8 && perms.contains(groups[x][y])) {
 					JLabel lbl = new JLabel(iconPersonal);
 					lbl.setToolTipText(Messages.getString("ResultView.91")); //$NON-NLS-1$
 					ret.add(lbl);
 					break;
 				}
-				if (x == 8 && perms.contains(groups[x][y])) {
+				if (x == 9 && perms.contains(groups[x][y])) {
 					JLabel lbl = new JLabel(iconStorage);
 					lbl.setToolTipText(Messages.getString("ResultView.92")); //$NON-NLS-1$
-					ret.add(lbl);
-					break;
-				}
-				if (x == 9 && perms.contains(groups[x][y])) {
-					JLabel lbl = new JLabel(iconLicenseCheck);
-					lbl.setToolTipText(Messages.getString("ResultView.0")); //$NON-NLS-1$
 					ret.add(lbl);
 					break;
 				}
