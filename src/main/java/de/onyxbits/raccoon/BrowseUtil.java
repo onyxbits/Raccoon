@@ -1,6 +1,8 @@
 package de.onyxbits.raccoon;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -63,6 +65,23 @@ public class BrowseUtil implements HyperlinkListener{
 		return null;
 	}
 	
+	private static Exception openMail(URI addr) {
+		try {
+			if (java.awt.Desktop.isDesktopSupported()) {
+				java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+
+				if (desktop.isSupported(java.awt.Desktop.Action.MAIL)) {
+					desktop.mail(addr);
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return e;
+		}
+		return null;
+	}
+	
 	@Override
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
@@ -80,7 +99,14 @@ public class BrowseUtil implements HyperlinkListener{
 			if ("https".equals(e.getURL().getProtocol())) {
 				BrowseUtil.openUrl(e.getURL().toString());
 			}
+			if ("mailto".equals(e.getURL().getProtocol())) {
+				try {
+					BrowseUtil.openMail(e.getURL().toURI());
+				}
+				catch (URISyntaxException e1) {
+					e1.printStackTrace();
+				}
+			}
 		}
 	}
-	
 }

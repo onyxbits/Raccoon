@@ -25,7 +25,8 @@ h1 {
 
 			<td valign="top"><u>
 					<h1>${title}</h1>
-			</u> ${if website} <strong><a href="${website}">${author}</a></strong><br>
+			</u> ${if website} <strong><a href="${website}">${author}</a></strong>
+				${if email} <a href="mailto:${email}">&lt;${email}&gt;</a>${end}<br>
 				${else} <strong>${author}</strong><br> ${end} <code>${package}</code></td>
 		</tr>
 	</table>
