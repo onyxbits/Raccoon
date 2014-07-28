@@ -21,7 +21,9 @@ import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
+import javax.swing.text.DefaultCaret;
 
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 
@@ -46,17 +48,17 @@ public class ResultView extends JPanel implements ActionListener {
 
 	private JButton download;
 
-	private JButton details;
+	private JButton gplay;
 
-	private JButton permissions;
+	private JToggleButton details;
+
+	private JToggleButton permissions;
 
 	private SearchView searchView;
 
 	private JEditorPane entry;
 
 	private HashMap<String, Object> model;
-
-	private boolean showingPermissions;
 
 	private static Icon iconNetwork;
 	private static Icon iconIap;
@@ -94,53 +96,47 @@ public class ResultView extends JPanel implements ActionListener {
 		this.doc = doc;
 		this.searchView = searchView;
 
-		// FIXME: The api returns wrong values for the commentcount, number of
-		// ratings, version and summary.
-
 		model = new HashMap<String, Object>();
 		model.put("i18n_installs", Messages.getString("ResultView.1")); //$NON-NLS-1$ //$NON-NLS-2$
 		model.put("i18n_rating", Messages.getString("ResultView.3")); //$NON-NLS-1$ //$NON-NLS-2$
 		model.put("i18n_price", Messages.getString("ResultView.5")); //$NON-NLS-1$ //$NON-NLS-2$
 		model.put("i18n_date", Messages.getString("ResultView.7")); //$NON-NLS-1$ //$NON-NLS-2$
+		model.put("i18n_version", Messages.getString("ResultView.2")); //$NON-NLS-1$ //$NON-NLS-2$
 		model.put("i18n_size", Messages.getString("ResultView.9")); //$NON-NLS-1$ //$NON-NLS-2$
-		model.put("cover_title", doc.getTitle()); //$NON-NLS-1$
-		model.put("cover_installs", doc.getDetails().getAppDetails().getNumDownloads()); //$NON-NLS-1$
-		model.put("cover_rating", String.format("%.2f", doc.getAggregateRating().getStarRating())); //$NON-NLS-1$ //$NON-NLS-2$
-		model.put("cover_package", doc.getBackendDocid()); //$NON-NLS-1$
-		model.put("cover_author", doc.getCreator()); //$NON-NLS-1$
-		model.put("cover_price", doc.getOffer(0).getFormattedAmount()); //$NON-NLS-1$
-		model.put("cover_date", doc.getDetails().getAppDetails().getUploadDate()); //$NON-NLS-1$
-		model.put("cover_size", Archive.humanReadableByteCount(doc.getDetails().getAppDetails() //$NON-NLS-1$
+		model.put("i18n_permissions", Messages.getString("ResultView.27")); //$NON-NLS-1$ //$NON-NLS-2$
+		model.put("title", doc.getTitle()); //$NON-NLS-1$
+		model.put("installs", doc.getDetails().getAppDetails().getNumDownloads()); //$NON-NLS-1$
+		model.put("rating", String.format("%.2f", doc.getAggregateRating().getStarRating())); //$NON-NLS-1$ //$NON-NLS-2$
+		model.put("package", doc.getBackendDocid()); //$NON-NLS-1$
+		model.put("author", doc.getCreator()); //$NON-NLS-1$
+		model.put("price", doc.getOffer(0).getFormattedAmount()); //$NON-NLS-1$
+		model.put("date", doc.getDetails().getAppDetails().getUploadDate()); //$NON-NLS-1$
+		model.put("size", Archive.humanReadableByteCount(doc.getDetails().getAppDetails() //$NON-NLS-1$
 				.getInstallationSize(), true));
-		File icon = SearchWorker.getImageCacheFile(doc.getBackendDocid(),4);
+		File icon = SearchWorker.getImageCacheFile(doc.getBackendDocid(), 4);
 		if (icon.exists()) {
-			model.put("cover_icon",icon.toURI());
-		}
-
-		List<String> perms = doc.getDetails().getAppDetails().getPermissionList();
-		if (perms.size() > 0) {
-			ArrayList<String> sortMe = new ArrayList<String>(perms);
-			Collections.sort(sortMe);
-			model.put("permissions_list", sortMe); //$NON-NLS-1$
-		}
-		else {
-			model.put("permissions_none", Messages.getString("ResultView.22")); //$NON-NLS-1$ //$NON-NLS-2$
+			model.put("icon", icon.toURI()); //$NON-NLS-1$
 		}
 
 		JPanel buttons = new JPanel();
-		buttons.setLayout(new GridLayout(3, 1, 0, 4));
+		buttons.setLayout(new GridLayout(0, 1, 0, 4));
 		buttons.setOpaque(false);
 		download = new JButton(Messages.getString("ResultView.25")); //$NON-NLS-1$
-		details = new JButton(Messages.getString("ResultView.26")); //$NON-NLS-1$
-		permissions = new JButton(Messages.getString("ResultView.27")); //$NON-NLS-1$
+		gplay = new JButton(Messages.getString("ResultView.26")); //$NON-NLS-1$
+		details = new JToggleButton(Messages.getString("ResultView.6")); //$NON-NLS-1$
+		permissions = new JToggleButton(Messages.getString("ResultView.27")); //$NON-NLS-1$
 		buttons.add(download);
+		buttons.add(gplay);
 		buttons.add(details);
 		buttons.add(permissions);
-		entry = new JEditorPane("text/html", TmplTool.transform("cover.html", model)); //$NON-NLS-1$ //$NON-NLS-2$
+		entry = new JEditorPane("text/html", TmplTool.transform("app.html", model)); //$NON-NLS-1$ //$NON-NLS-2$
 		entry.setEditable(false);
 		entry.setOpaque(false);
 		entry.setMargin(new Insets(10, 10, 10, 10));
-		add(entry);
+		entry.addHyperlinkListener(new BrowseUtil());
+		// Keep enclosing scrollpanes steady
+		DefaultCaret caret = (DefaultCaret) entry.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
 		JPanel outer = new JPanel(); // Needed to simplify the layout code.
 		outer.setOpaque(false);
 		JPanel container = new JPanel();
@@ -148,13 +144,14 @@ public class ResultView extends JPanel implements ActionListener {
 		container.setOpaque(false);
 		container.add(buttons);
 		container.add(Box.createVerticalStrut(10));
-		container.add(createBadges(perms));
+		container.add(createBadges(doc.getDetails().getAppDetails().getPermissionList()));
 		container.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		outer.add(container);
 		JSeparator sep = new JSeparator(JSeparator.VERTICAL);
 		sep.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		add(sep);
 		add(outer);
+		add(sep);
+		add(entry);
 	}
 
 	private JPanel createBadges(List<String> perms) {
@@ -279,8 +276,9 @@ public class ResultView extends JPanel implements ActionListener {
 		ResultView ret = new ResultView(searchView, doc);
 		ret.setLayout(new BoxLayout(ret, BoxLayout.X_AXIS));
 		ret.download.addActionListener(ret);
-		ret.details.addActionListener(ret);
+		ret.gplay.addActionListener(ret);
 		ret.permissions.addActionListener(ret);
+		ret.details.addActionListener(ret);
 		return ret;
 	}
 
@@ -297,23 +295,65 @@ public class ResultView extends JPanel implements ActionListener {
 				entry.setText(doc.toString());
 			}
 			else {
-				BrowseUtil.openUrl(doc.getShareUrl());
-				SwingUtilities.invokeLater(searchView);
+				doToggleDetails();
 			}
 		}
+		if (src == gplay) {
+			BrowseUtil.openUrl(doc.getShareUrl());
+			SwingUtilities.invokeLater(searchView); // Re - focus
+		}
 		if (src == permissions) {
-			doShowPermissions();
+			doTogglePermissions();
 		}
 	}
 
-	private void doShowPermissions() {
-		if (showingPermissions) {
-			entry.setText(TmplTool.transform("cover.html", model)); //$NON-NLS-1$
+	private void doTogglePermissions() {
+		if (model.containsKey("permissions_list")) {
+			model.remove("permissions_list");
+			model.remove("permissions_none");
 		}
 		else {
-			entry.setText(TmplTool.transform("permissions.html", model)); //$NON-NLS-1$
+			List<String> perms = doc.getDetails().getAppDetails().getPermissionList();
+			if (perms.size() > 0) {
+				ArrayList<String> sortMe = new ArrayList<String>(perms);
+				Collections.sort(sortMe);
+				model.put("permissions_list", sortMe); //$NON-NLS-1$
+			}
+			else {
+				ArrayList<String> none = new ArrayList<String>();
+				none.add(Messages.getString("ResultView.22")); //$NON-NLS-1$
+				model.put("permissions_list", none); //$NON-NLS-1$ //$NON-NLS-2$
+			}
 		}
-		showingPermissions = !showingPermissions;
+		entry.setText(TmplTool.transform("app.html", model)); //$NON-NLS-1$
+		SwingUtilities.invokeLater(searchView);
+	}
+
+	private void doToggleDetails() {
+		if (model.containsKey("description")) {
+			model.remove("version");
+			model.remove("vcode");
+			model.remove("email");
+			model.remove("website");
+			model.remove("description");
+			entry.setText(TmplTool.transform("app.html", model)); //$NON-NLS-1$
+			SwingUtilities.invokeLater(searchView);
+		}
+		else {
+			details.setEnabled(false);
+			new DetailsWorker(searchView.getArchive(), this, doc.getBackendDocid()).execute();
+		}
+	}
+
+	protected void updateEntry(DocV2 docV2) {
+		details.setEnabled(true);
+		doc = docV2;
+		model.put("version", doc.getDetails().getAppDetails().getVersionString()); //$NON-NLS-1$
+		model.put("vcode", doc.getDetails().getAppDetails().getVersionCode()); //$NON-NLS-1$
+		model.put("website", doc.getDetails().getAppDetails().getDeveloperWebsite()); //$NON-NLS-1$
+		model.put("email", doc.getDetails().getAppDetails().getDeveloperEmail()); //$NON-NLS-1$
+		model.put("description", doc.getDescriptionHtml()); //$NON-NLS-1$
+		entry.setText(TmplTool.transform("app.html", model)); //$NON-NLS-1$
 		SwingUtilities.invokeLater(searchView);
 	}
 }

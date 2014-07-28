@@ -2,6 +2,9 @@ package de.onyxbits.raccoon;
 
 import java.io.File;
 
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+
 /**
  * 
  * Wrapper for the desktop class.
@@ -9,7 +12,7 @@ import java.io.File;
  * @author patrick
  * 
  */
-public class BrowseUtil {
+public class BrowseUtil implements HyperlinkListener{
 
 	/**
 	 * Open a url
@@ -59,4 +62,25 @@ public class BrowseUtil {
 		}
 		return null;
 	}
+	
+	@Override
+	public void hyperlinkUpdate(HyperlinkEvent e) {
+		if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+			if ("file".equals(e.getURL().getProtocol())) {
+				try {
+					BrowseUtil.openFile(new File(e.getURL().toURI()));
+				}
+				catch (Exception exp) {
+					exp.printStackTrace();
+				}
+			}
+			if ("http".equals(e.getURL().getProtocol())) {
+				BrowseUtil.openUrl(e.getURL().toString());
+			}
+			if ("https".equals(e.getURL().getProtocol())) {
+				BrowseUtil.openUrl(e.getURL().toString());
+			}
+		}
+	}
+	
 }

@@ -7,7 +7,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
@@ -22,8 +21,6 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 
 import de.onyxbits.raccoon.App;
 import de.onyxbits.raccoon.BrowseUtil;
@@ -40,8 +37,7 @@ import de.onyxbits.raccoon.rss.Parser;
  * @author patrick
  * 
  */
-public class SearchView extends JPanel implements ActionListener, ChangeListener, Runnable,
-		HyperlinkListener {
+public class SearchView extends JPanel implements ActionListener, ChangeListener, Runnable {
 
 	/**
 	 * 
@@ -103,7 +99,6 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		message.setEditable(false);
 		message.setOpaque(false);
 		message.setMargin(new Insets(10, 10, 10, 10));
-		;
 		progress = new JProgressBar();
 		progress.setIndeterminate(true);
 		progress.setString(Messages.getString("SearchView.5")); //$NON-NLS-1$
@@ -136,7 +131,7 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		SearchView ret = new SearchView(mainActivity, archive);
 		ret.query.addActionListener(ret);
 		ret.page.addChangeListener(ret);
-		ret.message.addHyperlinkListener(ret);
+		ret.message.addHyperlinkListener(new BrowseUtil());
 		return ret;
 	}
 
@@ -221,20 +216,4 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		return archive;
 	}
 
-	@Override
-	public void hyperlinkUpdate(HyperlinkEvent e) {
-		if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-			if ("file".equals(e.getURL().getProtocol())) {
-				try {
-					BrowseUtil.openFile(new File(e.getURL().toURI()));
-				}
-				catch (Exception exp) {
-					exp.printStackTrace();
-				}
-			}
-			if ("http".equals(e.getURL().getProtocol())) {
-				BrowseUtil.openUrl(e.getURL().toString());
-			}
-		}
-	}
 }
