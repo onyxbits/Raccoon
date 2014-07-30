@@ -33,7 +33,7 @@ h1 {
 	${if description}
 	<p>
 	<div width="700">${description}</div>
-	${end} ${if permissions_list}
+	${end} ${if showpermissions}
 	<p>
 	<table width="100%">
 		<tr>
@@ -41,9 +41,13 @@ h1 {
 		</tr>
 		<tr>
 			<td>
+				${if permissions_list}
 				<ul>
 					${foreach permissions_list item}
-					<li>${item} ${end}
+					<li>${item} <sup><a href="http://www.onyxbits.de/raccoon/permission/${item}">[?]</a></sup></li>${end}
+				${else}
+				<em>${i18n_permissions_none}</em>
+				${end}
 			</td>
 		</tr>
 		</ul>

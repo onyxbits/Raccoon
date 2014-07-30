@@ -108,6 +108,7 @@ public class ResultView extends JPanel implements ActionListener {
 		model.put("i18n_version", Messages.getString("ResultView.2")); //$NON-NLS-1$ //$NON-NLS-2$
 		model.put("i18n_size", Messages.getString("ResultView.9")); //$NON-NLS-1$ //$NON-NLS-2$
 		model.put("i18n_permissions", Messages.getString("ResultView.27")); //$NON-NLS-1$ //$NON-NLS-2$
+		model.put("i18n_permissions_none", Messages.getString("ResultView.22")); //$NON-NLS-1$ //$NON-NLS-2$
 		model.put("i18n_changelog", Messages.getString("ResultView.4")); //$NON-NLS-1$ //$NON-NLS-2$
 		model.put("title", doc.getTitle()); //$NON-NLS-1$
 		model.put("installs", doc.getDetails().getAppDetails().getNumDownloads()); //$NON-NLS-1$
@@ -123,7 +124,7 @@ public class ResultView extends JPanel implements ActionListener {
 			model.put("icon", icon.toURI()); //$NON-NLS-1$
 		}
 		else {
-			model.put("icon",getClass().getResource("/rsrc/icons/icon_missing.png").toString());
+			model.put("icon", getClass().getResource("/rsrc/icons/icon_missing.png").toString());
 		}
 
 		JPanel buttons = new JPanel();
@@ -321,9 +322,9 @@ public class ResultView extends JPanel implements ActionListener {
 	}
 
 	private void doTogglePermissions() {
-		if (model.containsKey("permissions_list")) { //$NON-NLS-1$
+		if (model.containsKey("showpermissions")) { //$NON-NLS-1$
 			model.remove("permissions_list"); //$NON-NLS-1$
-			model.remove("permissions_none"); //$NON-NLS-1$
+			model.remove("showpermissions"); //$NON-NLS-1$
 		}
 		else {
 			List<String> perms = doc.getDetails().getAppDetails().getPermissionList();
@@ -332,11 +333,7 @@ public class ResultView extends JPanel implements ActionListener {
 				Collections.sort(sortMe);
 				model.put("permissions_list", sortMe); //$NON-NLS-1$
 			}
-			else {
-				ArrayList<String> none = new ArrayList<String>();
-				none.add(Messages.getString("ResultView.22")); //$NON-NLS-1$
-				model.put("permissions_list", none); //$NON-NLS-1$ //$NON-NLS-2$
-			}
+			model.put("showpermissions", true);
 		}
 		entry.setText(TmplTool.transform("app.html", model)); //$NON-NLS-1$
 		SwingUtilities.invokeLater(searchView);
