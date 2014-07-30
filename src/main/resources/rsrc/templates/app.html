@@ -11,6 +11,7 @@ th {
 
 td {
 	padding-right: 15px;
+	vertical-align:top;
 }
 
 h1 {
@@ -40,22 +41,21 @@ h1 {
 			<th>${i18n_permissions}</th>
 		</tr>
 		<tr>
-			<td>
-				${if permissions_list}
+			<td>${if permissions_list}
 				<ul>
 					${foreach permissions_list item}
-					<li>${item} <sup><a href="http://www.onyxbits.de/raccoon/permission/${item}">[?]</a></sup></li>${end}
-				${else}
-				<em>${i18n_permissions_none}</em>
-				${end}
+					<li>${item} <sup><a
+							href="http://www.onyxbits.de/raccoon/permission/${item}">[?]</a></sup></li>${end}
+					${else}
+					<em>${i18n_permissions_none}</em> ${end}
 			</td>
 		</tr>
 		</ul>
 	</table>
 	${end} ${if changelog}
 	<p>
-	<table width="100%">
-		<tr>
+
+		<table width="100%"><tr>
 			<th>${i18n_changelog}</th>
 		</tr>
 		<tr>
@@ -77,7 +77,10 @@ h1 {
 		<tr>
 			<td>${size}</td>
 			<td>${date}</td> ${if version}
-			<td>${version}<br>[${vcode}]
+			<td>${version}<br>
+			<div align="right">
+					<small><code>${vcode}</code></small>
+				</div>
 			</td>${end}
 			<td>${price}</td>
 			<td>${installs}</td>
