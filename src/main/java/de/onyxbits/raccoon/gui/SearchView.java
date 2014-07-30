@@ -138,7 +138,7 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		ret.page.addChangeListener(ret);
 		ret.cancel.addActionListener(ret);
 		ret.message.addHyperlinkListener(new BrowseUtil());
-		ret.doShowSplash();
+		ret.doMessage("");
 		return ret;
 	}
 
@@ -151,13 +151,17 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 			if (searcher != null) {
 				searcher.cancel(true);
 			}
-			doShowSplash();
 			run();
 		}
 	}
 
-	protected void doShowSplash() {
+	/**
+	 * Display a message.
+	 * @param status message to show.
+	 */
+	protected void doMessage(String status) {
 		HashMap<String, Object> model = new HashMap<String, Object>();
+		model.put("message", status); //$NON-NLS-1$
 		model.put("app_version", App.VERSIONSTRING); //$NON-NLS-1$
 		model.put("i18n_latestnews", Messages.getString("SearchView.2")); //$NON-NLS-1$ //$NON-NLS-2$
 		model.put("i18n_lastsession", Messages.getString("SearchView.10")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -220,15 +224,6 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 			searcher = new SearchWorker(archive, query.getText(), this).withOffset(offset).withLimit(10);
 			searcher.execute();
 		}
-	}
-
-	protected void doMessage(String status) {
-		query.setEnabled(true);
-		page.setEnabled(true);
-		cardLayout.show(main, CARDMESSAGE);
-		HashMap<String, Object> model = new HashMap<String, Object>();
-		model.put("message", status); //$NON-NLS-1$
-		message.setText(TmplTool.transform("message.html", model)); //$NON-NLS-1$
 	}
 
 	protected void doResultList(JPanel listing) {

@@ -187,7 +187,7 @@ class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 	 * @return where to cache the image.
 	 */
 	public static File getImageCacheFile(String appId, int type) {
-		return new File(App.getDir(App.CACHEDIR), appId + "-img-" + type);
+		return new File(App.getDir(App.CACHEDIR), appId + "-img-" + type); //$NON-NLS-1$
 	}
 
 	@Override
@@ -197,12 +197,12 @@ class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 			response = get();
 		}
 		catch (CancellationException e) {
-			searchView.doShowSplash();
+			searchView.doMessage(Messages.getString("SearchWorker.4")); //$NON-NLS-1$
 			SwingUtilities.invokeLater(searchView);
 			return;
 		}
 		catch (InterruptedException e) {
-			searchView.doShowSplash();
+			searchView.doMessage(Messages.getString("SearchWorker.5")); //$NON-NLS-1$
 			SwingUtilities.invokeLater(searchView);
 			return;
 		}
