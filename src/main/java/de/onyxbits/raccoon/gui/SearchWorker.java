@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.prefs.Preferences;
 
@@ -154,6 +155,9 @@ class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 	}
 
 	private void fetchIcon(DocV2 doc) {
+		if (isCancelled()) {
+			return;
+		}
 		List<Image> lst = doc.getImageList();
 		Iterator<Image> it = lst.iterator();
 		while (it.hasNext()) {
@@ -192,8 +196,13 @@ class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 		try {
 			response = get();
 		}
+		catch (CancellationException e) {
+			searchView.doShowSplash();
+			SwingUtilities.invokeLater(searchView);
+			return;
+		}
 		catch (InterruptedException e) {
-			searchView.doMessage(Messages.getString("SearchWorker.0")); //$NON-NLS-1$
+			searchView.doShowSplash();
 			SwingUtilities.invokeLater(searchView);
 			return;
 		}
