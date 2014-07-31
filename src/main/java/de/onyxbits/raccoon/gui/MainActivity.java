@@ -7,7 +7,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Vector;
 import java.util.prefs.Preferences;
@@ -31,7 +30,6 @@ import de.onyxbits.raccoon.BrowseUtil;
 import de.onyxbits.raccoon.Messages;
 import de.onyxbits.raccoon.io.Archive;
 import de.onyxbits.raccoon.io.DownloadLogger;
-import de.onyxbits.raccoon.io.FetchListener;
 
 /**
  * The main UI. This class must be started by creating an object and passing it
@@ -40,8 +38,7 @@ import de.onyxbits.raccoon.io.FetchListener;
  * @author patrick
  * 
  */
-public class MainActivity extends JFrame implements ActionListener, WindowListener, Runnable,
-		FetchListener {
+public class MainActivity extends JFrame implements ActionListener, WindowListener, Runnable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -73,7 +70,6 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	private JTabbedPane views;
 	private ListView downloadList;
 	private JScrollPane downloadListScroll;
-	private DownloadLogger logger;
 
 	private SearchView searchView;
 
@@ -260,8 +256,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	protected void doMount(Archive archive) {
 		this.archive = archive;
 		archive.getRoot().mkdirs();
-		logger = new DownloadLogger(archive);
-		logger.clear();
+		new DownloadLogger(archive).clear();
 		setTitle("Raccoon - " + archive.getRoot().getAbsolutePath()); //$NON-NLS-1$
 		views.removeAll();
 		if (archive.getAndroidId().length() == 0) {
@@ -303,7 +298,6 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	public void doDownload(DownloadView d) {
 		downloadList.add(d);
 		d.startWorker();
-		d.addFetchListener(this);
 		views.setSelectedComponent(downloadListScroll);
 	}
 
@@ -365,26 +359,6 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	}
 
 	public void windowOpened(WindowEvent arg0) {
-	}
-
-	public boolean onChunk(Object src, long numBytes) {
-		return false;
-	}
-
-	public void onComplete(Object src) {
-		try {
-			logger.addEntry(((DownloadWorker) src).getTarget());
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void onFailure(Object src, Exception e) {
-		e.printStackTrace();
-	}
-
-	public void onAborted(Object src) {
 	}
 
 }

@@ -12,13 +12,15 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsEntry;
+import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsResponse;
 import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
+import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 
 import de.onyxbits.raccoon.io.Archive;
 import de.onyxbits.raccoon.io.DownloadLogger;
+import de.onyxbits.raccoon.io.FetchListener;
 import de.onyxbits.raccoon.io.FetchService;
-import de.onyxbits.raccoon.io.UpdateListener;
-import de.onyxbits.raccoon.io.UpdateService;
 
 /**
  * Runs the app in command line interface mode.
@@ -26,45 +28,27 @@ import de.onyxbits.raccoon.io.UpdateService;
  * @author patrick
  * 
  */
-public class CliService implements UpdateListener, Runnable {
+public class CliService implements FetchListener, Runnable {
 
 	private String[] cmdLine;
 	private DownloadLogger logger;
 	private Archive destination;
-	private File current;
 
 	public CliService(String[] cmdLine) {
 		this.cmdLine = cmdLine;
 	}
 
-	public boolean onChunk(Object src, long numBytes) {
+	public boolean onChunk(FetchService src, long numBytes) {
 		System.out.print('.');
 		return false;
 	}
 
-	public void onComplete(Object src) {
-		try {
-			logger.addEntry(current);
-			System.out.println("Success");
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void onFailure(Object src, Exception e) {
+	public void onFailure(FetchService src, Exception e) {
 		System.err.println("Failure: " + e.getMessage());
-		e.printStackTrace();
+		// e.printStackTrace();
 	}
 
-	public int onBeginDownload(Object src, DocV2 doc) {
-		System.out.println("Starting: " + doc.getTitle());
-		current = destination.fileUnder(doc.getBackendDocid(), doc.getDetails().getAppDetails()
-				.getVersionCode());
-		return UpdateListener.PROCEED;
-	}
-
-	public void onAborted(Object src) {
+	public void onAborted(FetchService src) {
 	}
 
 	public void run() {
@@ -127,7 +111,7 @@ public class CliService implements UpdateListener, Runnable {
 
 		if (cmd.hasOption("u")) {
 			requireArchive();
-			new UpdateService(destination, this).run();
+			doUpdate();
 		}
 
 		if (cmd.hasOption("f")) {
@@ -138,12 +122,49 @@ public class CliService implements UpdateListener, Runnable {
 				String appId = tmp[0];
 				int vc = Integer.parseInt(tmp[1]);
 				int ot = Integer.parseInt(tmp[2]);
-				current = destination.fileUnder(appId,vc);
 				new FetchService(destination, appId, vc, ot, cmd.hasOption('p'), this).run();
 			}
 			catch (Exception e) {
 				System.err.println("Format: packagename,versioncode,offertype");
 				System.exit(1);
+			}
+		}
+	}
+
+	private void doUpdate() {
+		BulkDetailsResponse response = null;
+		GooglePlayAPI service = null;
+		try {
+			service = App.createConnection(destination);
+			response = service.bulkDetails(destination.list());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+
+		for (BulkDetailsEntry bulkDetailsEntry : response.getEntryList()) {
+			DocV2 doc = bulkDetailsEntry.getDoc();
+			String pn = doc.getBackendDocid();
+			int vc = -1;
+			int ot = -1;
+			boolean paid = false;
+			try {
+				vc = doc.getDetails().getAppDetails().getVersionCode();
+				ot = doc.getOffer(0).getOfferType();
+				paid = doc.getOffer(0).getCheckoutFlowRequired();
+			}
+			catch (Exception e) {
+				// Something in the apk storage did not resolve. This could be an app
+				// that was pulled from Google Play or a directory s/he created. Design
+				// decision: ignore silently. In the first case the user doesn't want
+				// to bother in the second, s/he does not need to.
+				continue;
+			}
+			File target = destination.fileUnder(pn, vc);
+			if (!target.exists()) {
+				FetchService fs = new FetchService(destination, pn, vc, ot, paid, this);
+				fs.run();
 			}
 		}
 	}
@@ -157,7 +178,7 @@ public class CliService implements UpdateListener, Runnable {
 				// Let's keep it simple.
 				String id = line.substring(prefix.length(), line.length());
 				destination.fileUnder(id, 0).getParentFile().mkdirs();
-				System.out.println("Adding: "+id);
+				System.out.println("Adding: " + id);
 			}
 		}
 		br.close();
@@ -171,5 +192,28 @@ public class CliService implements UpdateListener, Runnable {
 			System.err.println("No archive specified!");
 			System.exit(1);
 		}
+	}
+
+	@Override
+	public void onBeginFile(FetchService src, File file) {
+		System.err.println("Starting: " + file.getName());
+	}
+
+	@Override
+	public void onFinishFile(FetchService src, File file) {
+		try {
+			// NOTE: Not correct to do that here, but since the user can't cancel,
+			// we can get away with it.
+			logger.addEntry(file);
+			System.out.println("\nSuccess");
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void onComplete(FetchService src) {
+
 	}
 }

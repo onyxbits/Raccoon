@@ -22,10 +22,19 @@ h1 {
 <body>
 	<h1>${title}</h1>
 	<code>${path}</code>
+	${if files}
 	<ul>
 		${foreach files item}
-		<li><code>${item}</code> ${end}
+		<li><code>${item.name}</code> ${end}
 	</ul>
+	${end} ${if deleted_files}
+	<ul>
+		${foreach deleted_files item}
+		<li><code>
+				<strike>${item.name}</strike>
+			</code> ${end}
+	</ul>
+	${end}
 </body>
 </html>
 

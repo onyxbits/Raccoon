@@ -13,7 +13,7 @@ import de.onyxbits.raccoon.io.Archive;
 import de.onyxbits.raccoon.io.FetchListener;
 import de.onyxbits.raccoon.io.FetchService;
 
-class DownloadWorker extends SwingWorker<Object, Long> implements FetchListener {
+class DownloadWorker extends SwingWorker<Object, File> implements FetchListener {
 
 	private Archive archive;
 	private DocV2 app;
@@ -22,6 +22,7 @@ class DownloadWorker extends SwingWorker<Object, Long> implements FetchListener 
 	private long received;
 	private Exception failure;
 	private SearchWorker next;
+	private FetchService service;
 	private Vector<FetchListener> listeners;
 
 	/**
@@ -53,26 +54,27 @@ class DownloadWorker extends SwingWorker<Object, Long> implements FetchListener 
 	}
 
 	@Override
-	protected void process(List<Long> chunks) {
+	protected void process(List<File> lst) {
 		if (!isCancelled()) {
 			for (FetchListener fl : listeners) {
-				// NOTE: get it straight from the horses mouth instead of figuring out
-				// which chunk contains the latest value (which it doesn't anyway).
-				// There is not potential for a race condition here.
-				fl.onChunk(this, received);
+				fl.onChunk(service, received);
+				for (File f : lst) {
+					fl.onBeginFile(service, f);
+				}
 			}
 		}
 	}
 
 	@Override
 	protected Object doInBackground() throws Exception {
-		publish(0l); // Just so there is no delay in the UI updating
+		publish(new File[0]); // Just so there is no delay in the UI updating
 		String pn = app.getBackendDocid();
 		int vc = app.getDetails().getAppDetails().getVersionCode();
 		int ot = app.getOffer(0).getOfferType();
 		totalBytes = app.getDetails().getAppDetails().getInstallationSize();
 		boolean paid = app.getOffer(0).getCheckoutFlowRequired();
-		new FetchService(archive, pn, vc, ot, paid, this).run();
+		service= new FetchService(archive, pn, vc, ot, paid, this);
+		service.run();
 		return null;
 	}
 
@@ -82,18 +84,18 @@ class DownloadWorker extends SwingWorker<Object, Long> implements FetchListener 
 			get();
 			if (failure != null) {
 				for (FetchListener fl : listeners) {
-					fl.onFailure(this, failure);
+					fl.onFailure(service, failure);
 				}
 			}
 			else {
 				for (FetchListener fl : listeners) {
-					fl.onComplete(this);
+					fl.onComplete(service);
 				}
 			}
 		}
 		catch (CancellationException e) {
 			for (FetchListener fl : listeners) {
-				fl.onAborted(this);
+				fl.onAborted(service);
 			}
 		}
 		catch (ExecutionException e) {
@@ -107,21 +109,31 @@ class DownloadWorker extends SwingWorker<Object, Long> implements FetchListener 
 		}
 	}
 
-	public boolean onChunk(Object src, long numBytes) {
+	public boolean onChunk(FetchService src, long numBytes) {
 		received = numBytes;
-		publish(numBytes);
+		publish(new File[0]);
 		return isCancelled();
 	}
 
-	public void onComplete(Object src) {
+	public void onComplete(FetchService src) {
 
 	}
 
-	public void onFailure(Object src, Exception e) {
+	public void onFailure(FetchService src, Exception e) {
 		failure = e;
 	}
 
-	public void onAborted(Object src) {
+	public void onAborted(FetchService src) {
+	}
+
+	@Override
+	public void onBeginFile(FetchService src, File file) {
+		publish(file);
+	}
+
+	@Override
+	public void onFinishFile(FetchService src, File file) {
+
 	}
 
 }

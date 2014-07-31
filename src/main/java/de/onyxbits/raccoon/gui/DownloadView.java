@@ -18,7 +18,10 @@ import com.akdeniz.googleplaycrawler.GooglePlay.DocV2;
 import de.onyxbits.raccoon.BrowseUtil;
 import de.onyxbits.raccoon.Messages;
 import de.onyxbits.raccoon.io.Archive;
+import de.onyxbits.raccoon.io.DownloadLogger;
 import de.onyxbits.raccoon.io.FetchListener;
+import de.onyxbits.raccoon.io.FetchService;
+import de.onyxbits.raccoon.io.FileNode;
 
 /**
  * Display download progress and give the user a chance to cancel.
@@ -39,6 +42,9 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 	private JButton open;
 	private DocV2 doc;
 	private Archive archive;
+	private HashMap<String, Object> model;
+	private Vector<FileNode> files;
+	private JEditorPane info;
 
 	private DownloadView(Archive archive, DocV2 doc) {
 		this.doc = doc;
@@ -53,12 +59,10 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		String pn = doc.getBackendDocid();
 		int vc = doc.getDetails().getAppDetails().getVersionCode();
 		File dest = archive.fileUnder(pn, vc);
-		HashMap<String, Object> model = new HashMap<String, Object>();
+		model = new HashMap<String, Object>();
 		model.put("title", doc.getTitle());
 		model.put("path", dest.getParent());
-		Vector<String> files = new Vector<String>();
-		files.add(dest.getName());
-		model.put("files", files);
+		files = new Vector<FileNode>();
 
 		worker = new DownloadWorker(doc, archive, null);
 		JPanel container = new JPanel();
@@ -66,7 +70,7 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		container.add(progress);
 		container.add(cancel);
 		container.add(open);
-		JEditorPane info = new HypertextPane(TmplTool.transform("download.html", model)); //$NON-NLS-1$
+		info = new HypertextPane(TmplTool.transform("download.html", model)); //$NON-NLS-1$
 		info.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		info.setEditable(false);
 		info.setOpaque(false);
@@ -116,7 +120,7 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		}
 	}
 
-	public boolean onChunk(Object src, long numBytes) {
+	public boolean onChunk(FetchService src, long numBytes) {
 		float percent = (float) numBytes / (float) worker.totalBytes;
 		int tmp = (int) (100f * percent);
 		progress.setValue(tmp);
@@ -124,14 +128,23 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		return false;
 	}
 
-	public void onComplete(Object src) {
+	public void onComplete(FetchService src) {
 		progress.setString(Messages.getString("DownloadView.7")); //$NON-NLS-1$
 		progress.setValue(100);
 		cancel.setEnabled(false);
 		open.setEnabled(true);
+		try {
+			DownloadLogger dl = new DownloadLogger(archive);
+			for (FileNode fn : files) {
+				dl.addEntry(fn.file);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	public void onFailure(Object src, Exception e) {
+	public void onFailure(FetchService src, Exception e) {
 		if (e instanceof IndexOutOfBoundsException) {
 			progress.setString(Messages.getString("DownloadView.8")); //$NON-NLS-1$
 		}
@@ -141,8 +154,23 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		cancel.setEnabled(false);
 	}
 
-	public void onAborted(Object src) {
+	public void onAborted(FetchService src) {
+		model.remove("files");
+		model.put("deleted_files", files);
+		info.setText(TmplTool.transform("download.html", model)); //$NON-NLS-1$
 		progress.setString(Messages.getString("DownloadView.10")); //$NON-NLS-1$
 		cancel.setEnabled(false);
+	}
+
+	@Override
+	public void onBeginFile(FetchService src, File file) {
+		files.add(new FileNode(file));
+		model.put("files", files);
+		info.setText(TmplTool.transform("download.html", model)); //$NON-NLS-1$
+	}
+
+	@Override
+	public void onFinishFile(FetchService src, File file) {
+
 	}
 }

@@ -25,6 +25,7 @@ public class FetchService implements Runnable {
 	private int offerType;
 	private FetchListener callback;
 	private boolean paid;
+	private long received = 0;
 
 	/**
 	 * Create a new downloader
@@ -44,6 +45,9 @@ public class FetchService implements Runnable {
 	 */
 	public FetchService(Archive archive, String appId, int versionCode, int offerType, boolean paid,
 			FetchListener callback) {
+		if (callback == null) {
+			throw new NullPointerException("A Callback is required!");
+		}
 		this.appId = appId;
 		this.versionCode = versionCode;
 		this.archive = archive;
@@ -74,7 +78,9 @@ public class FetchService implements Runnable {
 			appFile.getParentFile().mkdirs();
 			out = new FileOutputStream(appFile);
 			in = data.openApp();
+			callback.onBeginFile(this,appFile);
 			boolean keepApp = transfer(in, out);
+			callback.onFinishFile(this,appFile);
 			in.close();
 			out.close();
 			if (!keepApp) {
@@ -85,7 +91,9 @@ public class FetchService implements Runnable {
 			in = data.openMainExpansion();
 			if (in != null && !mainFile.exists()) {
 				out = new FileOutputStream(mainFile);
+				callback.onBeginFile(this,mainFile);
 				boolean keepMain = transfer(in, out);
+				callback.onFinishFile(this,mainFile);
 				in.close();
 				out.close();
 				if (!keepMain) {
@@ -98,7 +106,9 @@ public class FetchService implements Runnable {
 			in = data.openPatchExpansion();
 			if (in != null && !patchFile.exists()) {
 				out = new FileOutputStream(patchFile);
+				callback.onBeginFile(this,patchFile);
 				boolean keepPatch = transfer(in, out);
+				callback.onFinishFile(this,patchFile);
 				in.close();
 				out.close();
 				if (!keepPatch) {
@@ -108,10 +118,7 @@ public class FetchService implements Runnable {
 					return;
 				}
 			}
-
-			if (callback != null) {
-				callback.onComplete(this);
-			}
+			callback.onComplete(this);
 		}
 		catch (Exception e) {
 			if (appFile != null) {
@@ -123,10 +130,7 @@ public class FetchService implements Runnable {
 			if (patchFile != null) {
 				patchFile.delete();
 			}
-
-			if (callback != null) {
-				callback.onFailure(this, e);
-			}
+			callback.onFailure(this, e);
 		}
 	}
 
@@ -144,16 +148,13 @@ public class FetchService implements Runnable {
 	private boolean transfer(InputStream in, OutputStream out) throws Exception {
 		byte[] buffer = new byte[1024 * 16];
 		int length;
-		long received = 0;
 		callback.onChunk(this, 0);
 		while ((length = in.read(buffer)) > 0) {
 			out.write(buffer, 0, length);
 			received += length;
-			if (callback != null) {
-				if (callback.onChunk(this, received)) {
-					callback.onAborted(this);
-					return false;
-				}
+			if (callback.onChunk(this, received)) {
+				callback.onAborted(this);
+				return false;
 			}
 		}
 		return true;
