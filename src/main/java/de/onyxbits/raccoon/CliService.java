@@ -54,6 +54,7 @@ public class CliService implements UpdateListener, Runnable {
 
 	public void onFailure(Object src, Exception e) {
 		System.err.println("Failure: " + e.getMessage());
+		e.printStackTrace();
 	}
 
 	public int onBeginDownload(Object src, DocV2 doc) {
@@ -137,6 +138,7 @@ public class CliService implements UpdateListener, Runnable {
 				String appId = tmp[0];
 				int vc = Integer.parseInt(tmp[1]);
 				int ot = Integer.parseInt(tmp[2]);
+				current = destination.fileUnder(appId,vc);
 				new FetchService(destination, appId, vc, ot, cmd.hasOption('p'), this).run();
 			}
 			catch (Exception e) {
