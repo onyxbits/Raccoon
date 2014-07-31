@@ -241,11 +241,12 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 			Vector<String> lst = new Vector<String>();
 			int count = 0;
 			while (st.hasMoreElements()) {
+				// Lets first check the entire clipboard if its content is well formed.
 				String url = st.nextToken();
 				if (url.startsWith(prefix) && url.length() > prefix.length()) {
 					// Let's keep it simple.
 					String id = url.substring(prefix.length(), url.length());
-					if (!archive.fileUnder(id, 0).getParentFile().exists()) {
+					if (!lst.contains(id) && !archive.fileUnder(id, 0).getParentFile().exists()) {
 						lst.add(id);
 						count++;
 					}
@@ -254,10 +255,24 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 					throw new Exception(url);
 				}
 			}
-			for (String pn : lst) {
-				archive.fileUnder(pn, 0).getParentFile().mkdirs();
+
+			// We got at least one new app id. Ask the user to confirm the list, then
+			// create files.
+			if (count > 0) {
+				String[] tmp = lst.toArray(new String[0]);
+				String res = (String) JOptionPane.showInputDialog(this, Messages.getString("MainActivity.41"), //$NON-NLS-1$
+						Messages.getString("MainActivity.42"), JOptionPane.PLAIN_MESSAGE, null, tmp, tmp[0]); //$NON-NLS-1$
+				if (res == null) {
+					return;
+				}
+				for (String pn : lst) {
+					archive.fileUnder(pn, 0).getParentFile().mkdirs();
+				}
+				searchView.doMessage(Messages.getString("MainActivity.39")); //$NON-NLS-1$
 			}
-			searchView.doMessage(count + Messages.getString("MainActivity.39")); //$NON-NLS-1$
+			else {
+				searchView.doMessage(Messages.getString("MainActivity.43")); //$NON-NLS-1$
+			}
 		}
 		catch (Exception e) {
 			searchView.doMessage(Messages.getString("MainActivity.40")); //$NON-NLS-1$
