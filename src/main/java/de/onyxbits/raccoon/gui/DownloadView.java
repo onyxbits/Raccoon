@@ -39,7 +39,6 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 	private DownloadWorker worker;
 	private JProgressBar progress;
 	private JButton cancel;
-	private JButton open;
 	private DocV2 doc;
 	private Archive archive;
 	private HashMap<String, Object> model;
@@ -50,8 +49,6 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		this.doc = doc;
 		this.archive = archive;
 		this.cancel = new JButton(Messages.getString("DownloadView.0")); //$NON-NLS-1$
-		this.open = new JButton(Messages.getString("DownloadView.2")); //$NON-NLS-1$
-		this.open.setEnabled(false);
 		this.progress = new JProgressBar(0, 100);
 		this.progress.setString(Messages.getString("DownloadView.1")); //$NON-NLS-1$
 		this.progress.setStringPainted(true);
@@ -62,6 +59,20 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		model = new HashMap<String, Object>();
 		model.put("title", doc.getTitle());
 		model.put("path", dest.getParent());
+		model.put("pathuri", dest.getParentFile().toURI());
+		model.put("package", doc.getBackendDocid()); //$NON-NLS-1$
+		model.put("author", doc.getCreator()); //$NON-NLS-1$
+		model.put("size", Archive.humanReadableByteCount(doc.getDetails().getAppDetails() //$NON-NLS-1$
+				.getInstallationSize(), true));
+
+		File icon = SearchWorker.getImageCacheFile(doc.getBackendDocid(), 4);
+		if (icon.exists()) {
+			model.put("icon", icon.toURI()); //$NON-NLS-1$
+		}
+		else {
+			model.put("icon", getClass().getResource("/rsrc/icons/icon_missing.png").toString());
+		}
+
 		files = new Vector<FileNode>();
 
 		worker = new DownloadWorker(doc, archive, null);
@@ -69,11 +80,9 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		container.setOpaque(false);
 		container.add(progress);
 		container.add(cancel);
-		container.add(open);
 		info = new HypertextPane(TmplTool.transform("download.html", model)); //$NON-NLS-1$
 		info.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		info.setEditable(false);
-		info.setOpaque(false);
+		info.addHyperlinkListener(new BrowseUtil());
 		add(info);
 		add(container);
 	}
@@ -81,7 +90,6 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 	public static DownloadView create(Archive archive, DocV2 doc) {
 		DownloadView ret = new DownloadView(archive, doc);
 		ret.cancel.addActionListener(ret);
-		ret.open.addActionListener(ret);
 		ret.setLayout(new BoxLayout(ret, BoxLayout.Y_AXIS));
 		ret.worker.addFetchListener(ret);
 		return ret;
@@ -113,11 +121,6 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		if (event.getSource() == cancel) {
 			worker.cancel(true);
 		}
-		if (event.getSource() == open) {
-			String pn = doc.getBackendDocid();
-			int vc = doc.getDetails().getAppDetails().getVersionCode();
-			BrowseUtil.openFile(archive.fileUnder(pn, vc).getParentFile());
-		}
 	}
 
 	public boolean onChunk(FetchService src, long numBytes) {
@@ -132,7 +135,6 @@ public class DownloadView extends JPanel implements ActionListener, FetchListene
 		progress.setString(Messages.getString("DownloadView.7")); //$NON-NLS-1$
 		progress.setValue(100);
 		cancel.setEnabled(false);
-		open.setEnabled(true);
 		try {
 			DownloadLogger dl = new DownloadLogger(archive);
 			for (FileNode fn : files) {
