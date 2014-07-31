@@ -52,11 +52,6 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	 */
 	public static final String FETCHICONS = "fetchicons"; //$NON-NLS-1$
 
-	/**
-	 * Preferences key for whether or not to fetch news.
-	 */
-	public static final String FETCHNEWS = "fetchnews";
-
 	private JMenuItem quit;
 	private JMenuItem open;
 	private JMenuItem search;
