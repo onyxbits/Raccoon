@@ -25,6 +25,8 @@ public class DownloadLogger {
 	private File completeLog;
 	private File completeLogOld;
 
+	private static Object lock = new Object();
+
 	/**
 	 * Create a new logger
 	 * 
@@ -59,12 +61,14 @@ public class DownloadLogger {
 	 * Clears the download log. This should be called when starting the session.
 	 */
 	public synchronized void clear() {
-		if (completeLogOld.exists()) {
-			completeLogOld.delete();
-		}
+		synchronized (lock) {
+			if (completeLogOld.exists()) {
+				completeLogOld.delete();
+			}
 
-		if (completeLog.exists()) {
-			completeLog.renameTo(completeLogOld);
+			if (completeLog.exists()) {
+				completeLog.renameTo(completeLogOld);
+			}
 		}
 	}
 
@@ -77,9 +81,12 @@ public class DownloadLogger {
 	 *           if writing fails.
 	 */
 	public synchronized void addEntry(File file) throws IOException {
-		completeLog.getParentFile().mkdirs();
-		FileWriter fw = new FileWriter(completeLog, true);
-		fw.write(file.getAbsolutePath() + "\n");
-		fw.close();
+		synchronized (lock) {
+
+			completeLog.getParentFile().mkdirs();
+			FileWriter fw = new FileWriter(completeLog, true);
+			fw.write(file.getAbsolutePath() + "\n");
+			fw.close();
+		}
 	}
 }
