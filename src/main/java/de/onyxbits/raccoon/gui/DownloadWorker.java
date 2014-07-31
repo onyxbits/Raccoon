@@ -73,7 +73,7 @@ class DownloadWorker extends SwingWorker<Object, File> implements FetchListener 
 		int ot = app.getOffer(0).getOfferType();
 		totalBytes = app.getDetails().getAppDetails().getInstallationSize();
 		boolean paid = app.getOffer(0).getCheckoutFlowRequired();
-		service= new FetchService(archive, pn, vc, ot, paid, this);
+		service = new FetchService(archive, pn, vc, ot, paid, this);
 		service.run();
 		return null;
 	}
@@ -124,6 +124,11 @@ class DownloadWorker extends SwingWorker<Object, File> implements FetchListener 
 	}
 
 	public void onAborted(FetchService src) {
+		File f = archive.fileUnder(app.getBackendDocid(),
+				app.getDetails().getAppDetails().getVersionCode()).getParentFile();
+		if (f.list().length==0) {
+			f.delete();
+		}
 	}
 
 	@Override

@@ -85,6 +85,7 @@ public class FetchService implements Runnable {
 			out.close();
 			if (!keepApp) {
 				appFile.delete();
+				callback.onAborted(this);
 				return;
 			}
 
@@ -99,6 +100,7 @@ public class FetchService implements Runnable {
 				if (!keepMain) {
 					appFile.delete();
 					mainFile.delete();
+					callback.onAborted(this);
 					return;
 				}
 			}
@@ -115,6 +117,7 @@ public class FetchService implements Runnable {
 					appFile.delete();
 					mainFile.delete();
 					patchFile.delete();
+					callback.onAborted(this);
 					return;
 				}
 			}
@@ -153,7 +156,6 @@ public class FetchService implements Runnable {
 			out.write(buffer, 0, length);
 			received += length;
 			if (callback.onChunk(this, received)) {
-				callback.onAborted(this);
 				return false;
 			}
 		}
