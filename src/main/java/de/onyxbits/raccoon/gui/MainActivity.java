@@ -62,7 +62,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	private JMenuItem open;
 	private JMenuItem search;
 	private JMenuItem close;
-	private JMenuItem updates;
+	private JMenuItem update;
 	private JMenuItem exportArchive;
 	private JMenuItem importArchive;
 	private JMenuItem downloads;
@@ -102,10 +102,10 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		close = new JMenuItem(
 				Messages.getString("MainActivity.4"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.24")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
 		close.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Event.CTRL_MASK));
-		updates = new JMenuItem(
+		update = new JMenuItem(
 				Messages.getString("MainActivity.5"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.25")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
-		updates.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, Event.CTRL_MASK));
-		updates.setEnabled(false);
+		update.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, Event.CTRL_MASK));
+		update.setEnabled(false);
 		newArchive = new JMenuItem(
 				Messages.getString("MainActivity.29"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.30")) //$NON-NLS-1$ //$NON-NLS-2$
 						.getKeyCode());
@@ -123,7 +123,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		file.add(new JSeparator());
 		file.add(importArchive);
 		file.add(exportArchive);
-		file.add(updates);
+		file.add(update);
 		file.add(close);
 		file.add(new JSeparator());
 		file.add(quit);
@@ -178,7 +178,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		search.addActionListener(this);
 		contents.addActionListener(this);
 		downloads.addActionListener(this);
-		updates.addActionListener(this);
+		update.addActionListener(this);
 		fetchIcons.addActionListener(this);
 		exportArchive.addActionListener(this);
 		importArchive.addActionListener(this);
@@ -216,7 +216,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		if (src == contents) {
 			BrowseUtil.openUrl(Messages.getString("MainActivity.12")); //$NON-NLS-1$
 		}
-		if (src == updates) {
+		if (src == update) {
 			views.setSelectedIndex(0);
 			searchView.doUpdateSearch();
 		}
@@ -330,7 +330,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		}
 		else {
 			searchView = SearchView.create(this, archive);
-			updates.setEnabled(true);
+			update.setEnabled(true);
 			views.addTab(Messages.getString("MainActivity.17"), searchView); //$NON-NLS-1$
 			views.addChangeListener(searchView);
 			search.setEnabled(true);
