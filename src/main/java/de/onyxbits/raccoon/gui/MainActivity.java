@@ -1,6 +1,9 @@
 package de.onyxbits.raccoon.gui;
 
 import java.awt.Event;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -8,6 +11,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
@@ -24,6 +28,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+
 
 import de.onyxbits.raccoon.App;
 import de.onyxbits.raccoon.BrowseUtil;
@@ -57,6 +62,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 	private JMenuItem search;
 	private JMenuItem close;
 	private JMenuItem updates;
+	private JMenuItem exportArchive;
 	private JMenuItem downloads;
 	private JMenuItem contents;
 	private JMenuItem newArchive;
@@ -102,6 +108,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 				Messages.getString("MainActivity.29"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.30")) //$NON-NLS-1$ //$NON-NLS-2$
 						.getKeyCode());
 		newArchive.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK));
+		exportArchive = new JMenuItem(Messages.getString("MainActivity.33"),KeyStroke.getKeyStroke(Messages.getString("MainActivity.35")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
 
 		Preferences prefs = Preferences.userNodeForPackage(getClass());
 		fetchIcons = new JRadioButtonMenuItem(
@@ -109,6 +116,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		file.add(newArchive);
 		file.add(open);
 		file.add(new JSeparator());
+		file.add(exportArchive);
 		file.add(updates);
 		file.add(close);
 		file.add(new JSeparator());
@@ -164,10 +172,11 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		downloads.addActionListener(this);
 		updates.addActionListener(this);
 		fetchIcons.addActionListener(this);
+		exportArchive.addActionListener(this);
 		addWindowListener(this);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		URL img = getClass().getResource("/rsrc/icons/appicon.png");
-		setIconImage(new ImageIcon(img, "").getImage());
+		URL img = getClass().getResource("/rsrc/icons/appicon.png"); //$NON-NLS-1$
+		setIconImage(new ImageIcon(img, "").getImage()); //$NON-NLS-1$
 		doMount(archive);
 		pack();
 		setSize(1024, 768);
@@ -206,6 +215,23 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 			Preferences prefs = Preferences.userNodeForPackage(getClass());
 			prefs.putBoolean(FETCHICONS, fetchIcons.isSelected());
 		}
+		if (src==exportArchive) {
+			doExport();
+		}
+	}
+
+	private void doExport() {
+		List<String>lst = archive.list();
+		StringBuilder sb  = new StringBuilder();
+		for (String s:lst) {
+			sb.append("market://details?id="); //$NON-NLS-1$
+			sb.append(s);
+			sb.append("\n"); //$NON-NLS-1$
+		}
+		StringSelection stringSelection = new StringSelection (sb.toString());
+		Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard ();
+		clpbrd.setContents (stringSelection, null);
+		searchView.doMessage(Messages.getString("MainActivity.38")); //$NON-NLS-1$
 	}
 
 	private void doNewArchive() {
