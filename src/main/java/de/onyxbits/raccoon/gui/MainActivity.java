@@ -251,9 +251,6 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 						count++;
 					}
 				}
-				else {
-					throw new Exception(url);
-				}
 			}
 
 			// We got at least one new app id. Ask the user to confirm the list, then
@@ -276,7 +273,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		}
 		catch (Exception e) {
 			searchView.doMessage(Messages.getString("MainActivity.40")); //$NON-NLS-1$
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
