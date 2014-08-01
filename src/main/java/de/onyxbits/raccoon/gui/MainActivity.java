@@ -20,6 +20,7 @@ import java.util.prefs.Preferences;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -256,18 +257,22 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 			// We got at least one new app id. Ask the user to confirm the list, then
 			// create files.
 			if (count > 0) {
-				String[] tmp = lst.toArray(new String[0]);
-				String res = (String) JOptionPane.showInputDialog(this, Messages.getString("MainActivity.41"), //$NON-NLS-1$
-						Messages.getString("MainActivity.42"), JOptionPane.PLAIN_MESSAGE, null, tmp, tmp[0]); //$NON-NLS-1$
-				if (res == null) {
-					return;
+				JList<String> all = new JList<String>(lst);
+				all.addSelectionInterval(0, lst.size() - 1);
+				if (JOptionPane
+						.showConfirmDialog(
+								this,
+								new JScrollPane(all),
+								Messages.getString("MainActivity.42"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null) == JOptionPane.OK_OPTION) {//$NON-NLS-1$
+					int[] sel = all.getSelectedIndices();
+					for (int idx : sel) {
+						archive.fileUnder(all.getModel().getElementAt(idx), 0).getParentFile().mkdirs();
+					}
+					searchView.doMessage(Messages.getString("MainActivity.39")); //$NON-NLS-1$
 				}
-				for (String pn : lst) {
-					archive.fileUnder(pn, 0).getParentFile().mkdirs();
-				}
-				searchView.doMessage(Messages.getString("MainActivity.39")); //$NON-NLS-1$
 			}
 			else {
+				// Tell the user that no new items were found.
 				searchView.doMessage(Messages.getString("MainActivity.43")); //$NON-NLS-1$
 			}
 		}
