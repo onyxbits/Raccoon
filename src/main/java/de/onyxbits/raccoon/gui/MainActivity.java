@@ -196,25 +196,30 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 
 	public void actionPerformed(ActionEvent event) {
 		Object src = event.getSource();
-		if (src == newArchive) {
-			doNewArchive();
-		}
-		if (src == quit) {
-			doQuit();
-		}
-		if (src == close) {
-			doClose();
-		}
-		if (src == open) {
-			doOpen();
-		}
 		if (src == downloads) {
 			views.setSelectedIndex(1);
 		}
 		if (src == search) {
 			views.setSelectedIndex(0);
 		}
+		if (src == newArchive) {
+			searchView.doMessage(null);
+			doNewArchive();
+		}
+		if (src == quit) {
+			searchView.doMessage(null);
+			doQuit();
+		}
+		if (src == close) {
+			searchView.doMessage(null);
+			doClose();
+		}
+		if (src == open) {
+			searchView.doMessage(null);
+			doOpen();
+		}
 		if (src == contents) {
+			searchView.doMessage(null);
 			BrowseUtil.openUrl(Messages.getString("MainActivity.12")); //$NON-NLS-1$
 		}
 		if (src == update) {
@@ -226,9 +231,11 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 			prefs.putBoolean(FETCHICONS, fetchIcons.isSelected());
 		}
 		if (src == exportArchive) {
+			searchView.doMessage(null);
 			doExport();
 		}
 		if (src == importArchive) {
+			searchView.doMessage(null);
 			doImport();
 		}
 	}
@@ -278,7 +285,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		}
 		catch (Exception e) {
 			searchView.doMessage(Messages.getString("MainActivity.40")); //$NON-NLS-1$
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
 
