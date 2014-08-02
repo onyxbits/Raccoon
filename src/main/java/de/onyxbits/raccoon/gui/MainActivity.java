@@ -203,23 +203,33 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 			views.setSelectedIndex(0);
 		}
 		if (src == newArchive) {
-			searchView.doMessage(null);
+			if (searchView != null) {
+				searchView.doMessage(null);
+			}
 			doNewArchive();
 		}
 		if (src == quit) {
-			searchView.doMessage(null);
+			if (searchView != null) {
+				searchView.doMessage(null);
+			}
 			doQuit();
 		}
 		if (src == close) {
-			searchView.doMessage(null);
+			if (searchView != null) {
+				searchView.doMessage(null);
+			}
 			doClose();
 		}
 		if (src == open) {
-			searchView.doMessage(null);
+			if (searchView != null) {
+				searchView.doMessage(null);
+			}
 			doOpen();
 		}
 		if (src == contents) {
-			searchView.doMessage(null);
+			if (searchView != null) {
+				searchView.doMessage(null);
+			}
 			BrowseUtil.openUrl(Messages.getString("MainActivity.12")); //$NON-NLS-1$
 		}
 		if (src == update) {
