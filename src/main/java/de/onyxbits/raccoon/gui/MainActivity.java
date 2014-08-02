@@ -125,8 +125,8 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		file.add(importArchive);
 		file.add(exportArchive);
 		file.add(update);
-		file.add(close);
 		file.add(new JSeparator());
+		file.add(close);
 		file.add(quit);
 		bar.add(file);
 
