@@ -85,6 +85,10 @@ public class BrowseUtil implements HyperlinkListener{
 	@Override
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+			if (e.getURL()==null) {
+				// Custom protocols (e.g. market://)
+				return;
+			}
 			if ("file".equals(e.getURL().getProtocol())) {
 				try {
 					BrowseUtil.openFile(new File(e.getURL().toURI()));

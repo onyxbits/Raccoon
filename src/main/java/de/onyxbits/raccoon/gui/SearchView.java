@@ -22,6 +22,8 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 import de.onyxbits.raccoon.App;
 import de.onyxbits.raccoon.BrowseUtil;
@@ -38,7 +40,8 @@ import de.onyxbits.raccoon.rss.Parser;
  * @author patrick
  * 
  */
-public class SearchView extends JPanel implements ActionListener, ChangeListener, Runnable {
+public class SearchView extends JPanel implements ActionListener, ChangeListener, Runnable,
+		HyperlinkListener {
 
 	/**
 	 * 
@@ -139,6 +142,7 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		ret.cancel.addActionListener(ret);
 		ret.message.addHyperlinkListener(new BrowseUtil());
 		ret.doMessage("");
+		ret.message.addHyperlinkListener(ret);
 		return ret;
 	}
 
@@ -157,7 +161,9 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 
 	/**
 	 * Display a message.
-	 * @param status message to show.
+	 * 
+	 * @param status
+	 *          message to show.
 	 */
 	protected void doMessage(String status) {
 		HashMap<String, Object> model = new HashMap<String, Object>();
@@ -259,4 +265,21 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		return archive;
 	}
 
+	@Override
+	public void hyperlinkUpdate(HyperlinkEvent event) {
+		String prefix = "market://details?id="; //$NON-NLS-1$
+		if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+			try {
+				String url = event.getDescription();
+				if (url.startsWith(prefix) && url.length() > prefix.length()) {
+					// Let's keep it simple.
+					query.setText(url.substring(prefix.length(), url.length()));
+					doSearch();
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }
