@@ -1,9 +1,11 @@
 package de.onyxbits.raccoon.gui;
 
+import java.awt.Cursor;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
@@ -39,6 +41,8 @@ public class InitWorker extends SwingWorker<String, String> {
 
 	protected void process(List<String> chunks) {
 		initView.doInProgress();
+		SwingUtilities.windowForComponent(initView).setCursor(
+				Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 	}
 
 	@Override
@@ -68,6 +72,7 @@ public class InitWorker extends SwingWorker<String, String> {
 
 	@Override
 	protected void done() {
+		SwingUtilities.windowForComponent(initView).setCursor(Cursor.getDefaultCursor());
 		try {
 			archive.setAndroidId(get());
 			initView.doRemount();
