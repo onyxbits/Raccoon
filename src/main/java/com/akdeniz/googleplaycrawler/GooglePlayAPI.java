@@ -33,7 +33,6 @@ import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsRequest.Builder;
 import com.akdeniz.googleplaycrawler.GooglePlay.BulkDetailsResponse;
 import com.akdeniz.googleplaycrawler.GooglePlay.BuyResponse;
 import com.akdeniz.googleplaycrawler.GooglePlay.DetailsResponse;
-import com.akdeniz.googleplaycrawler.GooglePlay.HttpCookie;
 import com.akdeniz.googleplaycrawler.GooglePlay.ListResponse;
 import com.akdeniz.googleplaycrawler.GooglePlay.ResponseWrapper;
 import com.akdeniz.googleplaycrawler.GooglePlay.ReviewResponse;
