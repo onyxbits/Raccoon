@@ -6,7 +6,7 @@
 	<name>Raccoon</name>
 
 	<properties>
-		<jdk.version>1.7</jdk.version>
+		<jdk.version>1.6</jdk.version>
 	</properties>
 
 	<!--
