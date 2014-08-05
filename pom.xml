@@ -68,6 +68,7 @@
 			<configuration>
 				<mainClass>de.onyxbits.raccoon.App</mainClass>
 				<bundleName>Raccoon</bundleName>
+				<diskImageFile>${project.build.directory}/Raccoon.dmg</diskImageFile>
 				<iconFile>${basedir}/src/main/resources/rsrc/icons/appicon.icns</iconFile>
 				<jvmVersion>1.6</jvmVersion>
 			</configuration>
