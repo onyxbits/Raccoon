@@ -11,6 +11,8 @@ bin/*
 gen/*
 libs/
 libs/*
+target/
+target/*
 compiled/
 compiled/*
 local.properties
