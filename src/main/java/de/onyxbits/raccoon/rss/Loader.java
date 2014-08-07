@@ -36,7 +36,7 @@ public class Loader {
 		long now = System.currentTimeMillis();
 		File file = getFeedCache();
 		if (!file.exists() || file.lastModified() < now - TTL) {
-			FileUtils.copyURLToFile(new URL(FEED), file);
+			FileUtils.copyURLToFile(new URL(FEED), file, 5000, 5000);
 		}
 	}
 

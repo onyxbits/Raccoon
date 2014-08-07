@@ -50,6 +50,11 @@ public class App {
 	public static final long CACHETTL = 1000 * 60 * 60 * 24 * 7;
 
 	/**
+	 * OSX Platform check.
+	 */
+	public static final boolean IS_MAC = System.getProperty("os.name").toLowerCase().startsWith("mac os x");
+
+	/**
 	 * Application Entry
 	 * 
 	 * @param args
