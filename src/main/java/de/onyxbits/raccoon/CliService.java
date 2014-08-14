@@ -60,7 +60,7 @@ public class CliService implements FetchListener, Runnable {
 				"i",
 				true,
 				"Import apps. A text file, containing one market url per line must be given (requires -a and -u to actually download).");
-		Option paid = new Option("p", true,
+		Option paid = new Option("p", false,
 				"Use with -f to download paid apps (the app must already have been bought).");
 		archive.setArgName("directory");
 
