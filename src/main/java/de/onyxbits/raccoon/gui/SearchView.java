@@ -141,7 +141,7 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		ret.page.addChangeListener(ret);
 		ret.cancel.addActionListener(ret);
 		ret.message.addHyperlinkListener(new BrowseUtil());
-		ret.doMessage("");
+		ret.doMessage(""); //$NON-NLS-1$
 		ret.message.addHyperlinkListener(ret);
 		return ret;
 	}
@@ -176,6 +176,8 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		model.put("i18n_none", Messages.getString("SearchView.12")); //$NON-NLS-1$ //$NON-NLS-2$
 		model.put("archive_count", archive.countApps()); //$NON-NLS-1$
 		model.put("archive_folder", new FileNode(archive.getRoot())); //$NON-NLS-1$
+		model.put("archive_account",archive.getUserId()); //$NON-NLS-1$
+		model.put("i18n_archive_account",Messages.getString("SearchView.15")); //$NON-NLS-1$ //$NON-NLS-2$
 		try {
 			Parser parser = new Parser(Loader.getFeedCache().toURI().toString());
 			model.put("newsfeed", parser.readFeed().getMessages()); //$NON-NLS-1$
