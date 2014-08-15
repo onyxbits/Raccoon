@@ -76,31 +76,6 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		results = new JScrollPane();
 		cardLayout = new CardLayout();
 
-		HashMap<String, Object> model = new HashMap<String, Object>();
-		model.put("app_version", App.VERSIONSTRING); //$NON-NLS-1$
-		model.put("i18n_latestnews", Messages.getString("SearchView.2")); //$NON-NLS-1$ //$NON-NLS-2$
-		model.put("i18n_lastsession", Messages.getString("SearchView.10")); //$NON-NLS-1$ //$NON-NLS-2$
-		model.put("i18n_archive_appcount", Messages.getString("SearchView.1")); //$NON-NLS-1$ //$NON-NLS-2$
-		model.put("i18n_archive_folder", Messages.getString("SearchView.11")); //$NON-NLS-1$ //$NON-NLS-2$
-		model.put("i18n_none", Messages.getString("SearchView.12")); //$NON-NLS-1$ //$NON-NLS-2$
-		model.put("archive_count", archive.countApps()); //$NON-NLS-1$
-		model.put("archive_folder", new FileNode(archive.getRoot())); //$NON-NLS-1$
-		try {
-			Parser parser = new Parser(Loader.getFeedCache().toURI().toString());
-			model.put("newsfeed", parser.readFeed().getMessages()); //$NON-NLS-1$
-		}
-		catch (Exception e) {
-			// We can do without the newsfeed
-			// e.printStackTrace();
-		}
-		try {
-			DownloadLogger dl = new DownloadLogger(archive);
-			model.put("lastsession", dl.getLastSessionDownloads()); //$NON-NLS-1$
-		}
-		catch (Exception e) {
-			// We can do without the latest downloads.
-			// e.printStackTrace();
-		}
 		message = new HypertextPane(""); //$NON-NLS-1$
 		message.setMargin(new Insets(10, 10, 10, 10));
 		progress = new JProgressBar();
