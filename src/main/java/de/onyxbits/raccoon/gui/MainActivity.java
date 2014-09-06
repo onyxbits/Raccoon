@@ -95,21 +95,26 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		file.setMnemonic(KeyStroke.getKeyStroke(Messages.getString("MainActivity.0")).getKeyCode()); //$NON-NLS-1$
 		quit = new JMenuItem(
 				Messages.getString("MainActivity.2"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.22")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
-		quit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		quit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit()
+				.getMenuShortcutKeyMask()));
 		open = new JMenuItem(
 				Messages.getString("MainActivity.3"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.23")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
-		open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit()
+				.getMenuShortcutKeyMask()));
 		close = new JMenuItem(
 				Messages.getString("MainActivity.4"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.24")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
-		close.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		close.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit()
+				.getMenuShortcutKeyMask()));
 		update = new JMenuItem(
 				Messages.getString("MainActivity.5"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.25")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
-		update.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		update.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, Toolkit.getDefaultToolkit()
+				.getMenuShortcutKeyMask()));
 		update.setEnabled(false);
 		newArchive = new JMenuItem(
 				Messages.getString("MainActivity.29"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.30")) //$NON-NLS-1$ //$NON-NLS-2$
 						.getKeyCode());
-		newArchive.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		newArchive.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit()
+				.getMenuShortcutKeyMask()));
 		exportArchive = new JMenuItem(
 				Messages.getString("MainActivity.33"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.35")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
 		importArchive = new JMenuItem(
@@ -133,10 +138,12 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		view.setMnemonic(KeyStroke.getKeyStroke(Messages.getString("MainActivity.15")).getKeyCode()); //$NON-NLS-1$
 		search = new JMenuItem(
 				Messages.getString("MainActivity.7"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.26")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
-		search.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		search.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit()
+				.getMenuShortcutKeyMask()));
 		downloads = new JMenuItem(
 				Messages.getString("MainActivity.8"), KeyStroke.getKeyStroke(Messages.getString("MainActivity.27")).getKeyCode()); //$NON-NLS-1$ //$NON-NLS-2$
-		downloads.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+		downloads.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, Toolkit.getDefaultToolkit()
+				.getMenuShortcutKeyMask()));
 		view.add(search);
 		view.add(downloads);
 		view.add(new JSeparator());
@@ -432,7 +439,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 			}
 		}
 		for (MainActivity ma : all) {
-			for (int i = 0; i < downloadList.getComponentCount(); i++) {
+			for (int i = 0; i < ma.downloadList.getComponentCount(); i++) {
 				DownloadView dv = (DownloadView) ma.downloadList.getComponent(i);
 				dv.stopWorker();
 			}
