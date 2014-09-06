@@ -99,7 +99,7 @@ public class Parser {
             message.setGuid(guid);
             message.setLink(link);
             message.setTitle(title);
-            feed.getMessages().add(0,message);
+            feed.getMessages().add(message);
             event = eventReader.nextEvent();
             continue;
           }
