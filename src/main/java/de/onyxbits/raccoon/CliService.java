@@ -66,6 +66,7 @@ public class CliService implements FetchListener, Runnable {
 
 		Option fetch = new Option("f", true, "Fetch an app (requires -a).");
 		fetch.setArgName("packId,versionCode,offerType");
+		importer.setArgName("file");
 		Options opts = new Options();
 		opts.addOption(version);
 		opts.addOption(archive);
