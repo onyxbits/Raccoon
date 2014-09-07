@@ -35,3 +35,15 @@ Building
 Currently, this is only an eclipse project, so there is no ant file. You
 have to import the project into your workspace and resolve the dependencies
 listed in the libs/ dir.
+
+Prebuild binaries
+-----------------
+
+Ready to use binaries are available from:
+
+http://www.onyxbits.de/raccoon
+
+SHA1 Checksums:
+
+3fe8548c944643500b8e5170d00e5c5ec70e266a  raccoon-3.2.exe
+b172ab687a11c5a0f37a2baa0ebc1cfe47b8bccc  raccoon-3.2.jar
