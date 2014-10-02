@@ -9,6 +9,7 @@ import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 import de.onyxbits.raccoon.gui.MainActivity;
 import de.onyxbits.raccoon.io.Archive;
 import de.onyxbits.raccoon.rss.Loader;
+import de.onyxbits.raccoon.util.EmptyPreferencesFactory;
 
 /**
  * Just the application launcher.
@@ -56,6 +57,11 @@ public class App {
 	 * @throws ParseException
 	 */
 	public static void main(String[] args) throws ParseException {
+		if (System.getProperty("raccoon.portable") != null && "true".equals(System.getProperty("raccoon.portable"))) {
+			// provide empty preferences that do not store anything in portable mode
+			System.setProperty("java.util.prefs.PreferencesFactory", EmptyPreferencesFactory.class.getName());
+		}
+
 		getDir(HOMEDIR).mkdirs();
 		getDir(EXTDIR).mkdirs();
 		getDir(CACHEDIR).mkdirs();
