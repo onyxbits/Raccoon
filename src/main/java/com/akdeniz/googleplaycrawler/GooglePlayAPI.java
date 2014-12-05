@@ -188,7 +188,7 @@ public class GooglePlayAPI {
 						{ "device_country", "us" },
 						{ "device_country", "us" },
 						{ "lang", "en" },
-						{ "sdk_version", "16" }, }, null);
+						{ "sdk_version", "21" }, }, null);
 
 		Map<String, String> c2dmAuth = Utils.parseResponse(new String(Utils.readAll(c2dmResponseEntity
 				.getContent())));
@@ -234,7 +234,7 @@ public class GooglePlayAPI {
 				{ "app", "com.android.vending" },
 				{ "device_country", "en" },
 				{ "lang", "en" },
-				{ "sdk_version", "16" }, }, null);
+				{ "sdk_version", "21" }, }, null);
 
 		Map<String, String> response = Utils.parseResponse(new String(Utils.readAll(responseEntity
 				.getContent())));

@@ -176,7 +176,7 @@ public class Utils {
 						.setProduct("smdk4x12").setCarrier("Google").setRadio("I9300XXALF2")
 						.setBootloader("PRIMELA03").setClient("android-google")
 						.setTimestamp(new Date().getTime() / 1000).setGoogleServices(16).setDevice("m0")
-						.setSdkVersion(16).setModel("GT-I9300").setManufacturer("Samsung")
+						.setSdkVersion(21).setModel("GT-I9300").setManufacturer("Samsung")
 						.setBuildProduct("m0xx").setOtaInstalled(false)).setLastCheckinMsec(0)
 				.setCellOperator("310260").setSimOperator("310260").setRoaming("mobile-notroaming")
 				.setUserNumber(0)).setLocale("en_US").setTimeZone("Europe/Istanbul").setVersion(3)
