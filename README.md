@@ -45,5 +45,7 @@ http://www.onyxbits.de/raccoon
 
 SHA1 Checksums:
 
+45e28f59a2a6d1fb17a100ee064bb035009331f5  raccoon-3.3.exe
+648487120fafd5ebbf1838c48556c81375e74aab  raccoon-3.3.jar
 3fe8548c944643500b8e5170d00e5c5ec70e266a  raccoon-3.2.exe
 b172ab687a11c5a0f37a2baa0ebc1cfe47b8bccc  raccoon-3.2.jar
