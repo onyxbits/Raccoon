@@ -11,6 +11,8 @@ import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -58,6 +60,8 @@ public class Archive {
 	public static final String ANDROIDID = "androidid";
 	public static final String PROXYHOST = "proxyhost";
 	public static final String PROXYPORT = "proxyport";
+	public static final String PROXYUSER = "proxyuser";
+	public static final String PROXYPASS = "proxypass";
 
 	private File root;
 
@@ -169,6 +173,8 @@ public class Archive {
 			cfg.load(new FileInputStream(cfgfile));
 			String ph = cfg.getProperty(PROXYHOST, null);
 			String pp = cfg.getProperty(PROXYPORT, null);
+			String pu = cfg.getProperty(PROXYUSER, null);
+			String pw = cfg.getProperty(PROXYPASS, null);
 			if (ph == null || pp == null) {
 				return null;
 			}
@@ -177,10 +183,14 @@ public class Archive {
 			connManager.setMaxTotal(100);
 			connManager.setDefaultMaxPerRoute(30);
 
-			HttpClient client = new DefaultHttpClient(connManager);
+			DefaultHttpClient client = new DefaultHttpClient(connManager);
 			client.getConnectionManager().getSchemeRegistry().register(Utils.getMockedScheme());
 			HttpHost proxy = new HttpHost(ph, Integer.parseInt(pp));
 			client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+			if (pu != null && pw != null) {
+				client.getCredentialsProvider().setCredentials(new AuthScope(proxy),
+						new UsernamePasswordCredentials(pu, pw));
+			}
 			return client;
 		}
 		return null;
