@@ -21,7 +21,7 @@ public class App {
 	/**
 	 * Version identifier.
 	 */
-	public static final String VERSIONSTRING = "3.3";
+	public static final String VERSIONSTRING = "3.4";
 
 	/**
 	 * Relative path for keeping extension jars in

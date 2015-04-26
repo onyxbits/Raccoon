@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.onyxbits</groupId>
 	<artifactId>raccoon</artifactId>
-	<version>3.1</version>
+	<version>3.4</version>
 	<name>Raccoon</name>
 
 	<properties>
