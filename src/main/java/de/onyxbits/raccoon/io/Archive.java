@@ -58,6 +58,7 @@ public class Archive {
 	public static final String ANDROIDID = "androidid";
 	public static final String PROXYHOST = "proxyhost";
 	public static final String PROXYPORT = "proxyport";
+	public static final String USERAGENT = "useragent";
 
 	private File root;
 
@@ -292,6 +293,10 @@ public class Archive {
 		int exp = (int) (Math.log(bytes) / Math.log(unit));
 		String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
 		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+	}
+
+	public String getUserAgent() {
+		return credentials.getProperty(USERAGENT,null);
 	}
 
 }

@@ -102,6 +102,7 @@ public class GooglePlayAPI {
 	private HttpClient client;
 	private String securityToken;
 	private String localization;
+	private String useragent;
 
 	/**
 	 * Default constructor. ANDROID ID and Authentication token must be supplied
@@ -127,6 +128,7 @@ public class GooglePlayAPI {
 		this.setEmail(email);
 		this.password = password;
 		setClient(new DefaultHttpClient(getConnectionManager()));
+		setUseragent("Android-Finsky/3.10.14 (api=3,versionCode=8016014,sdk=15,device=GT-I9300,hardware=aries,product=GT-I9300)");
 	}
 
 	/**
@@ -600,7 +602,7 @@ public class GooglePlayAPI {
 				{ "X-DFE-Client-Id", "am-android-google" },
 				{
 						"User-Agent",
-						"Android-Finsky/3.10.14 (api=3,versionCode=8016014,sdk=15,device=GT-I9300,hardware=aries,product=GT-I9300)" },
+						getUseragent() },
 				{ "X-DFE-SmallestScreenWidthDp", "320" },
 				{ "X-DFE-Filter-Level", "3" },
 				{ "Host", "android.clients.google.com" },
@@ -676,6 +678,20 @@ public class GooglePlayAPI {
 	 */
 	public void setLocalization(String localization) {
 		this.localization = localization;
+	}
+
+	/**
+	 * @return the useragent
+	 */
+	public String getUseragent() {
+		return useragent;
+	}
+
+	/**
+	 * @param useragent the useragent to set
+	 */
+	public void setUseragent(String useragent) {
+		this.useragent = useragent;
 	}
 
 }

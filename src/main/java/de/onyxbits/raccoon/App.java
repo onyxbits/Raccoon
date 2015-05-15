@@ -117,7 +117,11 @@ public class App {
 		String pwd = archive.getPassword();
 		String uid = archive.getUserId();
 		String aid = archive.getAndroidId();
+		String ua = archive.getUserAgent();
 		GooglePlayAPI ret = new GooglePlayAPI(uid, pwd, aid);
+		if (ua != null) {
+			ret.setUseragent(ua);
+		}
 
 		if (archive.getProxyClient() != null) {
 			ret.setClient(archive.getProxyClient());
