@@ -10,6 +10,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.prefs.Preferences;
 
+import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
@@ -24,6 +25,7 @@ import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 import com.akdeniz.googleplaycrawler.GooglePlayException;
 
 import de.onyxbits.raccoon.App;
+import de.onyxbits.raccoon.BrowseUtil;
 import de.onyxbits.raccoon.Messages;
 import de.onyxbits.raccoon.io.Archive;
 
@@ -238,6 +240,10 @@ class SearchWorker extends SwingWorker<Vector<BulkDetailsEntry>, String> {
 		}
 
 		if (listing.getComponentCount() > 0) {
+			HypertextPane hp = new HypertextPane(Messages.getString("SearchWorker.6"));
+			hp.addHyperlinkListener(new BrowseUtil());
+			listing.add(hp);
+			hp.setBorder(null);
 			searchView.doResultList(listing);
 		}
 		else {
