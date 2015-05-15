@@ -71,6 +71,7 @@ public class SearchView extends JPanel implements ActionListener, ChangeListener
 		setLayout(new BorderLayout());
 		query = new JTextField();
 		query.setToolTipText(Messages.getString("SearchView.3")); //$NON-NLS-1$
+		query.setMargin(new Insets(3,3,3,3));
 		page = new JSpinner(new SpinnerNumberModel(1, 1, 10000, 1));
 		page.setToolTipText(Messages.getString("SearchView.4")); //$NON-NLS-1$
 		results = new JScrollPane();
