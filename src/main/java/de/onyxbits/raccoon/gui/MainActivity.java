@@ -407,6 +407,7 @@ public class MainActivity extends JFrame implements ActionListener, WindowListen
 		downloadList.add(d);
 		d.startWorker();
 		views.setSelectedComponent(downloadListScroll);
+		Feedback.used(this);
 	}
 
 	private boolean isDownloading() {
