@@ -18,3 +18,5 @@ build.xml
 assets/build.properties
 .settings/
 .settings/*
+target/*
+target/

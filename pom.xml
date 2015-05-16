@@ -92,7 +92,7 @@
 								<mainClass>de.onyxbits.raccoon.App</mainClass>
 							</manifest>
 						</archive>
-						<finalName>raccoon</finalName> <!-- Manually sets the jar's name. -->
+						<finalName>raccoon-release</finalName> <!-- Manually sets the jar's name. -->
 						<appendAssemblyId>false</appendAssemblyId>
 					</configuration>
 				</execution>
