@@ -14,7 +14,7 @@ import de.onyxbits.raccoon.App;
  * @author patrick
  * 
  */
-public class Loader {
+public class Loader implements Runnable {
 	
 	/**
 	 * Feed URL
@@ -47,5 +47,16 @@ public class Loader {
 	 */
 	public static File getFeedCache() {
 		return new File(App.getDir(App.CACHEDIR), "newsfeed.xml");
+	}
+
+	@Override
+	public void run() {
+		try {
+			update();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 }

@@ -62,11 +62,6 @@ public class App {
 		getDir(ARCHIVEDIR).mkdirs();
 
 		if (args == null || args.length == 0) {
-			SwingUtilities.invokeLater(new MainActivity(null));
-			// NOTE: First start the UI, then look for updates in the newsfeed. We
-			// don't want to stall the booting process any longer than needs to be.
-			// There is also no need to show news on the first run. The user will
-			// want to explore the app instead of knowing what's new.
 			try {
 				long now = System.currentTimeMillis();
 				File[] lst = getDir(CACHEDIR).listFiles();
@@ -75,11 +70,14 @@ public class App {
 						f.delete();
 					}
 				}
-				Loader.update();
+				Thread t = new Thread(new Loader());
+				t.start();
+				t.join(1500);
 			}
-			catch (IOException e) {
+			catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			SwingUtilities.invokeLater(new MainActivity(null));
 		}
 		else {
 			new CliService(args).run();
