@@ -1,7 +1,6 @@
 package de.onyxbits.raccoon;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.swing.SwingUtilities;
 import org.apache.commons.cli.ParseException;
