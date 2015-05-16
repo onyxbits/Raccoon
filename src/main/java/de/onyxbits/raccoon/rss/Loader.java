@@ -22,9 +22,9 @@ public class Loader {
 	public static final String FEED = "http://www.onyxbits.de/raccoon/newsfeed";
 	
 	/**
-	 * Time To live (how long the cached version is valid): 1 day.
+	 * Time To live (how long the cached version is valid): 1 hour.
 	 */
-	public static final long TTL = 24*60*60*1000;
+	public static final long TTL = 60*60*1000;
 
 	/**
 	 * Call this on program start to load and cache the feed.
