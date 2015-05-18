@@ -4,6 +4,7 @@ import java.io.File;
 
 import javax.swing.SwingUtilities;
 import org.apache.commons.cli.ParseException;
+import org.apache.http.client.HttpClient;
 import com.akdeniz.googleplaycrawler.GooglePlayAPI;
 import de.onyxbits.raccoon.gui.MainActivity;
 import de.onyxbits.raccoon.io.Archive;
@@ -120,8 +121,9 @@ public class App {
 			ret.setUseragent(ua);
 		}
 
-		if (archive.getProxyClient() != null) {
-			ret.setClient(archive.getProxyClient());
+		HttpClient client = archive.getProxyClient();
+		if (client != null) {
+			ret.setClient(client);
 		}
 		// I am not quite sure if this method needs to be synchronized, but if so,
 		// this is why:
