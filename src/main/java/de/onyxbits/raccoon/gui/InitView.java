@@ -7,10 +7,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import de.onyxbits.raccoon.BrowseUtil;
@@ -30,6 +32,9 @@ public class InitView extends JPanel implements ActionListener {
 	private JLabel status;
 	private JButton login;
 	private JButton help;
+	private JRadioButton existing;
+	private JRadioButton generate;
+	private ButtonGroup profile;
 
 	private Archive archive;
 
@@ -40,12 +45,17 @@ public class InitView extends JPanel implements ActionListener {
 		this.archive = archive;
 		password = new JPasswordField("", 20); //$NON-NLS-1$
 		userId = new JTextField("", 20); //$NON-NLS-1$
-		androidId = new JTextField("", 20); //$NON-NLS-1$
+		androidId = new JTextField(Messages.getString("InitView.16"), 20); //$NON-NLS-1$
 		status = new JLabel(" "); //$NON-NLS-1$
 		login = new JButton(Messages.getString("InitView.4")); //$NON-NLS-1$
 		help = new JButton(Messages.getString("InitView.5")); //$NON-NLS-1$
-		JLabel instr = new JLabel(
-				Messages.getString("InitView.6")); //$NON-NLS-1$
+		existing = new JRadioButton(Messages.getString("InitView.15"));
+		generate = new JRadioButton(Messages.getString("InitView.14"));
+		profile = new ButtonGroup();
+		profile.add(generate);
+		profile.add(existing);
+		generate.setSelected(true);
+		JLabel instr = new JLabel(Messages.getString("InitView.6")); //$NON-NLS-1$
 
 		JPanel container = new JPanel();
 		container.add(help);
@@ -90,31 +100,50 @@ public class InitView extends JPanel implements ActionListener {
 		ret.setLayout(new GridBagLayout());
 		ret.setBorder(BorderFactory.createTitledBorder(Messages.getString("InitView.7"))); //$NON-NLS-1$
 		GridBagConstraints gbc = new GridBagConstraints();
+		JPanel cont = new JPanel();
+		cont.add(generate);
+		cont.add(existing);
 		gbc.insets = new Insets(2, 2, 2, 2);
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.weightx = 0;
 		ret.add(new JLabel(Messages.getString("InitView.8")), gbc); //$NON-NLS-1$
+
 		gbc.gridx = 1;
 		gbc.gridy = 0;
 		gbc.weightx = 1;
 		ret.add(userId, gbc);
+
 		gbc.gridx = 0;
 		gbc.gridy = 1;
 		gbc.weightx = 0;
 		ret.add(new JLabel(Messages.getString("InitView.9")), gbc); //$NON-NLS-1$
+
 		gbc.gridx = 1;
 		gbc.gridy = 1;
 		gbc.weightx = 1;
 		ret.add(password, gbc);
+
 		gbc.gridx = 0;
 		gbc.gridy = 2;
-		gbc.insets = new Insets(14, 2, 2, 2);
-		gbc.weightx = 0;
-		ret.add(new JLabel(Messages.getString("InitView.10")), gbc); //$NON-NLS-1$
+		gbc.insets = new Insets(15, 0, 0, 0);
+		ret.add(new JLabel(), gbc);
+
 		gbc.gridx = 1;
 		gbc.gridy = 2;
+		gbc.weightx = 0;
+		gbc.insets = new Insets(15, 0, 0, 0);
+		ret.add(cont, gbc);
+
+		gbc.gridx = 0;
+		gbc.gridy = 3;
+		gbc.weightx = 0;
+		gbc.insets=new Insets(0,0,0,0);
+		ret.add(new JLabel(Messages.getString("InitView.10")), gbc); //$NON-NLS-1$
+
+		gbc.gridx = 1;
+		gbc.gridy = 3;
 		gbc.weightx = 1;
 		ret.add(androidId, gbc);
 		return ret;
@@ -124,6 +153,9 @@ public class InitView extends JPanel implements ActionListener {
 		InitView ret = new InitView(mainActivity, archive);
 		ret.login.addActionListener(ret);
 		ret.help.addActionListener(ret);
+		ret.existing.addActionListener(ret);
+		ret.generate.addActionListener(ret);
+		ret.androidId.setEditable(false);
 		return ret;
 	}
 
@@ -132,12 +164,23 @@ public class InitView extends JPanel implements ActionListener {
 		if (src == login) {
 			archive.setPassword(new String(password.getPassword()));
 			archive.setUserId(userId.getText());
-			archive.setAndroidId(androidId.getText());
+			if (existing.isSelected()) {
+				archive.setAndroidId(androidId.getText());
+			}
 			login.setEnabled(false);
 			new InitWorker(archive, this).execute();
 		}
 		if (src == help) {
 			BrowseUtil.openUrl(Messages.getString("InitView.11")); //$NON-NLS-1$
+		}
+		if (src == existing || src == generate) {
+			androidId.setEditable(existing.isSelected());
+			if (existing.isSelected()) {
+				androidId.setText("");
+			}
+			else {
+				androidId.setText(Messages.getString("InitView.16"));
+			}
 		}
 	}
 
