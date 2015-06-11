@@ -93,7 +93,7 @@
 							</manifest>
 						</archive>
 						<finalName>raccoon-release</finalName> <!-- Manually sets the jar's name. -->
-						<appendAssemblyId>false</appendAssemblyId>
+						
 					</configuration>
 				</execution>
 			</executions>
