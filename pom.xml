@@ -6,7 +6,7 @@
 	<name>Raccoon</name>
 
 	<properties>
-		<jdk.version>1.6</jdk.version>
+		<jdk.version>1.7</jdk.version>
 	</properties>
 
 	<!--
@@ -56,7 +56,8 @@
 			<artifactId>maven-compiler-plugin</artifactId>
 			<version>3.1</version>
 			<configuration>
-				<target>1.6</target>
+				<source>1.7</source>
+				<target>1.7</target>
 				<compilerArgument>-Xlint:unchecked</compilerArgument>
 			</configuration>
 		</plugin>
