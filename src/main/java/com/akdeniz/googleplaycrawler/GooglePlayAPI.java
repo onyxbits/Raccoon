@@ -236,7 +236,7 @@ public class GooglePlayAPI {
 				{ "app", "com.android.vending" },
 				{ "device_country", "en" },
 				{ "lang", "en" },
-				{ "sdk_version", "21" }, }, null);
+				{ "sdk_version", "17" }, }, null);
 
 		Map<String, String> response = Utils.parseResponse(new String(Utils.readAll(responseEntity
 				.getContent())));
