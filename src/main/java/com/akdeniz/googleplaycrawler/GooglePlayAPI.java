@@ -183,6 +183,7 @@ public class GooglePlayAPI {
 				new String[][] {
 						{ "Email", this.getEmail() },
 						{ "Passwd", this.password },
+						{ "add_account", "1"},
 						{ "service", "ac2dm" },
 						{ "accountType", ACCOUNT_TYPE_HOSTED_OR_GOOGLE },
 						{ "has_permission", "1" },
@@ -230,6 +231,7 @@ public class GooglePlayAPI {
 				{ "Email", this.getEmail() },
 				{ "Passwd", this.password },
 				{ "service", "androidmarket" },
+				{ "add_account", "1"},
 				{ "accountType", ACCOUNT_TYPE_HOSTED_OR_GOOGLE },
 				{ "has_permission", "1" },
 				{ "source", "android" },
