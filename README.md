@@ -43,7 +43,14 @@ Ready to use binaries are available from:
 
 http://www.onyxbits.de/raccoon
 
+### Ubuntu Linux
+ 
+You can directly run the `racoon-3.x.jar` on Ubuntu Linux. Make sure you have installed the latest [Java](http://askubuntu.com/questions/48468/how-do-i-install-java) version. Then, either run Racoon by double-clicking the `.jar` file or perform the following command from the command-line:
+ 
+    java -jar raccoon-3.5.jar
+ 
 SHA1 Checksums:
+---------------
 
 45e28f59a2a6d1fb17a100ee064bb035009331f5  raccoon-3.3.exe
 648487120fafd5ebbf1838c48556c81375e74aab  raccoon-3.3.jar
