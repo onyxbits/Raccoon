@@ -1,3 +1,7 @@
+There will be no further development on Raccoon v3. This repository is only kept here for legacy reasons. Development on Raccoon v4 is continued in another repository:
+
+https://github.com/onyxbits/raccoon4/
+
 Raccoon - Google Play Desktop client.
 -------------------------------------
 
