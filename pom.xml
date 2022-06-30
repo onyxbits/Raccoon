@@ -68,7 +68,7 @@
 				<dependency> <!-- Newer Archiver than required fixing tar bugs. -->
 					<groupId>org.codehaus.plexus</groupId>
 					<artifactId>plexus-archiver</artifactId>
-					<version>2.4.3</version>
+					<version>3.6.0</version>
 				</dependency>
 				<dependency> <!-- Newer IO than Archiver required fixing another bug. -->
 					<groupId>org.codehaus.plexus</groupId>
